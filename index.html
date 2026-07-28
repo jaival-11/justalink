@@ -122,10 +122,29 @@
             </div>
           </div>
 
+          <!-- Social Icons Manager Card -->
+          <div class="builder-card border rounded-lg p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-bold">3. Social Icons</h2>
+                <p class="text-xs builder-subtext mt-0.5">
+                  Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, twitter, instagram, linkedin).
+                </p>
+              </div>
+              <button id="btn-add-social" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0 ml-2">
+                <span>+</span> Add Icon
+              </button>
+            </div>
+
+            <div id="socials-container" class="space-y-4">
+              <!-- Dynamic social icon items inserted here -->
+            </div>
+          </div>
+
           <!-- Links Manager Card -->
           <div class="builder-card border rounded-lg p-5">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-bold">3. Add Links</h2>
+              <h2 class="text-lg font-bold">4. Add Links</h2>
               <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer">
                 <span>+</span> Add Link
               </button>
@@ -138,7 +157,7 @@
 
           <!-- Share & URL Output Card -->
           <div class="builder-card border rounded-lg p-5">
-            <h2 class="text-lg font-bold mb-2">4. Your Generated Link</h2>
+            <h2 class="text-lg font-bold mb-2">5. Your Generated Link</h2>
             <p class="text-xs builder-subtext mb-3">
               Copy this link to share it on social media. Your data is compressed and encoded in the URL.
             </p>
@@ -208,6 +227,9 @@
               <div class="text-center mb-6">
                 <h3 id="preview-name" class="font-extrabold text-xl tracking-tight leading-snug">Name Placeholder</h3>
                 <p id="preview-bio" class="text-sm opacity-90 mt-1 whitespace-pre-line">Bio preview will appear here...</p>
+                <div id="preview-socials-list" class="flex flex-wrap items-center justify-center gap-2.5 mt-3 hidden">
+                  <!-- Dynamically populated social icons -->
+                </div>
               </div>
 
               <!-- Links List -->
@@ -259,6 +281,9 @@
         <div class="text-center mb-6">
           <h1 id="view-name" class="font-extrabold text-2xl tracking-tight leading-snug mb-1"></h1>
           <p id="view-bio" class="text-sm opacity-90 leading-relaxed whitespace-pre-line"></p>
+          <div id="view-socials-list" class="flex flex-wrap items-center justify-center gap-3 mt-3.5 hidden">
+            <!-- Populated dynamically -->
+          </div>
         </div>
 
         <!-- View Mode Links -->

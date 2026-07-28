@@ -26,7 +26,8 @@
     close: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
     info: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
     warning: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-    bolt: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-yellow-400 inline-block" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7V2z"/></svg>`
+    bolt: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-yellow-400 inline-block" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7V2z"/></svg>`,
+    link: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
   };
 
   // --- Initial Default App State ---
@@ -35,6 +36,7 @@
     avatar: '',
     bio: '',
     theme: 'slate',
+    socials: [],
     links: []
   };
 
@@ -53,6 +55,8 @@
   const inputAvatar = document.getElementById('input-avatar');
   const inputBio = document.getElementById('input-bio');
   const themeOptionsContainer = document.getElementById('theme-options');
+  const socialsContainer = document.getElementById('socials-container');
+  const btnAddSocial = document.getElementById('btn-add-social');
   const linksContainer = document.getElementById('links-container');
   const btnAddLink = document.getElementById('btn-add-link');
   const btnLoadPreset = document.getElementById('btn-load-preset');
@@ -68,6 +72,7 @@
   const previewAvatarFallback = document.getElementById('preview-avatar-fallback');
   const previewName = document.getElementById('preview-name');
   const previewBio = document.getElementById('preview-bio');
+  const previewSocialsList = document.getElementById('preview-socials-list');
   const previewLinksList = document.getElementById('preview-links-list');
   const watermarkLink = document.getElementById('watermark-link');
 
@@ -77,8 +82,21 @@
   const viewAvatarFallback = document.getElementById('view-avatar-fallback');
   const viewName = document.getElementById('view-name');
   const viewBio = document.getElementById('view-bio');
+  const viewSocialsList = document.getElementById('view-socials-list');
   const viewLinksList = document.getElementById('view-links-list');
   const viewWatermarkLink = document.getElementById('view-watermark-link');
+
+  // Helper for Simple Icons slug formatting
+  function getSimpleIconSlug(rawInput) {
+    if (!rawInput) return '';
+    return rawInput
+      .trim()
+      .toLowerCase()
+      .replace(/\+/g, 'plus')
+      .replace(/\./g, 'dot')
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]/g, '');
+  }
 
   // Toast
   const toast = document.getElementById('toast');
@@ -200,6 +218,116 @@
     });
   }
 
+  function renderSocialInputs() {
+    if (!socialsContainer) return;
+    socialsContainer.innerHTML = '';
+
+    if (!appState.socials || appState.socials.length === 0) {
+      socialsContainer.innerHTML = `
+        <div class="text-center py-6 border border-dashed border-zinc-700 rounded-lg builder-subtext text-xs">
+          No social icons added yet. Click "+ Add Icon" to add your social profiles.
+        </div>
+      `;
+      return;
+    }
+
+    appState.socials.forEach((social, index) => {
+      const item = document.createElement('div');
+      item.className = 'builder-input border rounded-lg p-3 space-y-2 relative group';
+
+      const slug = getSimpleIconSlug(social.icon);
+      const iconMarkup = slug
+        ? `<span class="social-icon-mask" style="-webkit-mask-image: url('https://cdn.simpleicons.org/${slug}'); mask-image: url('https://cdn.simpleicons.org/${slug}');"></span>`
+        : ICONS.link;
+
+      item.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono font-bold builder-subtext">#${index + 1}</span>
+            <div class="w-6 h-6 rounded border border-zinc-700/60 flex items-center justify-center text-current overflow-hidden shrink-0">
+              ${iconMarkup}
+            </div>
+          </div>
+          <div class="flex items-center gap-1">
+            <button type="button" class="btn-move-up-social p-1 text-xs builder-subtext hover:text-current flex items-center justify-center" title="Move Up" ${index === 0 ? 'disabled class="opacity-30 cursor-not-allowed p-1 text-xs flex items-center justify-center"' : ''}>${ICONS.up}</button>
+            <button type="button" class="btn-move-down-social p-1 text-xs builder-subtext hover:text-current flex items-center justify-center" title="Move Down" ${index === appState.socials.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed p-1 text-xs flex items-center justify-center"' : ''}>${ICONS.down}</button>
+            <button type="button" class="btn-delete-social p-1 text-xs text-red-500 hover:text-red-400 ml-1 flex items-center justify-center" title="Delete Icon">${ICONS.close}</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <input 
+            type="text" 
+            placeholder="Simple Icon Name (e.g. github, twitter, linkedin)" 
+            value="${social.icon || ''}" 
+            class="input-social-icon builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
+          />
+          <input 
+            type="url" 
+            placeholder="URL (e.g. https://github.com/username)" 
+            value="${social.url || ''}" 
+            class="input-social-url builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
+          />
+        </div>
+      `;
+
+      const inputIcon = item.querySelector('.input-social-icon');
+      const inputUrl = item.querySelector('.input-social-url');
+      const btnUp = item.querySelector('.btn-move-up-social');
+      const btnDown = item.querySelector('.btn-move-down-social');
+      const btnDelete = item.querySelector('.btn-delete-social');
+
+      inputIcon.addEventListener('input', (e) => {
+        appState.socials[index].icon = e.target.value;
+        const newSlug = getSimpleIconSlug(e.target.value);
+        const previewBadge = item.querySelector('.w-6.h-6');
+        if (previewBadge) {
+          previewBadge.innerHTML = newSlug
+            ? `<span class="social-icon-mask" style="-webkit-mask-image: url('https://cdn.simpleicons.org/${newSlug}'); mask-image: url('https://cdn.simpleicons.org/${newSlug}');"></span>`
+            : ICONS.link;
+        }
+        updatePreview();
+        updateShareUrl();
+      });
+
+      inputUrl.addEventListener('input', (e) => {
+        appState.socials[index].url = e.target.value;
+        updatePreview();
+        updateShareUrl();
+      });
+
+      if (btnUp && !btnUp.disabled) {
+        btnUp.addEventListener('click', () => {
+          const temp = appState.socials[index];
+          appState.socials[index] = appState.socials[index - 1];
+          appState.socials[index - 1] = temp;
+          renderSocialInputs();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      if (btnDown && !btnDown.disabled) {
+        btnDown.addEventListener('click', () => {
+          const temp = appState.socials[index];
+          appState.socials[index] = appState.socials[index + 1];
+          appState.socials[index + 1] = temp;
+          renderSocialInputs();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      btnDelete.addEventListener('click', () => {
+        appState.socials.splice(index, 1);
+        renderSocialInputs();
+        updatePreview();
+        updateShareUrl();
+      });
+
+      socialsContainer.appendChild(item);
+    });
+  }
+
   function renderLinkInputs() {
     linksContainer.innerHTML = '';
     
@@ -310,6 +438,32 @@
       previewAvatarFallback.querySelector('span').textContent = appState.name ? appState.name.trim().charAt(0).toUpperCase() : '?';
     }
 
+    // Social Icons Line after Bio
+    if (previewSocialsList) {
+      previewSocialsList.innerHTML = '';
+      if (appState.socials && appState.socials.length > 0) {
+        previewSocialsList.classList.remove('hidden');
+        appState.socials.forEach(s => {
+          const slug = getSimpleIconSlug(s.icon);
+          const socialBtn = document.createElement('a');
+          socialBtn.href = sanitizeUrl(s.url);
+          socialBtn.target = '_blank';
+          socialBtn.rel = 'noopener noreferrer';
+          socialBtn.title = s.icon || 'Social';
+          socialBtn.className = 'social-icon-btn inline-flex items-center justify-center p-1.5 rounded text-current opacity-85 hover:opacity-100 transition-opacity cursor-pointer';
+          
+          if (slug) {
+            socialBtn.innerHTML = `<span class="social-icon-mask" style="-webkit-mask-image: url('https://cdn.simpleicons.org/${slug}'); mask-image: url('https://cdn.simpleicons.org/${slug}');"></span>`;
+          } else {
+            socialBtn.innerHTML = ICONS.link;
+          }
+          previewSocialsList.appendChild(socialBtn);
+        });
+      } else {
+        previewSocialsList.classList.add('hidden');
+      }
+    }
+
     // Links
     previewLinksList.innerHTML = '';
     if (appState.links.length === 0) {
@@ -344,6 +498,7 @@
     inputAvatar.value = appState.avatar || '';
     inputBio.value = appState.bio || '';
     renderThemeSelector();
+    renderSocialInputs();
     renderLinkInputs();
     updatePreview();
     updateShareUrl();
@@ -369,6 +524,33 @@
       viewAvatarImg.classList.add('hidden');
       viewAvatarFallback.classList.remove('hidden');
       viewAvatarFallback.querySelector('span').textContent = data.name ? data.name.trim().charAt(0).toUpperCase() : '?';
+    }
+
+    // Social Icons Line in View Mode
+    if (viewSocialsList) {
+      viewSocialsList.innerHTML = '';
+      const socialsArr = data.socials || [];
+      if (socialsArr.length > 0) {
+        viewSocialsList.classList.remove('hidden');
+        socialsArr.forEach(s => {
+          const slug = getSimpleIconSlug(s.icon);
+          const socialBtn = document.createElement('a');
+          socialBtn.href = sanitizeUrl(s.url);
+          socialBtn.target = '_blank';
+          socialBtn.rel = 'noopener noreferrer';
+          socialBtn.title = s.icon || 'Social';
+          socialBtn.className = 'social-icon-btn inline-flex items-center justify-center p-2 rounded text-current opacity-85 hover:opacity-100 transition-opacity cursor-pointer';
+          
+          if (slug) {
+            socialBtn.innerHTML = `<span class="social-icon-mask" style="-webkit-mask-image: url('https://cdn.simpleicons.org/${slug}'); mask-image: url('https://cdn.simpleicons.org/${slug}');"></span>`;
+          } else {
+            socialBtn.innerHTML = ICONS.link;
+          }
+          viewSocialsList.appendChild(socialBtn);
+        });
+      } else {
+        viewSocialsList.classList.add('hidden');
+      }
     }
 
     // Links
@@ -451,6 +633,21 @@
       updatePreview();
       updateShareUrl();
     });
+
+    // Add Social Icon Button
+    if (btnAddSocial) {
+      btnAddSocial.addEventListener('click', () => {
+        if (!appState.socials) appState.socials = [];
+        appState.socials.push({
+          id: 'social_' + Date.now(),
+          icon: '',
+          url: ''
+        });
+        renderSocialInputs();
+        updatePreview();
+        updateShareUrl();
+      });
+    }
 
     // Add Link Button
     btnAddLink.addEventListener('click', () => {

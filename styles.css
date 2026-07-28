@@ -212,3 +212,28 @@ body.builder-light #brand-badge {
 .page-theme-emerald { background-color: #022c22; }
 .page-theme-berry { background-color: #2e1065; }
 .page-theme-neo { background-color: #ffedd5; }
+
+/* Social Icons (Simple Icons via SVG Mask) */
+.social-icon-mask {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
+.social-icon-btn {
+  color: currentColor;
+  opacity: 0.85;
+}
+.social-icon-btn:hover {
+  opacity: 1;
+}
+
+
+
