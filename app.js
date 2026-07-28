@@ -185,7 +185,7 @@
             <input 
               type="text" 
               id="input-restore-url" 
-              placeholder="https://justalink.com/#data=..." 
+              placeholder="https://jaival-11.github.io/justalink/#data=..." 
               class="w-full builder-input border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none"
             />
             <div id="restore-error" class="hidden mt-2.5 p-2.5 rounded border border-red-500/40 bg-red-950/20 text-red-400 text-xs font-semibold flex items-center gap-2">
@@ -285,7 +285,12 @@
         bio: decoded.bio || '',
         theme: decoded.theme || 'slate',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
-        links: Array.isArray(decoded.links) ? decoded.links : []
+        links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
+          id: l.id || ('link_' + Math.random().toString(36).substring(2, 9)),
+          title: l.title || '',
+          url: l.url || '',
+          description: l.description || ''
+        })) : []
       };
       populateBuilderInputs();
       return { success: true };
@@ -510,11 +515,20 @@
             class="input-link-url builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
           />
         </div>
+        <div>
+          <input 
+            type="text" 
+            placeholder="Description (optional, e.g. Check out my portfolio)" 
+            value="${link.description || ''}" 
+            class="input-link-description w-full builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
+          />
+        </div>
       `;
 
       // Event Listeners for Link Inputs
       const inputTitle = item.querySelector('.input-link-title');
       const inputUrl = item.querySelector('.input-link-url');
+      const inputDesc = item.querySelector('.input-link-description');
       const btnUp = item.querySelector('.btn-move-up');
       const btnDown = item.querySelector('.btn-move-down');
       const btnDelete = item.querySelector('.btn-delete-link');
@@ -527,6 +541,12 @@
 
       inputUrl.addEventListener('input', (e) => {
         appState.links[index].url = e.target.value;
+        updatePreview();
+        updateShareUrl();
+      });
+
+      inputDesc.addEventListener('input', (e) => {
+        appState.links[index].description = e.target.value;
         updatePreview();
         updateShareUrl();
       });
@@ -618,8 +638,20 @@
         linkBtn.href = sanitizeUrl(l.url);
         linkBtn.target = '_blank';
         linkBtn.rel = 'noopener noreferrer';
-        linkBtn.className = 'link-btn block w-full py-2.5 px-4 rounded-lg font-medium text-xs text-center truncate cursor-pointer';
-        linkBtn.textContent = l.title || 'Untitled Link';
+        linkBtn.className = 'link-btn block w-full py-2.5 px-4 rounded-lg text-center cursor-pointer transition-colors';
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'block font-semibold text-xs leading-snug';
+        titleSpan.textContent = l.title || 'Untitled Link';
+        linkBtn.appendChild(titleSpan);
+
+        if (l.description && l.description.trim()) {
+          const descSpan = document.createElement('span');
+          descSpan.className = 'block text-[11px] opacity-80 font-normal mt-0.5 leading-snug';
+          descSpan.textContent = l.description.trim();
+          linkBtn.appendChild(descSpan);
+        }
+
         previewLinksList.appendChild(linkBtn);
       });
     }
@@ -705,8 +737,20 @@
         linkBtn.href = sanitizeUrl(l.url);
         linkBtn.target = '_blank';
         linkBtn.rel = 'noopener noreferrer';
-        linkBtn.className = 'link-btn block w-full py-3 px-5 rounded-xl font-semibold text-sm text-center truncate cursor-pointer';
-        linkBtn.textContent = l.title || 'Link';
+        linkBtn.className = 'link-btn block w-full py-3 px-5 rounded-xl text-center cursor-pointer transition-colors';
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'block font-semibold text-sm leading-snug';
+        titleSpan.textContent = l.title || 'Link';
+        linkBtn.appendChild(titleSpan);
+
+        if (l.description && l.description.trim()) {
+          const descSpan = document.createElement('span');
+          descSpan.className = 'block text-xs opacity-80 font-normal mt-1 leading-snug';
+          descSpan.textContent = l.description.trim();
+          linkBtn.appendChild(descSpan);
+        }
+
         viewLinksList.appendChild(linkBtn);
       });
     } else {
@@ -865,7 +909,8 @@
       appState.links.push({
         id: 'link_' + Date.now(),
         title: '',
-        url: ''
+        url: '',
+        description: ''
       });
       renderLinkInputs();
       updatePreview();
