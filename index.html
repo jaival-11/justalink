@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JustALink - Zero-Database Hash Bio Link Builder</title>
+  <meta name="description" content="Create elegant, high-contrast, zero-database link-in-bio pages powered purely by URL hash fragments." />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="builder-light font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header / Navigation Bar (Homepage Builder Header) -->
+  <header id="main-header" class="border-b px-4 py-3 sticky top-0 z-40 transition-colors">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="#" id="brand-logo" class="flex items-center gap-2 font-extrabold text-xl tracking-tight hover:opacity-90">
+        <span id="brand-badge" class="px-2 py-0.5 rounded text-sm uppercase tracking-wider font-mono font-bold transition-colors">#</span>
+        <span>JustALink</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <!-- Light / Dark Mode Toggle Button -->
+        <button id="theme-toggle-btn" type="button" class="builder-muted-btn text-xs font-bold px-3 py-1.5 rounded border transition-colors flex items-center gap-1.5 cursor-pointer" aria-label="Toggle Theme Mode">
+          <span id="theme-toggle-icon" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"/></svg></span>
+          <span id="theme-toggle-text">Dark Mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="flex-grow flex flex-col justify-center">
+    
+    <!-- BUILDER MODE UI (Homepage) -->
+    <section id="builder-mode" class="max-w-6xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+      <div class="mb-6">
+        <h1 class="text-2xl sm:text-3xl font-extrabold">Create Your Link-in-Bio</h1>
+        <p class="builder-subtext text-sm mt-1">
+          Everything is stored inside your shareable link. No signups, no databases.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Column: Form Controls -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Profile Information Card -->
+          <div class="builder-card border rounded-lg p-5">
+            <h2 class="text-lg font-bold mb-4">
+              1. Profile Details
+            </h2>
+
+            <div class="space-y-4">
+              <!-- Name Input -->
+              <div>
+                <label for="input-name" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                  Full Name / Display Name
+                </label>
+                <input 
+                  type="text" 
+                  id="input-name" 
+                  placeholder="e.g. Your Name" 
+                  class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                />
+              </div>
+
+              <!-- Avatar URL Input -->
+              <div>
+                <label for="input-avatar" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                  Avatar Image URL
+                </label>
+                <input 
+                  type="url" 
+                  id="input-avatar" 
+                  placeholder="https://images.unsplash.com/photo-..." 
+                  class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                />
+              </div>
+
+              <!-- Bio Input -->
+              <div>
+                <label for="input-bio" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                  Bio / Description
+                </label>
+                <textarea 
+                  id="input-bio" 
+                  rows="3" 
+                  placeholder="Software engineer & digital creator. Building open-source tools." 
+                  class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none resize-y"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Theme Selection Card -->
+          <div class="builder-card border rounded-lg p-5">
+            <h2 class="text-lg font-bold mb-3">2. Choose Theme Style (Flat Solid Colors)</h2>
+            <p class="text-xs builder-subtext mb-4">Select a flat, high-contrast palette. Gradients and blurs are disabled by design philosophy.</p>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
+              <!-- Theme choices populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Links Manager Card -->
+          <div class="builder-card border rounded-lg p-5">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-lg font-bold">3. Add Links</h2>
+              <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer">
+                <span>+</span> Add Link
+              </button>
+            </div>
+
+            <div id="links-container" class="space-y-4">
+              <!-- Dynamic link items inserted here -->
+            </div>
+          </div>
+
+          <!-- Share & URL Output Card -->
+          <div class="builder-card border rounded-lg p-5">
+            <h2 class="text-lg font-bold mb-2">4. Your Generated Link</h2>
+            <p class="text-xs builder-subtext mb-3">
+              Copy this link to share it on social media. Your data is compressed and encoded in the URL.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input 
+                type="text" 
+                id="output-share-url" 
+                readonly 
+                class="flex-grow builder-input border rounded px-3 py-2 text-xs font-mono text-emerald-500 select-all focus:outline-none" 
+                value=""
+              />
+              <button 
+                id="btn-copy-url" 
+                type="button" 
+                class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded shrink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                <span id="copy-btn-text">Copy Link</span>
+              </button>
+              <a 
+                id="btn-open-preview" 
+                href="#" 
+                target="_blank" 
+                class="builder-muted-btn font-semibold text-xs px-4 py-2 rounded border shrink-0 transition-colors flex items-center justify-center"
+              >
+                Launch Card ↗
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Live Card Preview -->
+        <div class="lg:col-span-5 lg:sticky lg:top-20">
+          <div class="builder-card border rounded-lg p-4">
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-zinc-700/40">
+              <span class="text-xs font-semibold builder-subtext uppercase tracking-wider flex items-center gap-1.5">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Live Card Preview
+              </span>
+              <span class="text-xs builder-subtext font-mono">View Mode</span>
+            </div>
+
+            <!-- Preview Card Container Frame -->
+            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-xl border transition-all duration-300" id="preview-card-frame">
+              
+              <!-- Avatar -->
+              <div class="flex justify-center mb-4">
+                <div class="relative">
+                  <img 
+                    id="preview-avatar-img" 
+                    src="" 
+                    alt="Avatar" 
+                    class="w-20 h-20 rounded-full object-cover border-2 border-current shadow-none" 
+                  />
+                  <div 
+                    id="preview-avatar-fallback" 
+                    class="w-20 h-20 rounded-full border-2 border-current flex items-center justify-center font-bold text-2xl uppercase hidden"
+                  >
+                    <span>?</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Name & Bio -->
+              <div class="text-center mb-6">
+                <h3 id="preview-name" class="font-extrabold text-xl tracking-tight leading-snug">Name Placeholder</h3>
+                <p id="preview-bio" class="text-sm opacity-90 mt-1 whitespace-pre-line">Bio preview will appear here...</p>
+              </div>
+
+              <!-- Links List -->
+              <div id="preview-links-list" class="space-y-3">
+                <!-- Dynamically populated links -->
+              </div>
+
+              <!-- Permanent Footer Watermark -->
+              <div class="mt-8 pt-4 border-t border-current/20 text-center">
+                <a 
+                  id="watermark-link"
+                  href="#" 
+                  class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity"
+                  title="Create your own zero-database link-in-bio page"
+                >
+                  Built with <span class="underline">JustALink</span>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW MODE UI (Full Screen / Standalone Profile View - No top header banner) -->
+    <section id="view-mode" class="hidden min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6">
+      <div id="view-card-container" class="w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto">
+        
+        <!-- View Mode Profile Info -->
+        <div class="flex justify-center mb-5">
+          <div class="relative">
+            <img 
+              id="view-avatar-img" 
+              src="" 
+              alt="Profile Avatar" 
+              class="w-24 h-24 rounded-full object-cover border-2 border-current" 
+            />
+            <div 
+              id="view-avatar-fallback" 
+              class="w-24 h-24 rounded-full border-2 border-current flex items-center justify-center font-extrabold text-3xl uppercase hidden"
+            >
+              <span>?</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mb-6">
+          <h1 id="view-name" class="font-extrabold text-2xl tracking-tight leading-snug mb-1"></h1>
+          <p id="view-bio" class="text-sm opacity-90 leading-relaxed whitespace-pre-line"></p>
+        </div>
+
+        <!-- View Mode Links -->
+        <div id="view-links-list" class="space-y-3.5">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Permanent Watermark Footer -->
+        <footer class="mt-10 pt-5 border-t border-current/20 text-center">
+          <a 
+            id="view-watermark-link"
+            href="#" 
+            class="inline-block text-xs font-bold tracking-wide opacity-80 hover:opacity-100 transition-opacity uppercase font-mono"
+          >
+            Built with JustALink
+          </a>
+        </footer>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-zinc-900 text-white border border-zinc-700 px-4 py-3 rounded-lg text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+    <span id="toast-icon" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+    <span id="toast-message">Message standard text</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

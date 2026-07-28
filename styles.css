@@ -1,0 +1,214 @@
+/* JustALink - Flat Design System Styles */
+
+/* Enforce strict flat aesthetics: disable gradients, blurs, and drop shadows globally */
+* {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-image: none !important;
+}
+
+/* Custom Scrollbar for clean aesthetics */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #18181b;
+}
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+/* Base link transitions */
+a, button, input, textarea {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+/* Builder Mode Theme Styling (Flat Dark & Light) */
+body.builder-dark {
+  background-color: #000000;
+  color: #f4f4f5;
+}
+body.builder-dark #main-header {
+  background-color: #09090b;
+  border-color: #27272a;
+  color: #ffffff;
+}
+body.builder-dark .builder-card {
+  background-color: #09090b;
+  border-color: #27272a;
+  color: #f4f4f5;
+}
+body.builder-dark .builder-input {
+  background-color: #000000;
+  border-color: #27272a;
+  color: #ffffff;
+}
+body.builder-dark .builder-input:focus {
+  border-color: #71717a;
+}
+body.builder-dark .builder-subtext {
+  color: #a1a1aa;
+}
+body.builder-dark .builder-muted-btn {
+  background-color: #18181b;
+  border-color: #27272a;
+  color: #d4d4d8;
+}
+body.builder-dark .builder-muted-btn:hover {
+  background-color: #27272a;
+  color: #ffffff;
+}
+body.builder-dark #brand-badge {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.builder-light {
+  background-color: #ffffff;
+  color: #18181b;
+}
+body.builder-light #main-header {
+  background-color: #ffffff;
+  border-color: #e4e4e7;
+  color: #09090b;
+}
+body.builder-light .builder-card {
+  background-color: #f4f4f5;
+  border-color: #e4e4e7;
+  color: #18181b;
+}
+body.builder-light .builder-input {
+  background-color: #ffffff;
+  border-color: #d4d4d8;
+  color: #09090b;
+}
+body.builder-light .builder-input:focus {
+  border-color: #18181b;
+}
+body.builder-light .builder-subtext {
+  color: #71717a;
+}
+body.builder-light .builder-muted-btn {
+  background-color: #e4e4e7;
+  border-color: #d4d4d8;
+  color: #18181b;
+}
+body.builder-light .builder-muted-btn:hover {
+  background-color: #d4d4d8;
+  color: #000000;
+}
+body.builder-light #brand-badge {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Theme definitions - Pure flat solid colors & high contrast */
+.theme-slate {
+  background-color: #0f172a;
+  color: #f8fafc;
+  border-color: #334155;
+}
+.theme-slate .link-btn {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}
+.theme-slate .link-btn:hover {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #ffffff;
+}
+
+.theme-light {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+.theme-light .link-btn {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+.theme-light .link-btn:hover {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.theme-cyber {
+  background-color: #000000;
+  color: #facc15;
+  border-color: #facc15;
+}
+.theme-cyber .link-btn {
+  background-color: #18181b;
+  color: #facc15;
+  border: 2px solid #facc15;
+}
+.theme-cyber .link-btn:hover {
+  background-color: #facc15;
+  color: #000000;
+  border-color: #facc15;
+}
+
+.theme-emerald {
+  background-color: #064e3b;
+  color: #ecfdf5;
+  border-color: #059669;
+}
+.theme-emerald .link-btn {
+  background-color: #047857;
+  color: #ecfdf5;
+  border: 1px solid #10b981;
+}
+.theme-emerald .link-btn:hover {
+  background-color: #a7f3d0;
+  color: #064e3b;
+  border-color: #a7f3d0;
+}
+
+.theme-berry {
+  background-color: #4c1d95;
+  color: #f5f3ff;
+  border-color: #7c3aed;
+}
+.theme-berry .link-btn {
+  background-color: #6d28d9;
+  color: #f5f3ff;
+  border: 1px solid #8b5cf6;
+}
+.theme-berry .link-btn:hover {
+  background-color: #ddd6fe;
+  color: #4c1d95;
+  border-color: #ddd6fe;
+}
+
+.theme-neo {
+  background-color: #fff7ed;
+  color: #1c1917;
+  border-color: #1c1917;
+}
+.theme-neo .link-btn {
+  background-color: #ea580c;
+  color: #ffffff;
+  border: 2px solid #1c1917;
+}
+.theme-neo .link-btn:hover {
+  background-color: #1c1917;
+  color: #ffffff;
+  border-color: #1c1917;
+}
+
+/* Card theme background override for outer view wrapper */
+.page-theme-slate { background-color: #020617; }
+.page-theme-light { background-color: #f8fafc; }
+.page-theme-cyber { background-color: #09090b; }
+.page-theme-emerald { background-color: #022c22; }
+.page-theme-berry { background-color: #2e1065; }
+.page-theme-neo { background-color: #ffedd5; }
