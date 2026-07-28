@@ -44,9 +44,19 @@
 
   // --- DOM Elements ---
   const mainHeader = document.getElementById('main-header');
+  const btnRestoreUrl = document.getElementById('btn-restore-url');
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
   const themeToggleIcon = document.getElementById('theme-toggle-icon');
   const themeToggleText = document.getElementById('theme-toggle-text');
+
+  // Restore Modal Elements
+  const restoreModal = document.getElementById('restore-modal');
+  const inputRestoreUrl = document.getElementById('input-restore-url');
+  const restoreError = document.getElementById('restore-error');
+  const restoreErrorText = document.getElementById('restore-error-text');
+  const btnCloseRestoreModal = document.getElementById('btn-close-restore-modal');
+  const btnCancelRestore = document.getElementById('btn-cancel-restore');
+  const btnSubmitRestore = document.getElementById('btn-submit-restore');
 
   const builderModeSec = document.getElementById('builder-mode');
   const viewModeSec = document.getElementById('view-mode');
@@ -147,6 +157,140 @@
     } catch (err) {
       console.error('Decoding error:', err);
       return null;
+    }
+  }
+
+  function ensureRestoreModal() {
+    let modal = document.getElementById('restore-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'restore-modal';
+      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 hidden';
+      modal.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+      modal.innerHTML = `
+        <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
+          <div class="flex items-center justify-between border-b pb-3 border-zinc-700/40">
+            <h3 class="text-lg font-extrabold flex items-center gap-2">
+              <span>Restore Profile</span>
+            </h3>
+            <button id="btn-close-restore-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div>
+            <label for="input-restore-url" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1.5">
+              JustALink URL or Hash
+            </label>
+            <input 
+              type="text" 
+              id="input-restore-url" 
+              placeholder="https://justalink.com/#data=..." 
+              class="w-full builder-input border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none"
+            />
+            <div id="restore-error" class="hidden mt-2.5 p-2.5 rounded border border-red-500/40 bg-red-950/20 text-red-400 text-xs font-semibold flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span id="restore-error-text">Invalid URL or corrupted link data.</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-700/40">
+            <button id="btn-cancel-restore" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
+              Cancel
+            </button>
+            <button id="btn-submit-restore" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
+              Restore Profile
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    return modal;
+  }
+
+  function openRestoreModal() {
+    const modal = ensureRestoreModal();
+    const input = document.getElementById('input-restore-url');
+    if (input) input.value = '';
+    hideRestoreError();
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      if (input) input.focus();
+    }, 50);
+  }
+
+  function closeRestoreModal() {
+    const modal = document.getElementById('restore-modal');
+    const input = document.getElementById('input-restore-url');
+    if (modal) modal.classList.add('hidden');
+    if (input) input.value = '';
+    hideRestoreError();
+  }
+
+  function showRestoreError(msg) {
+    const errBox = document.getElementById('restore-error');
+    const errText = document.getElementById('restore-error-text');
+    if (errBox && errText) {
+      errText.textContent = msg;
+      errBox.classList.remove('hidden');
+    }
+  }
+
+  function hideRestoreError() {
+    const errBox = document.getElementById('restore-error');
+    if (errBox) {
+      errBox.classList.add('hidden');
+    }
+  }
+
+  function processRestoreInput(inputUrl) {
+    if (!inputUrl || !inputUrl.trim()) {
+      return { success: false, error: 'Please enter a URL or hash payload.' };
+    }
+
+    let rawStr = inputUrl.trim();
+
+    if (rawStr.startsWith('http://') || rawStr.startsWith('https://')) {
+      try {
+        const parsedUrl = new URL(rawStr);
+        if (!parsedUrl.hash || (!parsedUrl.hash.includes('data=') && !parsedUrl.search.includes('data='))) {
+          return { success: false, error: 'URL does not contain JustALink profile data (#data=...).' };
+        }
+      } catch (e) {
+        return { success: false, error: 'Invalid URL format.' };
+      }
+    }
+
+    let base64Str = '';
+    if (rawStr.includes('#data=')) {
+      base64Str = rawStr.split('#data=')[1];
+    } else if (rawStr.includes('data=')) {
+      base64Str = rawStr.split('data=')[1];
+    } else if (rawStr.startsWith('#')) {
+      base64Str = rawStr.substring(1);
+    } else {
+      base64Str = rawStr;
+    }
+
+    if (base64Str.includes('&')) {
+      base64Str = base64Str.split('&')[0];
+    }
+
+    const decoded = decodeData(base64Str);
+    if (decoded && typeof decoded === 'object') {
+      appState = {
+        name: decoded.name || '',
+        avatar: decoded.avatar || '',
+        bio: decoded.bio || '',
+        theme: decoded.theme || 'slate',
+        socials: Array.isArray(decoded.socials) ? decoded.socials : [],
+        links: Array.isArray(decoded.links) ? decoded.links : []
+      };
+      populateBuilderInputs();
+      return { success: true };
+    } else {
+      return { success: false, error: 'Could not decode profile details. Invalid or corrupted payload.' };
     }
   }
 
@@ -606,6 +750,73 @@
   // --- Event Listeners Initialization ---
 
   function initEvents() {
+    // Delegated click listener for Restore button (header)
+    document.addEventListener('click', (e) => {
+      const btnRestore = e.target.closest('#btn-restore-url');
+      if (btnRestore) {
+        e.preventDefault();
+        openRestoreModal();
+        return;
+      }
+
+      const btnClose = e.target.closest('#btn-close-restore-modal');
+      if (btnClose) {
+        e.preventDefault();
+        closeRestoreModal();
+        return;
+      }
+
+      const btnCancel = e.target.closest('#btn-cancel-restore');
+      if (btnCancel) {
+        e.preventDefault();
+        closeRestoreModal();
+        return;
+      }
+
+      const btnSubmit = e.target.closest('#btn-submit-restore');
+      if (btnSubmit) {
+        e.preventDefault();
+        handleRestoreSubmit();
+        return;
+      }
+
+      const modal = document.getElementById('restore-modal');
+      if (modal && e.target === modal) {
+        closeRestoreModal();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('restore-modal');
+      if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+        closeRestoreModal();
+      }
+    });
+
+    function handleRestoreSubmit() {
+      hideRestoreError();
+      const input = document.getElementById('input-restore-url');
+      const val = input ? input.value : '';
+      const result = processRestoreInput(val);
+      if (result.success) {
+        closeRestoreModal();
+        showToast('Profile restored successfully!', 'check');
+      } else {
+        showRestoreError(result.error);
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('input-restore-url');
+        const modal = document.getElementById('restore-modal');
+        if (input && document.activeElement === input && modal && !modal.classList.contains('hidden')) {
+          e.preventDefault();
+          handleRestoreSubmit();
+        }
+      }
+    });
+
     // Theme Mode Toggle (Light / Dark)
     if (themeToggleBtn) {
       themeToggleBtn.addEventListener('click', () => {
