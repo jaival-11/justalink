@@ -81,12 +81,12 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- Left Column: Form Controls -->
-        <div class="lg:col-span-7 space-y-6">
+        <div class="lg:col-span-7 space-y-3">
           
           <!-- Profile Information Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="1">
+          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="1">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-lg font-bold">
+              <h2 class="text-base sm:text-lg font-bold">
                 1. Profile Details
               </h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
@@ -95,7 +95,7 @@
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40 space-y-4">
+              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40 space-y-3">
                 <!-- Name Input -->
                 <div>
                   <label for="input-name" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
@@ -153,17 +153,17 @@
           </div>
 
           <!-- Color Theme Selection Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="2">
+          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="2">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-lg font-bold">2. Choose Theme Style (Flat Solid Colors)</h2>
+              <h2 class="text-base sm:text-lg font-bold">2. Choose Theme Style (Flat Solid Colors)</h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </span>
             </div>
             
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-4">Select a flat, high-contrast palette. Gradients and blurs are disabled by design philosophy.</p>
+              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3">Select a flat, high-contrast palette. Gradients and blurs are disabled by design philosophy.</p>
                 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
                   <!-- Theme choices populated by JavaScript -->
@@ -173,9 +173,9 @@
           </div>
 
           <!-- Social Icons Manager Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="3">
+          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="3">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-lg font-bold">3. Social Icons</h2>
+              <h2 class="text-base sm:text-lg font-bold">3. Social Icons</h2>
               <div class="flex items-center gap-2 sm:gap-3">
                 <button id="btn-add-social" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0">
                   <span>+</span> Add Icon
@@ -187,11 +187,11 @@
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-4">
+              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3">
                   Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, twitter, instagram, linkedin).
                 </p>
-                <div id="socials-container" class="space-y-4">
+                <div id="socials-container" class="space-y-3">
                   <!-- Dynamic social icon items inserted here -->
                 </div>
               </div>
@@ -199,10 +199,10 @@
           </div>
 
           <!-- Short Message Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="4">
+          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="4">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
               <div class="flex items-center gap-2">
-                <h2 class="text-lg font-bold">4. Short Message</h2>
+                <h2 class="text-base sm:text-lg font-bold">4. Short Message</h2>
                 <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
                   Markdown Supported
                 </span>
@@ -213,7 +213,7 @@
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40 space-y-3">
+              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
                 <p class="text-xs builder-subtext mb-3">
                   Add a brief single-line announcement or tagline displayed after social buttons and before your links.
                 </p>
@@ -233,9 +233,9 @@
           </div>
 
           <!-- Links Manager Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="5">
+          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="5">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-lg font-bold">5. Add Links</h2>
+              <h2 class="text-base sm:text-lg font-bold">5. Add Links</h2>
               <div class="flex items-center gap-2 sm:gap-3">
                 <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0">
                   <span>+</span> Add Link
@@ -247,12 +247,12 @@
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-4">
+              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3">
                   Link titles & descriptions support Markdown formatting (**bold**, *italics*, <u>underline</u>, ~~strikethrough~~).
                 </p>
 
-                <div id="links-container" class="space-y-4">
+                <div id="links-container" class="space-y-3">
                   <!-- Dynamic link items inserted here -->
                 </div>
               </div>
@@ -260,16 +260,16 @@
           </div>
 
           <!-- Share & URL Output Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="6">
+          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="6">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-lg font-bold">6. Your Generated Link</h2>
+              <h2 class="text-base sm:text-lg font-bold">6. Your Generated Link</h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </span>
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40 space-y-3">
+              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
                 <p class="text-xs builder-subtext mb-3">
                   Copy this link to share it on social media. Your data is compressed and encoded in the URL. You can also use this same URL to restore and edit your profile anytime using the Restore button at the top.
                 </p>
