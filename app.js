@@ -36,6 +36,7 @@
     name: '',
     avatar: '',
     bio: '',
+    message: '',
     theme: 'slate',
     socials: [],
     links: []
@@ -65,6 +66,7 @@
   const inputName = document.getElementById('input-name');
   const inputAvatar = document.getElementById('input-avatar');
   const inputBio = document.getElementById('input-bio');
+  const inputMessage = document.getElementById('input-message');
   const themeOptionsContainer = document.getElementById('theme-options');
   const socialsContainer = document.getElementById('socials-container');
   const btnAddSocial = document.getElementById('btn-add-social');
@@ -84,6 +86,8 @@
   const previewName = document.getElementById('preview-name');
   const previewBio = document.getElementById('preview-bio');
   const previewSocialsList = document.getElementById('preview-socials-list');
+  const previewMessageWrap = document.getElementById('preview-message-wrap');
+  const previewMessage = document.getElementById('preview-message');
   const previewLinksList = document.getElementById('preview-links-list');
   const watermarkLink = document.getElementById('watermark-link');
 
@@ -94,6 +98,8 @@
   const viewName = document.getElementById('view-name');
   const viewBio = document.getElementById('view-bio');
   const viewSocialsList = document.getElementById('view-socials-list');
+  const viewMessageWrap = document.getElementById('view-message-wrap');
+  const viewMessage = document.getElementById('view-message');
   const viewLinksList = document.getElementById('view-links-list');
   const viewWatermarkLink = document.getElementById('view-watermark-link');
 
@@ -292,6 +298,7 @@
         name: decoded.name || '',
         avatar: decoded.avatar || '',
         bio: decoded.bio || '',
+        message: decoded.message || decoded.shortMessage || '',
         theme: decoded.theme || 'slate',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
@@ -637,6 +644,16 @@
       }
     }
 
+    // Short Message after Social Icons and before Links
+    if (previewMessage && previewMessageWrap) {
+      if (appState.message && appState.message.trim()) {
+        previewMessage.textContent = appState.message.trim();
+        previewMessageWrap.classList.remove('hidden');
+      } else {
+        previewMessageWrap.classList.add('hidden');
+      }
+    }
+
     // Links
     previewLinksList.innerHTML = '';
     if (appState.links.length === 0) {
@@ -684,6 +701,7 @@
     inputName.value = appState.name || '';
     inputAvatar.value = appState.avatar || '';
     inputBio.value = appState.bio || '';
+    if (inputMessage) inputMessage.value = appState.message || '';
     renderThemeSelector();
     renderSocialInputs();
     renderLinkInputs();
@@ -737,6 +755,16 @@
         });
       } else {
         viewSocialsList.classList.add('hidden');
+      }
+    }
+
+    // Short Message after Social Icons and before Links
+    if (viewMessage && viewMessageWrap) {
+      if (data.message && data.message.trim()) {
+        viewMessage.textContent = data.message.trim();
+        viewMessageWrap.classList.remove('hidden');
+      } else {
+        viewMessageWrap.classList.add('hidden');
       }
     }
 
@@ -902,6 +930,14 @@
       updatePreview();
       updateShareUrl();
     });
+
+    if (inputMessage) {
+      inputMessage.addEventListener('input', (e) => {
+        appState.message = e.target.value;
+        updatePreview();
+        updateShareUrl();
+      });
+    }
 
     // Add Social Icon Button
     if (btnAddSocial) {
