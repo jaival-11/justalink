@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=1.1.1" />
   
   <script>
     tailwind.config = {
@@ -53,7 +53,7 @@
         </a>
         <!-- Light / Dark Mode Toggle Button -->
         <button id="theme-toggle-btn" type="button" class="builder-muted-btn text-xs font-bold px-3 py-1.5 rounded border transition-colors flex items-center gap-1.5 cursor-pointer" aria-label="Toggle Theme Mode">
-          <span id="theme-toggle-icon" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"/></svg></span>
+          <span id="theme-toggle-icon" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
           <span id="theme-toggle-text">Dark Mode</span>
         </button>
       </div>
@@ -255,6 +255,8 @@
                 <a 
                   id="watermark-link"
                   href="#" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity"
                   title="Create your own zero-database link-in-bio page"
                 >
@@ -267,6 +269,16 @@
         </div>
 
       </div>
+
+      <!-- Builder Page Footer -->
+      <footer class="builder-footer mt-12 pt-6 border-t text-center space-y-1.5">
+        <p class="text-sm font-semibold builder-subtext flex items-center justify-center gap-1.5">
+          Made with <span class="text-red-500">❤</span> by <a href="https://github.com/jaival-11" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80 transition-opacity">Jaival</a>
+        </p>
+        <p class="text-xs builder-subtext opacity-80 font-mono">
+          © 2026 Jaival Patel
+        </p>
+      </footer>
     </section>
 
     <!-- VIEW MODE UI (Full Screen / Standalone Profile View - No top header banner) -->
@@ -309,6 +321,8 @@
           <a 
             id="view-watermark-link"
             href="#" 
+            target="_blank"
+            rel="noopener noreferrer"
             class="inline-block text-xs font-bold tracking-wide opacity-80 hover:opacity-100 transition-opacity uppercase font-mono"
           >
             Built with JustALink
@@ -364,6 +378,6 @@
     <span id="toast-message">Message standard text</span>
   </div>
 
-  <script src="app.js?v=1.1.0"></script>
+  <script src="app.js?v=1.1.1"></script>
 </body>
 </html>
