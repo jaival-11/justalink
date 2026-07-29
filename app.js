@@ -32,6 +32,7 @@
 
   // --- Initial Default App State ---
   const defaultState = {
+    tag: 'v1.0',
     name: '',
     avatar: '',
     bio: '',
@@ -135,7 +136,8 @@
   // --- Utilities: Base64 UTF-8 Encoding & Decoding ---
   function encodeData(dataObj) {
     try {
-      const jsonStr = JSON.stringify(dataObj);
+      const payload = Object.assign({ tag: 'v1.0' }, dataObj);
+      const jsonStr = JSON.stringify(payload);
       const bytes = new TextEncoder().encode(jsonStr);
       let binString = '';
       for (let i = 0; i < bytes.length; i++) {
@@ -153,7 +155,13 @@
       const binString = atob(base64Str);
       const bytes = Uint8Array.from(binString, c => c.charCodeAt(0));
       const jsonStr = new TextDecoder().decode(bytes);
-      return JSON.parse(jsonStr);
+      const parsed = JSON.parse(jsonStr);
+      if (parsed && typeof parsed === 'object') {
+        if (!parsed.tag) {
+          parsed.tag = 'v1.0';
+        }
+      }
+      return parsed;
     } catch (err) {
       console.error('Decoding error:', err);
       return null;
@@ -280,6 +288,7 @@
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
       appState = {
+        tag: decoded.tag || 'v1.0',
         name: decoded.name || '',
         avatar: decoded.avatar || '',
         bio: decoded.bio || '',
@@ -774,6 +783,7 @@
       const decodedData = decodeData(base64Str);
 
       if (decodedData) {
+        const tag = decodedData.tag || 'v1.0';
         // Show View Mode: Hide Header Banner completely per user requirement
         if (mainHeader) mainHeader.classList.add('hidden');
         builderModeSec.classList.add('hidden');
