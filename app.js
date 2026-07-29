@@ -848,6 +848,55 @@
     viewWatermarkLink.rel = 'noopener noreferrer';
   }
 
+  // --- Accordion Logic for Builder Cards (1 to 6) ---
+  function toggleCard(targetCard) {
+    if (!targetCard) return;
+    const wrapper = targetCard.querySelector('.builder-card-body-wrapper');
+    if (!wrapper) return;
+
+    const isCurrentlyOpen = wrapper.classList.contains('is-open');
+
+    // Auto collapse all accordion cards with smooth transition
+    document.querySelectorAll('.builder-accordion-card').forEach(card => {
+      const cardWrapper = card.querySelector('.builder-card-body-wrapper');
+      const chevron = card.querySelector('.chevron-icon');
+      if (cardWrapper) cardWrapper.classList.remove('is-open');
+      if (chevron) chevron.classList.remove('rotate-180');
+    });
+
+    // If target card was closed, expand it smoothly
+    if (!isCurrentlyOpen) {
+      wrapper.classList.add('is-open');
+      const chevron = targetCard.querySelector('.chevron-icon');
+      if (chevron) chevron.classList.add('rotate-180');
+    }
+  }
+
+  function openCard(cardId) {
+    const targetCard = document.querySelector(`.builder-accordion-card[data-card-id="${cardId}"]`);
+    if (targetCard) {
+      const wrapper = targetCard.querySelector('.builder-card-body-wrapper');
+      if (wrapper && !wrapper.classList.contains('is-open')) {
+        toggleCard(targetCard);
+      }
+    }
+  }
+
+  function initAccordionCards() {
+    const cards = document.querySelectorAll('.builder-accordion-card');
+    cards.forEach(card => {
+      const header = card.querySelector('.builder-card-header');
+      if (header) {
+        header.addEventListener('click', (e) => {
+          if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) {
+            return;
+          }
+          toggleCard(card);
+        });
+      }
+    });
+  }
+
   // --- Router Logic ---
   function handleRoute() {
     const hash = window.location.hash;
@@ -977,6 +1026,9 @@
       updateShareUrl();
     });
 
+    // Accordion initialization
+    initAccordionCards();
+
     if (inputMessage) {
       inputMessage.addEventListener('input', (e) => {
         appState.message = e.target.value;
@@ -988,6 +1040,7 @@
     // Add Social Icon Button
     if (btnAddSocial) {
       btnAddSocial.addEventListener('click', () => {
+        openCard('3');
         if (!appState.socials) appState.socials = [];
         appState.socials.push({
           id: 'social_' + Date.now(),
@@ -1001,17 +1054,20 @@
     }
 
     // Add Link Button
-    btnAddLink.addEventListener('click', () => {
-      appState.links.push({
-        id: 'link_' + Date.now(),
-        title: '',
-        url: '',
-        description: ''
+    if (btnAddLink) {
+      btnAddLink.addEventListener('click', () => {
+        openCard('5');
+        appState.links.push({
+          id: 'link_' + Date.now(),
+          title: '',
+          url: '',
+          description: ''
+        });
+        renderLinkInputs();
+        updatePreview();
+        updateShareUrl();
       });
-      renderLinkInputs();
-      updatePreview();
-      updateShareUrl();
-    });
+    }
 
     // Load Sample Preset Button
     if (btnLoadPreset) {

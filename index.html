@@ -84,168 +84,222 @@
         <div class="lg:col-span-7 space-y-6">
           
           <!-- Profile Information Card -->
-          <div class="builder-card border rounded-lg p-5">
-            <h2 class="text-lg font-bold mb-4">
-              1. Profile Details
-            </h2>
+          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="1">
+            <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
+              <h2 class="text-lg font-bold">
+                1. Profile Details
+              </h2>
+              <span class="chevron-icon text-zinc-400 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
 
-            <div class="space-y-4">
-              <!-- Name Input -->
-              <div>
-                <label for="input-name" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
-                  Full Name / Display Name
-                </label>
-                <input 
-                  type="text" 
-                  id="input-name" 
-                  placeholder="e.g. Your Name" 
-                  class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
-                />
-              </div>
-
-              <!-- Avatar URL Input -->
-              <div>
-                <label for="input-avatar" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
-                  Avatar Image URL
-                </label>
-                <input 
-                  type="url" 
-                  id="input-avatar" 
-                  placeholder="https://images.unsplash.com/photo-..." 
-                  class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
-                />
-              </div>
-
-              <!-- Bio Input -->
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <label for="input-bio" class="block text-xs font-semibold builder-subtext uppercase tracking-wider">
-                    Bio / Description
+            <div class="builder-card-body-wrapper">
+              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40 space-y-4">
+                <!-- Name Input -->
+                <div>
+                  <label for="input-name" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                    Full Name / Display Name
                   </label>
-                  <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
-                    Markdown Supported
-                  </span>
+                  <input 
+                    type="text" 
+                    id="input-name" 
+                    placeholder="e.g. Your Name" 
+                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                  />
                 </div>
-                <textarea 
-                  id="input-bio" 
-                  rows="3" 
-                  placeholder="Software engineer & digital creator. Building **open-source** tools with *high impact*." 
-                  class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none resize-y"
-                ></textarea>
-                <p class="text-[11px] builder-subtext mt-1.5 font-mono flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                  <span class="font-sans font-semibold">Format:</span>
-                  <span><strong class="font-bold">**bold**</strong></span>
-                  <span><em class="italic">*italics*</em></span>
-                  <span><u><u>underline</u></u> (++text++)</span>
-                  <span><del>~~strikethrough~~</del></span>
-                  <span><code class="px-1 py-0.5 rounded text-[10px] bg-current/15">`code`</code></span>
-                  <span><span class="underline">[link](url)</span></span>
-                </p>
+
+                <!-- Avatar URL Input -->
+                <div>
+                  <label for="input-avatar" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                    Avatar Image URL
+                  </label>
+                  <input 
+                    type="url" 
+                    id="input-avatar" 
+                    placeholder="https://images.unsplash.com/photo-..." 
+                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                  />
+                </div>
+
+                <!-- Bio Input -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <label for="input-bio" class="block text-xs font-semibold builder-subtext uppercase tracking-wider">
+                      Bio / Description
+                    </label>
+                    <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
+                      Markdown Supported
+                    </span>
+                  </div>
+                  <textarea 
+                    id="input-bio" 
+                    rows="3" 
+                    placeholder="Software engineer & digital creator. Building **open-source** tools with *high impact*." 
+                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none resize-y"
+                  ></textarea>
+                  <p class="text-[11px] builder-subtext mt-1.5 font-mono flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                    <span class="font-sans font-semibold">Format:</span>
+                    <span><strong class="font-bold">**bold**</strong></span>
+                    <span><em class="italic">*italics*</em></span>
+                    <span><u><u>underline</u></u> (++text++)</span>
+                    <span><del>~~strikethrough~~</del></span>
+                    <span><code class="px-1 py-0.5 rounded text-[10px] bg-current/15">`code`</code></span>
+                    <span><span class="underline">[link](url)</span></span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Color Theme Selection Card -->
-          <div class="builder-card border rounded-lg p-5">
-            <h2 class="text-lg font-bold mb-3">2. Choose Theme Style (Flat Solid Colors)</h2>
-            <p class="text-xs builder-subtext mb-4">Select a flat, high-contrast palette. Gradients and blurs are disabled by design philosophy.</p>
+          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="2">
+            <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
+              <h2 class="text-lg font-bold">2. Choose Theme Style (Flat Solid Colors)</h2>
+              <span class="chevron-icon text-zinc-400 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
             
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
-              <!-- Theme choices populated by JavaScript -->
+            <div class="builder-card-body-wrapper">
+              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-4">Select a flat, high-contrast palette. Gradients and blurs are disabled by design philosophy.</p>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
+                  <!-- Theme choices populated by JavaScript -->
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Social Icons Manager Card -->
-          <div class="builder-card border rounded-lg p-5">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h2 class="text-lg font-bold">3. Social Icons</h2>
-                <p class="text-xs builder-subtext mt-0.5">
-                  Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, twitter, instagram, linkedin).
-                </p>
+          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="3">
+            <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
+              <h2 class="text-lg font-bold">3. Social Icons</h2>
+              <div class="flex items-center gap-2 sm:gap-3">
+                <button id="btn-add-social" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0">
+                  <span>+</span> Add Icon
+                </button>
+                <span class="chevron-icon text-zinc-400 transition-transform duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
               </div>
-              <button id="btn-add-social" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0 ml-2">
-                <span>+</span> Add Icon
-              </button>
             </div>
 
-            <div id="socials-container" class="space-y-4">
-              <!-- Dynamic social icon items inserted here -->
+            <div class="builder-card-body-wrapper">
+              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-4">
+                  Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, twitter, instagram, linkedin).
+                </p>
+                <div id="socials-container" class="space-y-4">
+                  <!-- Dynamic social icon items inserted here -->
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Short Message Card -->
-          <div class="builder-card border rounded-lg p-5">
-            <div class="flex items-center justify-between mb-1">
-              <h2 class="text-lg font-bold">4. Short Message</h2>
-              <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
-                Markdown Supported
+          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="4">
+            <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-bold">4. Short Message</h2>
+                <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
+                  Markdown Supported
+                </span>
+              </div>
+              <span class="chevron-icon text-zinc-400 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </span>
             </div>
-            <p class="text-xs builder-subtext mb-3">
-              Add a brief single-line announcement or tagline displayed after social buttons and before your links.
-            </p>
-            <div>
-              <label for="input-message" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
-                Short Message
-              </label>
-              <input 
-                type="text" 
-                id="input-message" 
-                placeholder="e.g. 🚀 **Open** for *new projects* & <u>collaborations</u>!" 
-                class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
-              />
+
+            <div class="builder-card-body-wrapper">
+              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40 space-y-3">
+                <p class="text-xs builder-subtext mb-3">
+                  Add a brief single-line announcement or tagline displayed after social buttons and before your links.
+                </p>
+                <div>
+                  <label for="input-message" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                    Short Message
+                  </label>
+                  <input 
+                    type="text" 
+                    id="input-message" 
+                    placeholder="e.g. 🚀 **Open** for *new projects* & <u>collaborations</u>!" 
+                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Links Manager Card -->
-          <div class="builder-card border rounded-lg p-5">
-            <div class="flex items-center justify-between mb-2">
+          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="5">
+            <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
               <h2 class="text-lg font-bold">5. Add Links</h2>
-              <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer">
-                <span>+</span> Add Link
-              </button>
+              <div class="flex items-center gap-2 sm:gap-3">
+                <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0">
+                  <span>+</span> Add Link
+                </button>
+                <span class="chevron-icon text-zinc-400 transition-transform duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
             </div>
-            <p class="text-xs builder-subtext mb-4">
-              Link titles & descriptions support Markdown formatting (**bold**, *italics*, <u>underline</u>, ~~strikethrough~~).
-            </p>
 
-            <div id="links-container" class="space-y-4">
-              <!-- Dynamic link items inserted here -->
+            <div class="builder-card-body-wrapper">
+              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-4">
+                  Link titles & descriptions support Markdown formatting (**bold**, *italics*, <u>underline</u>, ~~strikethrough~~).
+                </p>
+
+                <div id="links-container" class="space-y-4">
+                  <!-- Dynamic link items inserted here -->
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Share & URL Output Card -->
-          <div class="builder-card border rounded-lg p-5">
-            <h2 class="text-lg font-bold mb-2">6. Your Generated Link</h2>
-            <p class="text-xs builder-subtext mb-3">
-              Copy this link to share it on social media. Your data is compressed and encoded in the URL. You can also use this same URL to restore and edit your profile anytime using the Restore button at the top.
-            </p>
+          <div class="builder-card builder-accordion-card border rounded-lg p-5" data-card-id="6">
+            <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
+              <h2 class="text-lg font-bold">6. Your Generated Link</h2>
+              <span class="chevron-icon text-zinc-400 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
 
-            <div class="flex flex-col sm:flex-row gap-2">
-              <input 
-                type="text" 
-                id="output-share-url" 
-                readonly 
-                class="flex-grow builder-input border rounded px-3 py-2 text-xs font-mono text-emerald-500 select-all focus:outline-none" 
-                value=""
-              />
-              <button 
-                id="btn-copy-url" 
-                type="button" 
-                class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded shrink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
-                <span id="copy-btn-text">Copy Link</span>
-              </button>
-              <a 
-                id="btn-open-preview" 
-                href="#" 
-                target="_blank" 
-                class="builder-muted-btn font-semibold text-xs px-4 py-2 rounded border shrink-0 transition-colors flex items-center justify-center"
-              >
-                Launch Card ↗
-              </a>
+            <div class="builder-card-body-wrapper">
+              <div class="builder-card-body-inner mt-4 pt-4 border-t border-zinc-700/40 space-y-3">
+                <p class="text-xs builder-subtext mb-3">
+                  Copy this link to share it on social media. Your data is compressed and encoded in the URL. You can also use this same URL to restore and edit your profile anytime using the Restore button at the top.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-2">
+                  <input 
+                    type="text" 
+                    id="output-share-url" 
+                    readonly 
+                    class="flex-grow builder-input border rounded px-3 py-2 text-xs font-mono text-emerald-500 select-all focus:outline-none" 
+                    value=""
+                  />
+                  <button 
+                    id="btn-copy-url" 
+                    type="button" 
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded shrink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                    <span id="copy-btn-text">Copy Link</span>
+                  </button>
+                  <a 
+                    id="btn-open-preview" 
+                    href="#" 
+                    target="_blank" 
+                    class="builder-muted-btn font-semibold text-xs px-4 py-2 rounded border shrink-0 transition-colors flex items-center justify-center"
+                  >
+                    Launch Card ↗
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 

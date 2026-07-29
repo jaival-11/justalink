@@ -29,6 +29,30 @@ a, button, input, textarea {
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
+.builder-card-header {
+  transition: opacity 0.15s ease;
+}
+.builder-card-header:hover {
+  opacity: 0.85;
+}
+
+/* Accordion Smooth Expand/Collapse Animations */
+.builder-card-body-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease-out;
+  opacity: 0;
+}
+
+.builder-card-body-wrapper.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.builder-card-body-inner {
+  overflow: hidden;
+}
+
 /* Builder Mode Theme Styling (Flat Dark & Light) */
 body.builder-dark {
   background-color: #000000;
