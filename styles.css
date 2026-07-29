@@ -282,6 +282,109 @@ body.builder-light .markdown-badge {
   color: #047857;
 }
 
+/* Custom Theme Panel & Badge Styles (High Contrast Light & Dark) */
+.custom-theme-locked-bg {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+body.builder-dark .custom-theme-locked-bg {
+  background-color: rgba(24, 24, 27, 0.6);
+  border-color: rgba(63, 63, 70, 0.8);
+}
+body.builder-light .custom-theme-locked-bg {
+  background-color: #f4f4f5;
+  border-color: #d4d4d8;
+}
+
+/* Locked Badge (Amber) */
+.badge-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.625rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+body.builder-dark .badge-locked {
+  background-color: rgba(120, 53, 15, 0.4);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+}
+body.builder-light .badge-locked {
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+  color: #b45309;
+}
+
+/* Unlocked Badge (Emerald) */
+.badge-unlocked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.625rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+body.builder-dark .badge-unlocked {
+  background-color: rgba(6, 78, 59, 0.5);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #34d399;
+}
+body.builder-light .badge-unlocked {
+  background-color: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #047857;
+}
+
+/* Unlock Success Message Banner */
+.unlock-success-banner {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+body.builder-dark .unlock-success-banner {
+  background-color: rgba(6, 78, 59, 0.5);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #6ee7b7;
+}
+body.builder-light .unlock-success-banner {
+  background-color: #ecfdf5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+}
+
+/* Unlock Link Cards inside Modal */
+.unlock-link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+body.builder-dark .unlock-link-card {
+  background-color: #18181b;
+  border-color: #27272a;
+  color: #f4f4f5;
+}
+body.builder-light .unlock-link-card {
+  background-color: #ffffff;
+  border-color: #e4e4e7;
+  color: #18181b;
+}
+
+body.builder-dark .unlock-link-text {
+  color: #34d399;
+}
+body.builder-light .unlock-link-text {
+  color: #047857;
+}
+
 strong {
   font-weight: 700;
 }

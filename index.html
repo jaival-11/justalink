@@ -168,6 +168,11 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
                   <!-- Theme choices populated by JavaScript -->
                 </div>
+
+                <!-- Custom Theme Panel (Rendered & managed by JavaScript) -->
+                <div id="custom-theme-panel">
+                  <!-- Dynamic content loaded via app.js -->
+                </div>
               </div>
             </div>
           </div>
@@ -481,6 +486,72 @@
         </button>
         <button id="btn-submit-restore" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
           Restore Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unlock Custom Colors Modal Dialog -->
+  <div id="unlock-colors-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
+    <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
+      <div class="flex items-center justify-between border-b pb-3 border-zinc-700/40">
+        <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+          <span>Unlock Custom Colors</span>
+        </h3>
+        <button id="btn-close-unlock-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <p class="text-sm font-semibold builder-subtext">
+          Unlock custom colors by opening links below
+        </p>
+
+        <div class="space-y-2.5">
+          <!-- Line 1: Follow me on X (twitter) -->
+          <div class="unlock-link-card transition-colors">
+            <a 
+              id="unlock-link-x" 
+              href="https://x.com/techironic11" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="text-xs font-bold unlock-link-text hover:underline flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>Follow me on X (twitter)</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <div id="unlock-tick-x" class="shrink-0 ml-2">
+              <span class="w-5 h-5 rounded-full border border-zinc-500 inline-flex items-center justify-center text-[10px] builder-subtext font-mono">1</span>
+            </div>
+          </div>
+
+          <!-- Line 2: Join my telegram channel -->
+          <div class="unlock-link-card transition-colors">
+            <a 
+              id="unlock-link-telegram" 
+              href="https://t.me/techironic" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="text-xs font-bold unlock-link-text hover:underline flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>Join my telegram channel</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <div id="unlock-tick-telegram" class="shrink-0 ml-2">
+              <span class="w-5 h-5 rounded-full border border-zinc-500 inline-flex items-center justify-center text-[10px] builder-subtext font-mono">2</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="unlock-success-msg" class="hidden unlock-success-banner">
+          🎉 Custom colors unlocked! You can now choose custom background and accent colors.
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end pt-2 border-t border-zinc-700/40">
+        <button id="btn-cancel-unlock" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
+          Close
         </button>
       </div>
     </div>

@@ -38,11 +38,85 @@
     bio: '',
     message: '',
     theme: 'slate',
+    customBg: '#0f172a',
+    customAccent: '#10b981',
     socials: [],
     links: []
   };
 
   let appState = JSON.parse(JSON.stringify(defaultState));
+
+  // --- Custom Theme Unlock Feature State ---
+  let isCustomUnlocked = localStorage.getItem('justalink_custom_colors_unlocked') === 'true';
+  let unlockState = {
+    xOpened: localStorage.getItem('justalink_link_x_opened') === 'true',
+    telegramOpened: localStorage.getItem('justalink_link_telegram_opened') === 'true'
+  };
+
+  function canUseCustomColors() {
+    return isCustomUnlocked || (appState && appState.theme === 'custom');
+  }
+
+  function getContrastTextColor(hexColor) {
+    if (!hexColor) return '#ffffff';
+    let hex = hexColor.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if (hex.length !== 6) return '#ffffff';
+    const r = parseInt(hex.substring(0, 2), 16) || 0;
+    const g = parseInt(hex.substring(2, 4), 16) || 0;
+    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 128 ? '#0f172a' : '#ffffff';
+  }
+
+  function getFaintedOuterColor(hexColor) {
+    if (!hexColor) return '#020617';
+    let hex = hexColor.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    if (hex.length !== 6) return '#020617';
+
+    let r = (parseInt(hex.substring(0, 2), 16) || 0) / 255;
+    let g = (parseInt(hex.substring(2, 4), 16) || 0) / 255;
+    let b = (parseInt(hex.substring(4, 6), 16) || 0) / 255;
+
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h = 0, s = 0, l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+
+    s = Math.max(0, s * 0.5);
+    if (l < 0.5) {
+      l = Math.min(0.85, l + 0.15);
+    } else {
+      l = Math.min(0.97, l + 0.04);
+    }
+
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    const rOut = Math.round(hue2rgb(p, q, h + 1/3) * 255).toString(16).padStart(2, '0');
+    const gOut = Math.round(hue2rgb(p, q, h) * 255).toString(16).padStart(2, '0');
+    const bOut = Math.round(hue2rgb(p, q, h - 1/3) * 255).toString(16).padStart(2, '0');
+
+    return `#${rOut}${gOut}${bOut}`;
+  }
 
   // --- DOM Elements ---
   const mainHeader = document.getElementById('main-header');
@@ -304,6 +378,75 @@
     }
   }
 
+  let verifyingState = {
+    x: false,
+    telegram: false
+  };
+
+  function openUnlockModal() {
+    const modal = document.getElementById('unlock-colors-modal');
+    if (modal) {
+      updateUnlockModalTicks();
+      modal.classList.remove('hidden');
+    }
+  }
+
+  function closeUnlockModal() {
+    const modal = document.getElementById('unlock-colors-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function updateUnlockModalTicks() {
+    const tickX = document.getElementById('unlock-tick-x');
+    const tickTelegram = document.getElementById('unlock-tick-telegram');
+
+    const greenTickHTML = `<span class="w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold inline-flex items-center justify-center text-xs shadow-none">✓</span>`;
+    const verifyingHTML = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verifying...</span>`;
+
+    if (tickX) {
+      if (unlockState.xOpened) {
+        tickX.innerHTML = greenTickHTML;
+      } else if (verifyingState.x) {
+        tickX.innerHTML = verifyingHTML;
+      } else {
+        tickX.innerHTML = `<span class="w-5 h-5 rounded-full border border-zinc-500 inline-flex items-center justify-center text-[10px] builder-subtext font-mono">1</span>`;
+      }
+    }
+
+    if (tickTelegram) {
+      if (unlockState.telegramOpened) {
+        tickTelegram.innerHTML = greenTickHTML;
+      } else if (verifyingState.telegram) {
+        tickTelegram.innerHTML = verifyingHTML;
+      } else {
+        tickTelegram.innerHTML = `<span class="w-5 h-5 rounded-full border border-zinc-500 inline-flex items-center justify-center text-[10px] builder-subtext font-mono">2</span>`;
+      }
+    }
+
+    const successMsg = document.getElementById('unlock-success-msg');
+    if (successMsg) {
+      if (unlockState.xOpened && unlockState.telegramOpened) {
+        successMsg.classList.remove('hidden');
+      } else {
+        successMsg.classList.add('hidden');
+      }
+    }
+  }
+
+  function checkUnlockConditions() {
+    if (unlockState.xOpened && unlockState.telegramOpened) {
+      if (!isCustomUnlocked) {
+        isCustomUnlocked = true;
+        localStorage.setItem('justalink_custom_colors_unlocked', 'true');
+        showToast('Custom colors feature unlocked!', 'check');
+      }
+      renderThemeSelector();
+      updatePreview();
+    }
+  }
+
   function processRestoreInput(inputUrl) {
     if (!inputUrl || !inputUrl.trim()) {
       return { success: false, error: 'Please enter a URL or hash payload.' };
@@ -346,6 +489,8 @@
         bio: decoded.bio || '',
         message: decoded.message || decoded.shortMessage || '',
         theme: decoded.theme || 'slate',
+        customBg: decoded.customBg || '#0f172a',
+        customAccent: decoded.customAccent || '#10b981',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
           id: l.id || ('link_' + Math.random().toString(36).substring(2, 9)),
@@ -427,6 +572,154 @@
       });
       themeOptionsContainer.appendChild(btn);
     });
+
+    renderCustomThemeControls();
+  }
+
+  function renderCustomThemeControls() {
+    let customPanel = document.getElementById('custom-theme-panel');
+    if (!customPanel) return;
+
+    const isCustomSelected = appState.theme === 'custom';
+    const bgVal = appState.customBg || '#0f172a';
+    const accentVal = appState.customAccent || '#10b981';
+
+    if (!canUseCustomColors()) {
+      // Locked state: disabled & greyed out with high contrast
+      customPanel.className = 'mt-4 p-3.5 rounded-lg border border-dashed custom-theme-locked-bg cursor-pointer transition-all hover:opacity-90 relative select-none';
+      customPanel.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Custom Theme</span>
+            <span class="badge-locked">
+              <span>Locked</span>
+            </span>
+          </div>
+          <span class="text-[11px] unlock-link-text font-semibold underline">Click to unlock</span>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Choose your own custom background & accent colors.</p>
+        <div class="grid grid-cols-2 gap-3 pointer-events-none opacity-60">
+          <div>
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Background Color</label>
+            <div class="flex items-center gap-2 border rounded p-1.5 builder-input">
+              <div class="w-5 h-5 rounded border border-zinc-500" style="background-color: ${bgVal}"></div>
+              <span class="text-xs font-mono">${bgVal}</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Accent Color</label>
+            <div class="flex items-center gap-2 border rounded p-1.5 builder-input">
+              <div class="w-5 h-5 rounded border border-zinc-500" style="background-color: ${accentVal}"></div>
+              <span class="text-xs font-mono">${accentVal}</span>
+            </div>
+          </div>
+        </div>
+      `;
+      customPanel.onclick = (e) => {
+        e.preventDefault();
+        openUnlockModal();
+      };
+    } else {
+      // Unlocked state: active custom theme controls
+      customPanel.className = `mt-4 p-3.5 rounded-lg border transition-all ${
+        isCustomSelected ? 'ring-2 ring-emerald-500 border-emerald-500 builder-card' : 'border-zinc-700/60 builder-card'
+      }`;
+      customPanel.onclick = null;
+      customPanel.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Custom Theme</span>
+            <span class="badge-unlocked">
+              <span>Unlocked</span>
+            </span>
+          </div>
+          <button type="button" id="btn-select-custom-theme" class="text-xs font-bold px-2.5 py-1 rounded transition-colors ${
+            isCustomSelected ? 'bg-emerald-600 text-white' : 'builder-muted-btn'
+          }">
+            ${isCustomSelected ? 'Active' : 'Use Custom Theme'}
+          </button>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Select your custom background color and accent color.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="input-custom-bg-picker" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Background Color</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="input-custom-bg-picker" value="${bgVal}" class="w-8 h-8 rounded border border-zinc-600 p-0 cursor-pointer bg-transparent" />
+              <input type="text" id="input-custom-bg-text" value="${bgVal}" class="w-full builder-input border rounded px-2.5 py-1 text-xs font-mono focus:outline-none" placeholder="#0f172a" />
+            </div>
+          </div>
+          <div>
+            <label for="input-custom-accent-picker" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Accent Color</label>
+            <div class="flex items-center gap-2">
+              <input type="color" id="input-custom-accent-picker" value="${accentVal}" class="w-8 h-8 rounded border border-zinc-600 p-0 cursor-pointer bg-transparent" />
+              <input type="text" id="input-custom-accent-text" value="${accentVal}" class="w-full builder-input border rounded px-2.5 py-1 text-xs font-mono focus:outline-none" placeholder="#10b981" />
+            </div>
+          </div>
+        </div>
+      `;
+
+      const btnSelectCustom = customPanel.querySelector('#btn-select-custom-theme');
+      if (btnSelectCustom) {
+        btnSelectCustom.addEventListener('click', (e) => {
+          e.stopPropagation();
+          appState.theme = 'custom';
+          renderThemeSelector();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      const pickerBg = customPanel.querySelector('#input-custom-bg-picker');
+      const textBg = customPanel.querySelector('#input-custom-bg-text');
+      const pickerAccent = customPanel.querySelector('#input-custom-accent-picker');
+      const textAccent = customPanel.querySelector('#input-custom-accent-text');
+
+      if (pickerBg && textBg) {
+        pickerBg.addEventListener('input', (e) => {
+          appState.customBg = e.target.value;
+          textBg.value = e.target.value;
+          appState.theme = 'custom';
+          renderThemeSelector();
+          updatePreview();
+          updateShareUrl();
+        });
+        textBg.addEventListener('input', (e) => {
+          let val = e.target.value.trim();
+          if (val && !val.startsWith('#')) val = '#' + val;
+          appState.customBg = val;
+          if (/^#[0-9A-F]{6}$/i.test(val)) {
+            pickerBg.value = val;
+          }
+          appState.theme = 'custom';
+          renderThemeSelector();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      if (pickerAccent && textAccent) {
+        pickerAccent.addEventListener('input', (e) => {
+          appState.customAccent = e.target.value;
+          textAccent.value = e.target.value;
+          appState.theme = 'custom';
+          renderThemeSelector();
+          updatePreview();
+          updateShareUrl();
+        });
+        textAccent.addEventListener('input', (e) => {
+          let val = e.target.value.trim();
+          if (val && !val.startsWith('#')) val = '#' + val;
+          appState.customAccent = val;
+          if (/^#[0-9A-F]{6}$/i.test(val)) {
+            pickerAccent.value = val;
+          }
+          appState.theme = 'custom';
+          renderThemeSelector();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+    }
   }
 
   function renderSocialInputs() {
@@ -647,8 +940,22 @@
   }
 
   function updatePreview() {
-    // Theme class on preview frame
-    previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 theme-${appState.theme}`;
+    // Theme class & inline styles on preview frame
+    if (appState.theme === 'custom') {
+      const bg = appState.customBg || '#0f172a';
+      const accent = appState.customAccent || '#10b981';
+      const textColor = getContrastTextColor(bg);
+
+      previewFrame.className = 'w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300';
+      previewFrame.style.backgroundColor = bg;
+      previewFrame.style.color = textColor;
+      previewFrame.style.borderColor = accent;
+    } else {
+      previewFrame.style.backgroundColor = '';
+      previewFrame.style.color = '';
+      previewFrame.style.borderColor = '';
+      previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 theme-${appState.theme}`;
+    }
     
     // Name & Bio
     previewName.innerHTML = parseMarkdown(appState.name || 'Your Name', true);
@@ -705,6 +1012,10 @@
     if (appState.links.length === 0) {
       previewLinksList.innerHTML = '<div class="text-center text-xs opacity-60 italic py-2">No links created yet</div>';
     } else {
+      const isCustom = appState.theme === 'custom';
+      const accent = appState.customAccent || '#10b981';
+      const accentText = getContrastTextColor(accent);
+
       appState.links.forEach(l => {
         const linkBtn = document.createElement('a');
         linkBtn.href = sanitizeUrl(l.url);
@@ -712,6 +1023,12 @@
         linkBtn.rel = 'noopener noreferrer';
         linkBtn.className = 'link-btn block w-full py-2.5 px-4 rounded-lg text-center cursor-pointer transition-colors';
         
+        if (isCustom) {
+          linkBtn.style.backgroundColor = accent;
+          linkBtn.style.color = accentText;
+          linkBtn.style.borderColor = accent;
+        }
+
         const titleSpan = document.createElement('span');
         titleSpan.className = 'block font-semibold text-xs leading-snug';
         titleSpan.innerHTML = parseMarkdown(l.title || 'Untitled Link', false);
@@ -756,12 +1073,31 @@
   }
 
   function renderViewMode(data) {
-    const themeClass = `theme-${data.theme || 'slate'}`;
-    const pageThemeClass = `page-theme-${data.theme || 'slate'}`;
+    if (data.theme === 'custom') {
+      const bg = data.customBg || '#0f172a';
+      const accent = data.customAccent || '#10b981';
+      const textColor = getContrastTextColor(bg);
+      const outerBg = getFaintedOuterColor(bg);
 
-    // Apply background theme to View Section container
-    viewModeSec.className = `min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 ${pageThemeClass}`;
-    viewCardContainer.className = `w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto ${themeClass}`;
+      viewModeSec.className = 'min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6';
+      viewModeSec.style.backgroundColor = outerBg;
+
+      viewCardContainer.className = 'w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto';
+      viewCardContainer.style.backgroundColor = bg;
+      viewCardContainer.style.color = textColor;
+      viewCardContainer.style.borderColor = accent;
+    } else {
+      viewModeSec.style.backgroundColor = '';
+      viewCardContainer.style.backgroundColor = '';
+      viewCardContainer.style.color = '';
+      viewCardContainer.style.borderColor = '';
+
+      const themeClass = `theme-${data.theme || 'slate'}`;
+      const pageThemeClass = `page-theme-${data.theme || 'slate'}`;
+
+      viewModeSec.className = `min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 ${pageThemeClass}`;
+      viewCardContainer.className = `w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto ${themeClass}`;
+    }
 
     // Name & Bio
     viewName.innerHTML = parseMarkdown(data.name || 'Anonymous', true);
@@ -817,6 +1153,10 @@
     // Links
     viewLinksList.innerHTML = '';
     if (data.links && Array.isArray(data.links) && data.links.length > 0) {
+      const isCustom = data.theme === 'custom';
+      const accent = data.customAccent || '#10b981';
+      const accentText = getContrastTextColor(accent);
+
       data.links.forEach(l => {
         const linkBtn = document.createElement('a');
         linkBtn.href = sanitizeUrl(l.url);
@@ -824,6 +1164,12 @@
         linkBtn.rel = 'noopener noreferrer';
         linkBtn.className = 'link-btn block w-full py-3 px-5 rounded-xl text-center cursor-pointer transition-colors';
         
+        if (isCustom) {
+          linkBtn.style.backgroundColor = accent;
+          linkBtn.style.color = accentText;
+          linkBtn.style.borderColor = accent;
+        }
+
         const titleSpan = document.createElement('span');
         titleSpan.className = 'block font-semibold text-sm leading-snug';
         titleSpan.innerHTML = parseMarkdown(l.title || 'Link', false);
@@ -961,9 +1307,22 @@
         return;
       }
 
+      const btnCloseUnlock = e.target.closest('#btn-close-unlock-modal');
+      const btnCancelUnlock = e.target.closest('#btn-cancel-unlock');
+      if (btnCloseUnlock || btnCancelUnlock) {
+        e.preventDefault();
+        closeUnlockModal();
+        return;
+      }
+
       const modal = document.getElementById('restore-modal');
       if (modal && e.target === modal) {
         closeRestoreModal();
+      }
+
+      const unlockModal = document.getElementById('unlock-colors-modal');
+      if (unlockModal && e.target === unlockModal) {
+        closeUnlockModal();
       }
     });
 
@@ -972,7 +1331,47 @@
       if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
         closeRestoreModal();
       }
+      const unlockModal = document.getElementById('unlock-colors-modal');
+      if (e.key === 'Escape' && unlockModal && !unlockModal.classList.contains('hidden')) {
+        closeUnlockModal();
+      }
     });
+
+    // Unlock Custom Colors Link Click Handlers
+    const linkX = document.getElementById('unlock-link-x');
+    const linkTelegram = document.getElementById('unlock-link-telegram');
+
+    if (linkX) {
+      linkX.addEventListener('click', () => {
+        if (unlockState.xOpened || verifyingState.x) return;
+        verifyingState.x = true;
+        updateUnlockModalTicks();
+
+        setTimeout(() => {
+          verifyingState.x = false;
+          unlockState.xOpened = true;
+          localStorage.setItem('justalink_link_x_opened', 'true');
+          updateUnlockModalTicks();
+          checkUnlockConditions();
+        }, 4000);
+      });
+    }
+
+    if (linkTelegram) {
+      linkTelegram.addEventListener('click', () => {
+        if (unlockState.telegramOpened || verifyingState.telegram) return;
+        verifyingState.telegram = true;
+        updateUnlockModalTicks();
+
+        setTimeout(() => {
+          verifyingState.telegram = false;
+          unlockState.telegramOpened = true;
+          localStorage.setItem('justalink_link_telegram_opened', 'true');
+          updateUnlockModalTicks();
+          checkUnlockConditions();
+        }, 4000);
+      });
+    }
 
     function handleRestoreSubmit() {
       hideRestoreError();
