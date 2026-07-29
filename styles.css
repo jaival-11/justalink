@@ -241,5 +241,34 @@ body.builder-light .builder-footer {
   opacity: 1;
 }
 
+/* Markdown Badge & Formatting Styles */
+.markdown-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+body.builder-dark .markdown-badge {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+body.builder-light .markdown-badge {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
 
-
+strong {
+  font-weight: 700;
+}
+em {
+  font-style: italic;
+}
+u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+del {
+  text-decoration: line-through;
+  opacity: 0.8;
+}

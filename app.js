@@ -174,6 +174,52 @@
     }
   }
 
+  // --- Markdown Parser (Supports bold, italics, underline, strikethrough, code, links) ---
+  function parseMarkdown(text, allowLinks = true) {
+    if (!text) return '';
+
+    // HTML escape to prevent XSS vulnerabilities
+    let html = String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+
+    // Inline Code: `code`
+    html = html.replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded text-[0.85em] font-mono bg-current/15">$1</code>');
+
+    // Bold & Italic: ***text*** or ___text___
+    html = html.replace(/(\*\*\*|___)(.*?)\1/g, '<strong><em>$2</em></strong>');
+
+    // Bold: **text** or __text__
+    html = html.replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>');
+
+    // Italics: *text* or _text_
+    html = html.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+
+    // Strikethrough: ~~text~~ or ~text~
+    html = html.replace(/(~~|~)(.*?)\1/g, '<del>$2</del>');
+
+    // Underline: ++text++ or <u>text</u> or <ins>text</ins>
+    html = html.replace(/(\+\+|&lt;u&gt;|&lt;ins&gt;)(.*?)(?:\+\+|&lt;\/u&gt;|&lt;\/ins&gt;)/gi, '<u>$2</u>');
+
+    // Markdown Links: [text](url)
+    if (allowLinks) {
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, linkText, url) => {
+        const safeUrl = sanitizeUrl(url.replace(/&amp;/g, '&'));
+        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">${linkText}</a>`;
+      });
+    } else {
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<span class="underline">$1</span>');
+    }
+
+    // Preserve line breaks
+    html = html.replace(/\n/g, '<br>');
+
+    return html;
+  }
+
   function ensureRestoreModal() {
     let modal = document.getElementById('restore-modal');
     if (!modal) {
@@ -520,7 +566,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <input 
             type="text" 
-            placeholder="Link Title (e.g. My Website)" 
+            placeholder="Link Title (e.g. **My Website**)" 
             value="${link.title || ''}" 
             class="input-link-title builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
           />
@@ -534,7 +580,7 @@
         <div>
           <input 
             type="text" 
-            placeholder="Description (optional, e.g. Check out my portfolio)" 
+            placeholder="Description (e.g. Check out *my portfolio* & <u>projects</u>)" 
             value="${link.description || ''}" 
             class="input-link-description w-full builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
           />
@@ -605,8 +651,8 @@
     previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 theme-${appState.theme}`;
     
     // Name & Bio
-    previewName.textContent = appState.name || 'Your Name';
-    previewBio.textContent = appState.bio || 'Your bio details will be displayed here.';
+    previewName.innerHTML = parseMarkdown(appState.name || 'Your Name', true);
+    previewBio.innerHTML = parseMarkdown(appState.bio || 'Your bio details will be displayed here.', true);
 
     // Avatar
     if (appState.avatar) {
@@ -647,7 +693,7 @@
     // Short Message after Social Icons and before Links
     if (previewMessage && previewMessageWrap) {
       if (appState.message && appState.message.trim()) {
-        previewMessage.textContent = appState.message.trim();
+        previewMessage.innerHTML = parseMarkdown(appState.message.trim(), true);
         previewMessageWrap.classList.remove('hidden');
       } else {
         previewMessageWrap.classList.add('hidden');
@@ -668,13 +714,13 @@
         
         const titleSpan = document.createElement('span');
         titleSpan.className = 'block font-semibold text-xs leading-snug';
-        titleSpan.textContent = l.title || 'Untitled Link';
+        titleSpan.innerHTML = parseMarkdown(l.title || 'Untitled Link', false);
         linkBtn.appendChild(titleSpan);
 
         if (l.description && l.description.trim()) {
           const descSpan = document.createElement('span');
           descSpan.className = 'block text-[11px] opacity-80 font-normal mt-0.5 leading-snug';
-          descSpan.textContent = l.description.trim();
+          descSpan.innerHTML = parseMarkdown(l.description.trim(), false);
           linkBtn.appendChild(descSpan);
         }
 
@@ -718,8 +764,8 @@
     viewCardContainer.className = `w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto ${themeClass}`;
 
     // Name & Bio
-    viewName.textContent = data.name || 'Anonymous';
-    viewBio.textContent = data.bio || '';
+    viewName.innerHTML = parseMarkdown(data.name || 'Anonymous', true);
+    viewBio.innerHTML = parseMarkdown(data.bio || '', true);
 
     // Avatar
     if (data.avatar) {
@@ -761,7 +807,7 @@
     // Short Message after Social Icons and before Links
     if (viewMessage && viewMessageWrap) {
       if (data.message && data.message.trim()) {
-        viewMessage.textContent = data.message.trim();
+        viewMessage.innerHTML = parseMarkdown(data.message.trim(), true);
         viewMessageWrap.classList.remove('hidden');
       } else {
         viewMessageWrap.classList.add('hidden');
@@ -780,13 +826,13 @@
         
         const titleSpan = document.createElement('span');
         titleSpan.className = 'block font-semibold text-sm leading-snug';
-        titleSpan.textContent = l.title || 'Link';
+        titleSpan.innerHTML = parseMarkdown(l.title || 'Link', false);
         linkBtn.appendChild(titleSpan);
 
         if (l.description && l.description.trim()) {
           const descSpan = document.createElement('span');
           descSpan.className = 'block text-xs opacity-80 font-normal mt-1 leading-snug';
-          descSpan.textContent = l.description.trim();
+          descSpan.innerHTML = parseMarkdown(l.description.trim(), false);
           linkBtn.appendChild(descSpan);
         }
 

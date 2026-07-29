@@ -65,11 +65,17 @@
     
     <!-- BUILDER MODE UI (Homepage) -->
     <section id="builder-mode" class="max-w-6xl mx-auto w-full p-4 sm:p-6 lg:p-8">
-      <div class="mb-6">
-        <h1 class="text-2xl sm:text-3xl font-extrabold">Create Your Link-in-Bio</h1>
-        <p class="builder-subtext text-sm mt-1">
-          Everything is stored inside your shareable link. No signups, no databases.
-        </p>
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold">Create Your Link-in-Bio</h1>
+          <p class="builder-subtext text-sm mt-1">
+            Everything is stored inside your shareable link. No signups, no databases.
+          </p>
+        </div>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border text-xs font-mono font-semibold shrink-0 markdown-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+          <span>Markdown Supported</span>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -112,15 +118,29 @@
 
               <!-- Bio Input -->
               <div>
-                <label for="input-bio" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
-                  Bio / Description
-                </label>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="input-bio" class="block text-xs font-semibold builder-subtext uppercase tracking-wider">
+                    Bio / Description
+                  </label>
+                  <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
+                    Markdown Supported
+                  </span>
+                </div>
                 <textarea 
                   id="input-bio" 
                   rows="3" 
-                  placeholder="Software engineer & digital creator. Building open-source tools." 
+                  placeholder="Software engineer & digital creator. Building **open-source** tools with *high impact*." 
                   class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none resize-y"
                 ></textarea>
+                <p class="text-[11px] builder-subtext mt-1.5 font-mono flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                  <span class="font-sans font-semibold">Format:</span>
+                  <span><strong class="font-bold">**bold**</strong></span>
+                  <span><em class="italic">*italics*</em></span>
+                  <span><u><u>underline</u></u> (++text++)</span>
+                  <span><del>~~strikethrough~~</del></span>
+                  <span><code class="px-1 py-0.5 rounded text-[10px] bg-current/15">`code`</code></span>
+                  <span><span class="underline">[link](url)</span></span>
+                </p>
               </div>
             </div>
           </div>
@@ -156,7 +176,12 @@
 
           <!-- Short Message Card -->
           <div class="builder-card border rounded-lg p-5">
-            <h2 class="text-lg font-bold mb-1">4. Short Message</h2>
+            <div class="flex items-center justify-between mb-1">
+              <h2 class="text-lg font-bold">4. Short Message</h2>
+              <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
+                Markdown Supported
+              </span>
+            </div>
             <p class="text-xs builder-subtext mb-3">
               Add a brief single-line announcement or tagline displayed after social buttons and before your links.
             </p>
@@ -167,7 +192,7 @@
               <input 
                 type="text" 
                 id="input-message" 
-                placeholder="e.g. 🚀 Open for new projects & collaborations!" 
+                placeholder="e.g. 🚀 **Open** for *new projects* & <u>collaborations</u>!" 
                 class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
               />
             </div>
@@ -175,12 +200,15 @@
 
           <!-- Links Manager Card -->
           <div class="builder-card border rounded-lg p-5">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-2">
               <h2 class="text-lg font-bold">5. Add Links</h2>
               <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer">
                 <span>+</span> Add Link
               </button>
             </div>
+            <p class="text-xs builder-subtext mb-4">
+              Link titles & descriptions support Markdown formatting (**bold**, *italics*, <u>underline</u>, ~~strikethrough~~).
+            </p>
 
             <div id="links-container" class="space-y-4">
               <!-- Dynamic link items inserted here -->
