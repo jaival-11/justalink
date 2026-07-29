@@ -1507,6 +1507,136 @@
     window.addEventListener('hashchange', handleRoute);
   }
 
+  // --- GitHub Verification Logic ---
+  const GITHUB_TARGET_OWNER = 'jaival-11';
+  const GITHUB_TARGET_REPO = 'justalink';
+
+  const GITHUB_HEADERS = {
+    'Accept': 'application/vnd.github+json',
+    'User-Agent': 'JustALink-App',
+  };
+
+  /**
+   * Check if a user has starred jaival-11/justalink
+   * Uses GET https://api.github.com/repos/jaival-11/justalink/stargazers?per_page=100
+   * 
+   * @param {string} username - GitHub username
+   * @returns {Promise<boolean>} True if user starred the repo, false otherwise
+   */
+  async function checkIfUserStarred(username) {
+    const cleanUsername = (username || '').trim().toLowerCase();
+    if (!cleanUsername) return false;
+
+    let page = 1;
+    const perPage = 100;
+
+    while (true) {
+      const url = `https://api.github.com/repos/${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO}/stargazers?per_page=${perPage}&page=${page}`;
+      const response = await fetch(url, { headers: GITHUB_HEADERS });
+
+      if (response.status === 404) {
+        console.warn(`Repository ${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO} not found.`);
+        return false;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `GitHub API error (${response.status})`);
+      }
+
+      const stargazers = await response.json();
+      if (!Array.isArray(stargazers) || stargazers.length === 0) {
+        return false;
+      }
+
+      const found = stargazers.some(
+        (user) => user.login && user.login.toLowerCase() === cleanUsername
+      );
+      if (found) return true;
+
+      if (stargazers.length < perPage) {
+        return false;
+      }
+
+      page++;
+    }
+  }
+
+  /**
+   * Check if a user follows jaival-11
+   * Uses GET https://api.github.com/users/jaival-11/followers?per_page=100
+   * 
+   * @param {string} username - GitHub username
+   * @returns {Promise<boolean>} True if user follows jaival-11, false otherwise
+   */
+  async function checkIfUserFollows(username) {
+    const cleanUsername = (username || '').trim().toLowerCase();
+    if (!cleanUsername) return false;
+
+    let page = 1;
+    const perPage = 100;
+
+    while (true) {
+      const url = `https://api.github.com/users/${GITHUB_TARGET_OWNER}/followers?per_page=${perPage}&page=${page}`;
+      const response = await fetch(url, { headers: GITHUB_HEADERS });
+
+      if (response.status === 404) {
+        console.warn(`User ${GITHUB_TARGET_OWNER} not found.`);
+        return false;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || `GitHub API error (${response.status})`);
+      }
+
+      const followers = await response.json();
+      if (!Array.isArray(followers) || followers.length === 0) {
+        return false;
+      }
+
+      const found = followers.some(
+        (user) => user.login && user.login.toLowerCase() === cleanUsername
+      );
+      if (found) return true;
+
+      if (followers.length < perPage) {
+        return false;
+      }
+
+      page++;
+    }
+  }
+
+  /**
+   * Check if user has starred jaival-11/justalink AND follows jaival-11
+   * 
+   * @param {string} username - GitHub username
+   * @returns {Promise<{ hasStarred: boolean, isFollowing: boolean, hasDoneBoth: boolean }>}
+   */
+  async function checkIfUserStarredAndFollowed(username) {
+    const [hasStarred, isFollowing] = await Promise.all([
+      checkIfUserStarred(username),
+      checkIfUserFollows(username),
+    ]);
+
+    return {
+      hasStarred,
+      isFollowing,
+      hasDoneBoth: hasStarred && isFollowing,
+    };
+  }
+
+  // Expose methods globally for external triggers or button event listeners
+  window.GitHubVerification = {
+    checkIfUserStarred,
+    checkIfUserFollows,
+    checkIfUserStarredAndFollowed,
+  };
+  window.checkIfUserStarred = checkIfUserStarred;
+  window.checkIfUserFollows = checkIfUserFollows;
+  window.checkIfUserStarredAndFollowed = checkIfUserStarredAndFollowed;
+
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
     applyBuilderTheme(builderTheme);
@@ -1515,3 +1645,4 @@
   });
 
 })();
+
