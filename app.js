@@ -1518,7 +1518,7 @@
 
   /**
    * Check if a user has starred jaival-11/justalink
-   * Uses GET https://api.github.com/repos/jaival-11/justalink/stargazers?per_page=100
+   * Uses unauthenticated endpoint: GET https://api.github.com/users/{username}/starred
    * 
    * @param {string} username - GitHub username
    * @returns {Promise<boolean>} True if user starred the repo, false otherwise
@@ -1527,16 +1527,21 @@
     const cleanUsername = (username || '').trim().toLowerCase();
     if (!cleanUsername) return false;
 
+    const targetFullName = `${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO}`.toLowerCase();
     let page = 1;
     const perPage = 100;
 
     while (true) {
-      const url = `https://api.github.com/repos/${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO}/stargazers?per_page=${perPage}&page=${page}`;
+      const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/starred?per_page=${perPage}&page=${page}`;
       const response = await fetch(url, { headers: GITHUB_HEADERS });
 
       if (response.status === 404) {
-        console.warn(`Repository ${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO} not found.`);
+        // GitHub user does not exist
         return false;
+      }
+
+      if (response.status === 403) {
+        throw new Error('GitHub API rate limit exceeded. Unauthenticated limit is 60 requests/hour. Please try again later.');
       }
 
       if (!response.ok) {
@@ -1544,17 +1549,17 @@
         throw new Error(error.message || `GitHub API error (${response.status})`);
       }
 
-      const stargazers = await response.json();
-      if (!Array.isArray(stargazers) || stargazers.length === 0) {
+      const starredRepos = await response.json();
+      if (!Array.isArray(starredRepos) || starredRepos.length === 0) {
         return false;
       }
 
-      const found = stargazers.some(
-        (user) => user.login && user.login.toLowerCase() === cleanUsername
+      const found = starredRepos.some(
+        (repo) => repo.full_name && repo.full_name.toLowerCase() === targetFullName
       );
       if (found) return true;
 
-      if (stargazers.length < perPage) {
+      if (starredRepos.length < perPage) {
         return false;
       }
 
@@ -1564,7 +1569,8 @@
 
   /**
    * Check if a user follows jaival-11
-   * Uses GET https://api.github.com/users/jaival-11/followers?per_page=100
+   * Uses unauthenticated endpoint: GET https://api.github.com/users/{username}/following/jaival-11
+   * Returns 204 if following, 404 if not following
    * 
    * @param {string} username - GitHub username
    * @returns {Promise<boolean>} True if user follows jaival-11, false otherwise
@@ -1573,39 +1579,22 @@
     const cleanUsername = (username || '').trim().toLowerCase();
     if (!cleanUsername) return false;
 
-    let page = 1;
-    const perPage = 100;
+    const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/following/${GITHUB_TARGET_OWNER}`;
+    const response = await fetch(url, { headers: GITHUB_HEADERS });
 
-    while (true) {
-      const url = `https://api.github.com/users/${GITHUB_TARGET_OWNER}/followers?per_page=${perPage}&page=${page}`;
-      const response = await fetch(url, { headers: GITHUB_HEADERS });
+    if (response.status === 204) return true;
+    if (response.status === 404) return false;
 
-      if (response.status === 404) {
-        console.warn(`User ${GITHUB_TARGET_OWNER} not found.`);
-        return false;
-      }
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || `GitHub API error (${response.status})`);
-      }
-
-      const followers = await response.json();
-      if (!Array.isArray(followers) || followers.length === 0) {
-        return false;
-      }
-
-      const found = followers.some(
-        (user) => user.login && user.login.toLowerCase() === cleanUsername
-      );
-      if (found) return true;
-
-      if (followers.length < perPage) {
-        return false;
-      }
-
-      page++;
+    if (response.status === 403) {
+      throw new Error('GitHub API rate limit exceeded. Unauthenticated limit is 60 requests/hour. Please try again later.');
     }
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || `GitHub API error (${response.status})`);
+    }
+
+    return false;
   }
 
   /**
