@@ -473,8 +473,8 @@
             class="input-social-icon builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
           />
           <input 
-            type="url" 
-            placeholder="URL (e.g. https://github.com/username)" 
+            type="text" 
+            placeholder="URL (e.g. https://... or mailto:user@example.com)" 
             value="${social.url || ''}" 
             class="input-social-url builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
           />
