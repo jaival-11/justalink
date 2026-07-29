@@ -1517,6 +1517,28 @@
   };
 
   /**
+   * Validates a GitHub username format.
+   * GitHub usernames can only contain alphanumeric characters and single hyphens (-).
+   * Spaces, underscores, and special characters are invalid.
+   * 
+   * @param {string} username 
+   * @returns {string} Cleaned username if valid
+   * @throws {Error} If username format is invalid
+   */
+  function validateGitHubUsername(username) {
+    const raw = (username || '').trim();
+    if (!raw) {
+      throw new Error('Please enter a GitHub username.');
+    }
+    // GitHub username rule: 1-39 chars, alphanumeric and single hyphens, no start/end hyphen, no spaces/underscores
+    const githubUsernameRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+    if (!githubUsernameRegex.test(raw)) {
+      throw new Error(`Username "${raw}" is invalid. GitHub usernames cannot contain spaces or underscores, and can only include letters, numbers, and single hyphens.`);
+    }
+    return raw;
+  }
+
+  /**
    * Check if a user has starred jaival-11/justalink
    * Uses unauthenticated endpoint: GET https://api.github.com/users/{username}/starred
    * 
@@ -1524,8 +1546,7 @@
    * @returns {Promise<boolean>} True if user starred the repo, false otherwise
    */
   async function checkIfUserStarred(username) {
-    const cleanUsername = (username || '').trim().toLowerCase();
-    if (!cleanUsername) return false;
+    const cleanUsername = validateGitHubUsername(username);
 
     const targetFullName = `${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO}`.toLowerCase();
     let page = 1;
@@ -1536,8 +1557,7 @@
       const response = await fetch(url, { headers: GITHUB_HEADERS });
 
       if (response.status === 404) {
-        // GitHub user does not exist
-        return false;
+        throw new Error(`Cannot find GitHub user "${cleanUsername}". Please check the username.`);
       }
 
       if (response.status === 403) {
@@ -1576,14 +1596,21 @@
    * @returns {Promise<boolean>} True if user follows jaival-11, false otherwise
    */
   async function checkIfUserFollows(username) {
-    const cleanUsername = (username || '').trim().toLowerCase();
-    if (!cleanUsername) return false;
+    const cleanUsername = validateGitHubUsername(username);
 
     const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/following/${GITHUB_TARGET_OWNER}`;
     const response = await fetch(url, { headers: GITHUB_HEADERS });
 
     if (response.status === 204) return true;
-    if (response.status === 404) return false;
+
+    if (response.status === 404) {
+      // Confirm if the user exists or if 404 is simply because they don't follow
+      const userCheck = await fetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}`, { headers: GITHUB_HEADERS });
+      if (userCheck.status === 404) {
+        throw new Error(`Cannot find GitHub user "${cleanUsername}". Please check the username.`);
+      }
+      return false; // User exists, but does not follow jaival-11
+    }
 
     if (response.status === 403) {
       throw new Error('GitHub API rate limit exceeded. Unauthenticated limit is 60 requests/hour. Please try again later.');
@@ -1604,9 +1631,11 @@
    * @returns {Promise<{ hasStarred: boolean, isFollowing: boolean, hasDoneBoth: boolean }>}
    */
   async function checkIfUserStarredAndFollowed(username) {
+    const cleanUsername = validateGitHubUsername(username);
+
     const [hasStarred, isFollowing] = await Promise.all([
-      checkIfUserStarred(username),
-      checkIfUserFollows(username),
+      checkIfUserStarred(cleanUsername),
+      checkIfUserFollows(cleanUsername),
     ]);
 
     return {
@@ -1618,10 +1647,12 @@
 
   // Expose methods globally for external triggers or button event listeners
   window.GitHubVerification = {
+    validateGitHubUsername,
     checkIfUserStarred,
     checkIfUserFollows,
     checkIfUserStarredAndFollowed,
   };
+  window.validateGitHubUsername = validateGitHubUsername;
   window.checkIfUserStarred = checkIfUserStarred;
   window.checkIfUserFollows = checkIfUserFollows;
   window.checkIfUserStarredAndFollowed = checkIfUserStarredAndFollowed;
