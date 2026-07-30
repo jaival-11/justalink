@@ -41,6 +41,7 @@
     customBg: '#0f172a',
     customAccent: '#10b981',
     customFooter: '',
+    disableFooter: false,
     githubUsername: localStorage.getItem('justalink_github_username') || '',
     socials: [],
     links: []
@@ -578,7 +579,7 @@
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
       const ghUser = decoded.githubUsername || decoded.githubUser || decoded.unlockedBy || '';
-      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim())) {
+      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || decoded.disableFooter || decoded.footerDisabled) {
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         if (ghUser) {
@@ -595,6 +596,7 @@
         customBg: decoded.customBg || '#0f172a',
         customAccent: decoded.customAccent || '#10b981',
         customFooter: decoded.customFooter || '',
+        disableFooter: !!(decoded.disableFooter || decoded.footerDisabled),
         githubUsername: ghUser || localStorage.getItem('justalink_github_username') || '',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
@@ -834,6 +836,7 @@
     if (!subCardPanel) return;
 
     const footerVal = appState.customFooter || '';
+    const isFooterDisabled = !!appState.disableFooter;
 
     if (!isSubcardUnlocked) {
       // Locked state: disabled & greyed out with high contrast
@@ -848,16 +851,24 @@
           </div>
           <span class="text-[11px] unlock-link-text font-semibold underline">Star repo to unlock</span>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Replace default "Built with JustALink" footer with your custom branding or text.</p>
-        <div class="pointer-events-none opacity-60">
-          <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
-          <input 
-            type="text" 
-            disabled 
-            value="${footerVal.replace(/"/g, '&quot;')}" 
-            placeholder="e.g. Built with ❤ by Alex" 
-            class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
-          />
+        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or replace default "Built with JustALink" footer with your custom branding or text.</p>
+        <div class="pointer-events-none opacity-60 space-y-3">
+          <div>
+            <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold">
+              <input type="checkbox" disabled ${!isFooterDisabled ? 'checked' : ''} class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" />
+              <span>Enable Footer</span>
+            </label>
+          </div>
+          <div class="${isFooterDisabled ? 'opacity-40 pointer-events-none' : ''}">
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
+            <input 
+              type="text" 
+              disabled 
+              value="${footerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. Built with ❤ by Alex" 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
         </div>
       `;
       subCardPanel.onclick = (e) => {
@@ -877,18 +888,42 @@
             </span>
           </div>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Replace default "Built with JustALink" footer with your custom branding or text. Markdown supported.</p>
-        <div>
+        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or replace default "Built with JustALink" footer with your custom branding or text. Markdown supported.</p>
+        
+        <div class="mb-3">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold builder-subtext text-current">
+            <input 
+              type="checkbox" 
+              id="checkbox-enable-footer" 
+              ${!isFooterDisabled ? 'checked' : ''} 
+              class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" 
+            />
+            <span>Enable Footer</span>
+          </label>
+        </div>
+
+        <div id="custom-footer-container" class="transition-all ${isFooterDisabled ? 'opacity-40 pointer-events-none' : ''}">
           <label for="input-custom-footer" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
           <input 
             type="text" 
             id="input-custom-footer" 
+            ${isFooterDisabled ? 'disabled' : ''}
             value="${footerVal.replace(/"/g, '&quot;')}" 
             placeholder="e.g. Built with ❤ by Alex" 
             class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
           />
         </div>
       `;
+
+      const checkboxEnableFooter = document.getElementById('checkbox-enable-footer');
+      if (checkboxEnableFooter) {
+        checkboxEnableFooter.addEventListener('change', (e) => {
+          appState.disableFooter = !e.target.checked;
+          renderSubCardPanel();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
 
       const inputFooter = document.getElementById('input-custom-footer');
       if (inputFooter) {
@@ -1228,6 +1263,13 @@
     watermarkLink.href = window.location.origin + window.location.pathname;
     watermarkLink.target = '_blank';
     watermarkLink.rel = 'noopener noreferrer';
+    if (watermarkLink.parentElement) {
+      if (appState.disableFooter) {
+        watermarkLink.parentElement.classList.add('hidden');
+      } else {
+        watermarkLink.parentElement.classList.remove('hidden');
+      }
+    }
     if (appState.customFooter && appState.customFooter.trim()) {
       watermarkLink.innerHTML = parseMarkdown(appState.customFooter.trim(), false);
     } else {
@@ -1376,6 +1418,13 @@
     viewWatermarkLink.href = window.location.origin + window.location.pathname;
     viewWatermarkLink.target = '_blank';
     viewWatermarkLink.rel = 'noopener noreferrer';
+    if (viewWatermarkLink.parentElement) {
+      if (data.disableFooter || data.footerDisabled) {
+        viewWatermarkLink.parentElement.classList.add('hidden');
+      } else {
+        viewWatermarkLink.parentElement.classList.remove('hidden');
+      }
+    }
     if (data.customFooter && data.customFooter.trim()) {
       viewWatermarkLink.innerHTML = parseMarkdown(data.customFooter.trim(), false);
     } else {
