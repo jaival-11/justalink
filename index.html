@@ -460,7 +460,7 @@
   <!-- Restore Modal Dialog -->
   <div id="restore-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
-      <div class="flex items-center justify-between border-b pb-3 border-zinc-700/40">
+      <div class="flex items-center justify-between border-b pb-3 modal-divider">
         <h3 class="text-lg font-extrabold flex items-center gap-2">
           <span>Restore Profile</span>
         </h3>
@@ -479,13 +479,13 @@
           placeholder="https://jaival-11.github.io/justalink/#data=..." 
           class="w-full builder-input border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none"
         />
-        <div id="restore-error" class="hidden mt-2.5 p-2.5 rounded border border-red-500/40 bg-red-950/20 text-red-400 text-xs font-semibold flex items-center gap-2">
+        <div id="restore-error" class="hidden mt-2.5 p-2.5 rounded border restore-error-box text-xs font-semibold flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span id="restore-error-text">Invalid URL or corrupted link data.</span>
         </div>
       </div>
 
-      <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-700/40">
+      <div class="flex items-center justify-end gap-2 pt-2 border-t modal-divider">
         <button id="btn-cancel-restore" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
           Cancel
         </button>
@@ -499,7 +499,7 @@
   <!-- Unlock Custom Colors Modal Dialog -->
   <div id="unlock-colors-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
-      <div class="flex items-center justify-between border-b pb-3 border-zinc-700/40">
+      <div class="flex items-center justify-between border-b pb-3 modal-divider">
         <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
           <span>Unlock Custom Colors</span>
         </h3>
@@ -554,7 +554,7 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-end pt-2 border-t border-zinc-700/40">
+      <div class="flex items-center justify-end pt-2 border-t modal-divider">
         <button id="btn-cancel-unlock" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
           Close
         </button>
@@ -565,7 +565,7 @@
   <!-- Star Repo Modal Dialog (Sub-Card Unlock) -->
   <div id="star-repo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
-      <div class="flex items-center justify-between border-b pb-3 border-zinc-700/40">
+      <div class="flex items-center justify-between border-b pb-3 modal-divider">
         <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
           <span>⭐ Star Repo to Unlock Sub-Card</span>
         </h3>
@@ -579,9 +579,9 @@
           Star the repository on GitHub to unlock custom footer options and sub-card features.
         </p>
 
-        <div class="p-3 rounded-lg border border-zinc-700/60 bg-zinc-800/40 space-y-2">
+        <div class="p-3 rounded-lg border modal-step-card space-y-2">
           <p class="text-xs builder-subtext">
-            1. Star <code class="text-emerald-400 font-mono font-semibold">jaival-11/justalink</code> on GitHub:
+            1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> on GitHub:
           </p>
           <a 
             href="https://github.com/jaival-11/justalink" 
@@ -616,10 +616,10 @@
           </div>
         </div>
 
-        <div id="star-verify-status" class="hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap"></div>
+        <div id="star-verify-status" class="hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box"></div>
       </div>
 
-      <div class="flex items-center justify-end pt-2 border-t border-zinc-700/40">
+      <div class="flex items-center justify-end pt-2 border-t modal-divider">
         <button id="btn-cancel-star-modal" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
           Cancel
         </button>

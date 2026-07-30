@@ -315,7 +315,7 @@
       modal.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
       modal.innerHTML = `
         <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
-          <div class="flex items-center justify-between border-b pb-3 border-zinc-700/40">
+          <div class="flex items-center justify-between border-b pb-3 modal-divider">
             <h3 class="text-lg font-extrabold flex items-center gap-2">
               <span>Restore Profile</span>
             </h3>
@@ -334,13 +334,13 @@
               placeholder="https://jaival-11.github.io/justalink/#data=..." 
               class="w-full builder-input border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none"
             />
-            <div id="restore-error" class="hidden mt-2.5 p-2.5 rounded border border-red-500/40 bg-red-950/20 text-red-400 text-xs font-semibold flex items-center gap-2">
+            <div id="restore-error" class="hidden mt-2.5 p-2.5 rounded border restore-error-box text-xs font-semibold flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               <span id="restore-error-text">Invalid URL or corrupted link data.</span>
             </div>
           </div>
 
-          <div class="flex items-center justify-end gap-2 pt-2 border-t border-zinc-700/40">
+          <div class="flex items-center justify-end gap-2 pt-2 border-t modal-divider">
             <button id="btn-cancel-restore" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
               Cancel
             </button>
@@ -415,7 +415,7 @@
     if (modal) {
       const statusDiv = document.getElementById('star-verify-status');
       if (statusDiv) {
-        statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap';
+        statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
         statusDiv.textContent = '';
       }
       modal.classList.remove('hidden');
@@ -444,7 +444,7 @@
     const username = usernameInput ? usernameInput.value.trim() : '';
     if (!username) {
       if (statusDiv) {
-        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-red-950/40 border-red-700 text-red-300';
+        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
         statusDiv.textContent = '⚠️ Please enter your GitHub username.';
       }
       return;
@@ -452,7 +452,7 @@
 
     if (verifyBtn) verifyBtn.disabled = true;
     if (statusDiv) {
-      statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-zinc-900 border-zinc-700 text-amber-400';
+      statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-loading';
       statusDiv.textContent = `⏳ Checking stargazers list for "${username}"...`;
     }
 
@@ -467,7 +467,7 @@
         updateShareUrl();
 
         if (statusDiv) {
-          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-emerald-950/40 border-emerald-700 text-emerald-300';
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-success';
           statusDiv.textContent = `🎉 Star verified! Sub-card features unlocked for user "${cleanUser}".`;
         }
 
@@ -479,13 +479,13 @@
         }, 1500);
       } else {
         if (statusDiv) {
-          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-red-950/40 border-red-700 text-red-300';
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
           statusDiv.textContent = `❌ Star not found for user "${username}".\nPlease make sure you have starred jaival-11/justalink on GitHub and try again.`;
         }
       }
     } catch (err) {
       if (statusDiv) {
-        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-red-950/40 border-red-700 text-red-300';
+        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
         statusDiv.textContent = `Error: ${err.message}`;
       }
     } finally {
@@ -498,7 +498,7 @@
     const tickTelegram = document.getElementById('unlock-tick-telegram');
 
     const greenTickHTML = `<span class="w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold inline-flex items-center justify-center text-xs shadow-none">✓</span>`;
-    const verifyingHTML = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/30 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verifying...</span>`;
+    const verifyingHTML = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold unlock-verifying-badge flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verifying...</span>`;
 
     if (tickX) {
       if (unlockState.xOpened) {
