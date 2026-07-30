@@ -432,9 +432,7 @@
       modal.classList.remove('hidden');
       const usernameInput = document.getElementById('input-star-username');
       if (usernameInput) {
-        if (!usernameInput.value) {
-          usernameInput.value = appState.githubUsername || localStorage.getItem('justalink_github_username') || '';
-        }
+        usernameInput.value = '';
         usernameInput.focus();
       }
     }
@@ -444,6 +442,15 @@
     const modal = document.getElementById('star-repo-modal');
     if (modal) {
       modal.classList.add('hidden');
+    }
+    const usernameInput = document.getElementById('input-star-username');
+    if (usernameInput) {
+      usernameInput.value = '';
+    }
+    const statusDiv = document.getElementById('star-verify-status');
+    if (statusDiv) {
+      statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
+      statusDiv.textContent = '';
     }
   }
 
@@ -543,9 +550,7 @@
       modal.classList.remove('hidden');
       const usernameInput = document.getElementById('input-star-follow-username');
       if (usernameInput) {
-        if (!usernameInput.value) {
-          usernameInput.value = appState.githubUsername || localStorage.getItem('justalink_github_username') || '';
-        }
+        usernameInput.value = '';
         usernameInput.focus();
       }
     }
@@ -555,6 +560,15 @@
     const modal = document.getElementById('star-follow-repo-modal');
     if (modal) {
       modal.classList.add('hidden');
+    }
+    const usernameInput = document.getElementById('input-star-follow-username');
+    if (usernameInput) {
+      usernameInput.value = '';
+    }
+    const statusDiv = document.getElementById('star-follow-verify-status');
+    if (statusDiv) {
+      statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
+      statusDiv.textContent = '';
     }
   }
 
@@ -582,14 +596,17 @@
       const result = await checkIfUserStarredAndFollowed(username);
       const cleanUser = validateGitHubUsername(username);
 
+      // If no error occurred during verification (user exists and format is valid),
+      // replace stored username with the just used username
+      localStorage.setItem('justalink_github_username', cleanUser);
+      appState.githubUsername = cleanUser;
+      updateShareUrl();
+
       if (result.hasDoneBoth) {
         isSubcard2Unlocked = true;
         localStorage.setItem('justalink_subcard2_unlocked', 'true');
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
-        localStorage.setItem('justalink_github_username', cleanUser);
-        appState.githubUsername = cleanUser;
-        updateShareUrl();
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-success';
@@ -2355,6 +2372,9 @@
   window.checkIfUserStarred = checkIfUserStarred;
   window.checkIfUserFollows = checkIfUserFollows;
   window.checkIfUserStarredAndFollowed = checkIfUserStarredAndFollowed;
+  window.openStarModal = openStarModal;
+  window.closeStarModal = closeStarModal;
+  window.handleVerifyStar = handleVerifyStar;
   window.openStarFollowModal = openStarFollowModal;
   window.closeStarFollowModal = closeStarFollowModal;
   window.handleVerifyStarFollow = handleVerifyStarFollow;
