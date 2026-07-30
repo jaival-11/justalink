@@ -42,6 +42,7 @@
     customAccent: '#10b981',
     customFooter: '',
     disableFooter: false,
+    disableFooterLink: false,
     githubUsername: localStorage.getItem('justalink_github_username') || '',
     socials: [],
     links: []
@@ -579,7 +580,10 @@
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
       const ghUser = decoded.githubUsername || decoded.githubUser || decoded.unlockedBy || '';
-      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || decoded.disableFooter || decoded.footerDisabled) {
+      const isFooterLinkDisabled = decoded.disableFooterLink !== undefined 
+        ? !!decoded.disableFooterLink 
+        : (decoded.enableFooterLink !== undefined ? !decoded.enableFooterLink : !!decoded.footerLinkDisabled);
+      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || decoded.disableFooter || decoded.footerDisabled || isFooterLinkDisabled) {
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         if (ghUser) {
@@ -597,6 +601,7 @@
         customAccent: decoded.customAccent || '#10b981',
         customFooter: decoded.customFooter || '',
         disableFooter: !!(decoded.disableFooter || decoded.footerDisabled),
+        disableFooterLink: isFooterLinkDisabled,
         githubUsername: ghUser || localStorage.getItem('justalink_github_username') || '',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
@@ -837,6 +842,7 @@
 
     const footerVal = appState.customFooter || '';
     const isFooterDisabled = !!appState.disableFooter;
+    const isFooterLinkDisabled = !!appState.disableFooterLink;
 
     if (!isSubcardUnlocked) {
       // Locked state: disabled & greyed out with high contrast
@@ -859,15 +865,23 @@
               <span>Enable Footer</span>
             </label>
           </div>
-          <div class="${isFooterDisabled ? 'opacity-40 pointer-events-none' : ''}">
-            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
-            <input 
-              type="text" 
-              disabled 
-              value="${footerVal.replace(/"/g, '&quot;')}" 
-              placeholder="e.g. Built with ❤ by Alex" 
-              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
-            />
+          <div class="${isFooterDisabled ? 'opacity-40 pointer-events-none' : ''} space-y-3">
+            <div>
+              <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
+              <input 
+                type="text" 
+                disabled 
+                value="${footerVal.replace(/"/g, '&quot;')}" 
+                placeholder="e.g. Built with ❤ by Alex" 
+                class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+              />
+            </div>
+            <div>
+              <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold">
+                <input type="checkbox" disabled ${!isFooterLinkDisabled ? 'checked' : ''} class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" />
+                <span>Enable Footer Link</span>
+              </label>
+            </div>
           </div>
         </div>
       `;
@@ -902,16 +916,31 @@
           </label>
         </div>
 
-        <div id="custom-footer-container" class="transition-all ${isFooterDisabled ? 'opacity-40 pointer-events-none' : ''}">
-          <label for="input-custom-footer" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
-          <input 
-            type="text" 
-            id="input-custom-footer" 
-            ${isFooterDisabled ? 'disabled' : ''}
-            value="${footerVal.replace(/"/g, '&quot;')}" 
-            placeholder="e.g. Built with ❤ by Alex" 
-            class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
-          />
+        <div id="custom-footer-container" class="space-y-3 transition-all ${isFooterDisabled ? 'opacity-40 pointer-events-none' : ''}">
+          <div>
+            <label for="input-custom-footer" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
+            <input 
+              type="text" 
+              id="input-custom-footer" 
+              ${isFooterDisabled ? 'disabled' : ''}
+              value="${footerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. Built with ❤ by Alex" 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
+
+          <div>
+            <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold builder-subtext text-current">
+              <input 
+                type="checkbox" 
+                id="checkbox-enable-footer-link" 
+                ${!isFooterLinkDisabled ? 'checked' : ''} 
+                ${isFooterDisabled ? 'disabled' : ''}
+                class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" 
+              />
+              <span>Enable Footer Link</span>
+            </label>
+          </div>
         </div>
       `;
 
@@ -929,6 +958,15 @@
       if (inputFooter) {
         inputFooter.addEventListener('input', (e) => {
           appState.customFooter = e.target.value;
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      const checkboxEnableFooterLink = document.getElementById('checkbox-enable-footer-link');
+      if (checkboxEnableFooterLink) {
+        checkboxEnableFooterLink.addEventListener('change', (e) => {
+          appState.disableFooterLink = !e.target.checked;
           updatePreview();
           updateShareUrl();
         });
@@ -1260,9 +1298,25 @@
     }
 
     // Watermark link target & text
-    watermarkLink.href = window.location.origin + window.location.pathname;
-    watermarkLink.target = '_blank';
-    watermarkLink.rel = 'noopener noreferrer';
+    const isFooterLinkDisabled = !!appState.disableFooterLink;
+    if (isFooterLinkDisabled) {
+      watermarkLink.removeAttribute('href');
+      watermarkLink.removeAttribute('target');
+      watermarkLink.removeAttribute('rel');
+      watermarkLink.removeAttribute('title');
+      watermarkLink.classList.add('cursor-default');
+      watermarkLink.classList.remove('cursor-pointer');
+      watermarkLink.onclick = (e) => { e.preventDefault(); };
+    } else {
+      watermarkLink.href = window.location.origin + window.location.pathname;
+      watermarkLink.target = '_blank';
+      watermarkLink.rel = 'noopener noreferrer';
+      watermarkLink.setAttribute('title', 'Create your own zero-database link-in-bio page');
+      watermarkLink.classList.remove('cursor-default');
+      watermarkLink.classList.add('cursor-pointer');
+      watermarkLink.onclick = null;
+    }
+
     if (watermarkLink.parentElement) {
       if (appState.disableFooter) {
         watermarkLink.parentElement.classList.add('hidden');
@@ -1273,7 +1327,11 @@
     if (appState.customFooter && appState.customFooter.trim()) {
       watermarkLink.innerHTML = parseMarkdown(appState.customFooter.trim(), false);
     } else {
-      watermarkLink.innerHTML = 'Built with <span class="underline">JustALink</span>';
+      if (isFooterLinkDisabled) {
+        watermarkLink.innerHTML = 'Built with JustALink';
+      } else {
+        watermarkLink.innerHTML = 'Built with <span class="underline">JustALink</span>';
+      }
     }
   }
 
@@ -1294,6 +1352,7 @@
     renderThemeSelector();
     renderSocialInputs();
     renderLinkInputs();
+    renderSubCardPanel();
     updatePreview();
     updateShareUrl();
   }
@@ -1415,9 +1474,23 @@
     }
 
     // Watermark
-    viewWatermarkLink.href = window.location.origin + window.location.pathname;
-    viewWatermarkLink.target = '_blank';
-    viewWatermarkLink.rel = 'noopener noreferrer';
+    const isFooterLinkDisabled = !!(data.disableFooterLink || data.footerLinkDisabled || (data.enableFooterLink !== undefined && !data.enableFooterLink));
+    if (isFooterLinkDisabled) {
+      viewWatermarkLink.removeAttribute('href');
+      viewWatermarkLink.removeAttribute('target');
+      viewWatermarkLink.removeAttribute('rel');
+      viewWatermarkLink.classList.add('cursor-default');
+      viewWatermarkLink.classList.remove('cursor-pointer');
+      viewWatermarkLink.onclick = (e) => { e.preventDefault(); };
+    } else {
+      viewWatermarkLink.href = window.location.origin + window.location.pathname;
+      viewWatermarkLink.target = '_blank';
+      viewWatermarkLink.rel = 'noopener noreferrer';
+      viewWatermarkLink.classList.remove('cursor-default');
+      viewWatermarkLink.classList.add('cursor-pointer');
+      viewWatermarkLink.onclick = null;
+    }
+
     if (viewWatermarkLink.parentElement) {
       if (data.disableFooter || data.footerDisabled) {
         viewWatermarkLink.parentElement.classList.add('hidden');
