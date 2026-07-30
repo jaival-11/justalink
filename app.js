@@ -40,14 +40,16 @@
     theme: 'slate',
     customBg: '#0f172a',
     customAccent: '#10b981',
+    customFooter: '',
     socials: [],
     links: []
   };
 
   let appState = JSON.parse(JSON.stringify(defaultState));
 
-  // --- Custom Theme Unlock Feature State ---
+  // --- Custom Theme & Sub-Card Unlock Feature State ---
   let isCustomUnlocked = localStorage.getItem('justalink_custom_colors_unlocked') === 'true';
+  let isSubcardUnlocked = localStorage.getItem('justalink_subcard_unlocked') === 'true';
   let unlockState = {
     xOpened: localStorage.getItem('justalink_link_x_opened') === 'true',
     telegramOpened: localStorage.getItem('justalink_link_telegram_opened') === 'true'
@@ -285,7 +287,7 @@
         return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">${linkText}</a>`;
       });
     } else {
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<span class="underline">$1</span>');
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
     }
 
     // Preserve line breaks
@@ -398,6 +400,80 @@
     }
   }
 
+  function openStarModal() {
+    const modal = document.getElementById('star-repo-modal');
+    if (modal) {
+      const statusDiv = document.getElementById('star-verify-status');
+      if (statusDiv) {
+        statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap';
+        statusDiv.textContent = '';
+      }
+      modal.classList.remove('hidden');
+      const usernameInput = document.getElementById('input-star-username');
+      if (usernameInput) usernameInput.focus();
+    }
+  }
+
+  function closeStarModal() {
+    const modal = document.getElementById('star-repo-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  async function handleVerifyStar() {
+    const usernameInput = document.getElementById('input-star-username');
+    const verifyBtn = document.getElementById('btn-verify-star');
+    const statusDiv = document.getElementById('star-verify-status');
+
+    const username = usernameInput ? usernameInput.value.trim() : '';
+    if (!username) {
+      if (statusDiv) {
+        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-red-950/40 border-red-700 text-red-300';
+        statusDiv.textContent = '⚠️ Please enter your GitHub username.';
+      }
+      return;
+    }
+
+    if (verifyBtn) verifyBtn.disabled = true;
+    if (statusDiv) {
+      statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-zinc-900 border-zinc-700 text-amber-400';
+      statusDiv.textContent = `⏳ Checking stargazers list for "${username}"...`;
+    }
+
+    try {
+      const hasStarred = await checkIfUserStarred(username);
+      if (hasStarred) {
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-emerald-950/40 border-emerald-700 text-emerald-300';
+          statusDiv.textContent = `🎉 Star verified! Sub-card features unlocked for user "${username}".`;
+        }
+
+        showToast('Sub-card features unlocked!', 'check');
+        renderSubCardPanel();
+
+        setTimeout(() => {
+          closeStarModal();
+        }, 1500);
+      } else {
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-red-950/40 border-red-700 text-red-300';
+          statusDiv.textContent = `❌ Star not found for user "${username}".\nPlease make sure you have starred jaival-11/justalink on GitHub and try again.`;
+        }
+      }
+    } catch (err) {
+      if (statusDiv) {
+        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-red-950/40 border-red-700 text-red-300';
+        statusDiv.textContent = `Error: ${err.message}`;
+      }
+    } finally {
+      if (verifyBtn) verifyBtn.disabled = false;
+    }
+  }
+
   function updateUnlockModalTicks() {
     const tickX = document.getElementById('unlock-tick-x');
     const tickTelegram = document.getElementById('unlock-tick-telegram');
@@ -482,6 +558,10 @@
 
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
+      if (decoded.customFooter && String(decoded.customFooter).trim()) {
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+      }
       appState = {
         tag: decoded.tag || 'v1.0',
         name: decoded.name || '',
@@ -491,6 +571,7 @@
         theme: decoded.theme || 'slate',
         customBg: decoded.customBg || '#0f172a',
         customAccent: decoded.customAccent || '#10b981',
+        customFooter: decoded.customFooter || '',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
           id: l.id || ('link_' + Math.random().toString(36).substring(2, 9)),
@@ -574,6 +655,7 @@
     });
 
     renderCustomThemeControls();
+    renderSubCardPanel();
   }
 
   function renderCustomThemeControls() {
@@ -715,6 +797,78 @@
           }
           appState.theme = 'custom';
           renderThemeSelector();
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+    }
+  }
+
+  function renderSubCardPanel() {
+    let subCardPanel = document.getElementById('sub-card-panel');
+    if (!subCardPanel) return;
+
+    const footerVal = appState.customFooter || '';
+
+    if (!isSubcardUnlocked) {
+      // Locked state: disabled & greyed out with high contrast
+      subCardPanel.className = 'mt-4 p-3.5 rounded-lg border border-dashed custom-theme-locked-bg cursor-pointer transition-all hover:opacity-90 relative select-none';
+      subCardPanel.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Customization Sub-Card</span>
+            <span class="badge-locked">
+              <span>Locked</span>
+            </span>
+          </div>
+          <span class="text-[11px] unlock-link-text font-semibold underline">Star repo to unlock</span>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Replace default "Built with JustALink" footer with your custom branding or text.</p>
+        <div class="pointer-events-none opacity-60">
+          <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
+          <input 
+            type="text" 
+            disabled 
+            value="${footerVal.replace(/"/g, '&quot;')}" 
+            placeholder="e.g. Built with ❤ by Alex" 
+            class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+          />
+        </div>
+      `;
+      subCardPanel.onclick = (e) => {
+        e.preventDefault();
+        openStarModal();
+      };
+    } else {
+      // Unlocked state: active sub-card controls
+      subCardPanel.className = 'mt-4 p-3.5 rounded-lg border border-zinc-700/60 builder-card transition-all relative';
+      subCardPanel.onclick = null;
+      subCardPanel.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Customization Sub-Card</span>
+            <span class="badge-unlocked">
+              <span>Unlocked</span>
+            </span>
+          </div>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Replace default "Built with JustALink" footer with your custom branding or text. Markdown supported.</p>
+        <div>
+          <label for="input-custom-footer" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
+          <input 
+            type="text" 
+            id="input-custom-footer" 
+            value="${footerVal.replace(/"/g, '&quot;')}" 
+            placeholder="e.g. Built with ❤ by Alex" 
+            class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+          />
+        </div>
+      `;
+
+      const inputFooter = document.getElementById('input-custom-footer');
+      if (inputFooter) {
+        inputFooter.addEventListener('input', (e) => {
+          appState.customFooter = e.target.value;
           updatePreview();
           updateShareUrl();
         });
@@ -1045,10 +1199,15 @@
       });
     }
 
-    // Watermark link target
+    // Watermark link target & text
     watermarkLink.href = window.location.origin + window.location.pathname;
     watermarkLink.target = '_blank';
     watermarkLink.rel = 'noopener noreferrer';
+    if (appState.customFooter && appState.customFooter.trim()) {
+      watermarkLink.innerHTML = parseMarkdown(appState.customFooter.trim(), false);
+    } else {
+      watermarkLink.innerHTML = 'Built with <span class="underline">JustALink</span>';
+    }
   }
 
   function updateShareUrl() {
@@ -1192,6 +1351,11 @@
     viewWatermarkLink.href = window.location.origin + window.location.pathname;
     viewWatermarkLink.target = '_blank';
     viewWatermarkLink.rel = 'noopener noreferrer';
+    if (data.customFooter && data.customFooter.trim()) {
+      viewWatermarkLink.innerHTML = parseMarkdown(data.customFooter.trim(), false);
+    } else {
+      viewWatermarkLink.innerHTML = 'Built with JustALink';
+    }
   }
 
   // --- Accordion Logic for Builder Cards (1 to 6) ---
@@ -1315,6 +1479,21 @@
         return;
       }
 
+      const btnCloseStar = e.target.closest('#btn-close-star-modal');
+      const btnCancelStar = e.target.closest('#btn-cancel-star-modal');
+      if (btnCloseStar || btnCancelStar) {
+        e.preventDefault();
+        closeStarModal();
+        return;
+      }
+
+      const btnVerifyStar = e.target.closest('#btn-verify-star');
+      if (btnVerifyStar) {
+        e.preventDefault();
+        handleVerifyStar();
+        return;
+      }
+
       const modal = document.getElementById('restore-modal');
       if (modal && e.target === modal) {
         closeRestoreModal();
@@ -1323,6 +1502,11 @@
       const unlockModal = document.getElementById('unlock-colors-modal');
       if (unlockModal && e.target === unlockModal) {
         closeUnlockModal();
+      }
+
+      const starModal = document.getElementById('star-repo-modal');
+      if (starModal && e.target === starModal) {
+        closeStarModal();
       }
     });
 
@@ -1334,6 +1518,10 @@
       const unlockModal = document.getElementById('unlock-colors-modal');
       if (e.key === 'Escape' && unlockModal && !unlockModal.classList.contains('hidden')) {
         closeUnlockModal();
+      }
+      const starModal = document.getElementById('star-repo-modal');
+      if (e.key === 'Escape' && starModal && !starModal.classList.contains('hidden')) {
+        closeStarModal();
       }
     });
 
