@@ -42,6 +42,7 @@
     customBg: '#0f172a',
     customAccent: '#10b981',
     customFooter: '',
+    footerUrl: '',
     disableFooter: false,
     disableFooterLink: false,
     githubUsername: localStorage.getItem('justalink_github_username') || '',
@@ -690,6 +691,7 @@
     if (decoded && typeof decoded === 'object') {
       const ghUser = decoded.githubUsername || decoded.githubUser || decoded.unlockedBy || '';
       const bannerVal = decoded.banner || decoded.bannerImage || '';
+      const footerUrlVal = decoded.footerUrl || decoded.customFooterUrl || '';
       const isFooterLinkDisabled = decoded.disableFooterLink !== undefined 
         ? !!decoded.disableFooterLink 
         : (decoded.enableFooterLink !== undefined ? !decoded.enableFooterLink : !!decoded.footerLinkDisabled);
@@ -700,7 +702,7 @@
           localStorage.setItem('justalink_github_username', ghUser);
         }
       }
-      if (bannerVal && String(bannerVal).trim()) {
+      if ((bannerVal && String(bannerVal).trim()) || (footerUrlVal && String(footerUrlVal).trim())) {
         isSubcard2Unlocked = true;
         localStorage.setItem('justalink_subcard2_unlocked', 'true');
       }
@@ -715,6 +717,7 @@
         customBg: decoded.customBg || '#0f172a',
         customAccent: decoded.customAccent || '#10b981',
         customFooter: decoded.customFooter || '',
+        footerUrl: footerUrlVal,
         disableFooter: !!(decoded.disableFooter || decoded.footerDisabled),
         disableFooterLink: isFooterLinkDisabled,
         githubUsername: ghUser || localStorage.getItem('justalink_github_username') || '',
@@ -1087,6 +1090,7 @@
         checkboxEnableFooter.addEventListener('change', (e) => {
           appState.disableFooter = !e.target.checked;
           renderSubCardPanel();
+          renderSubCardPanel2();
           updatePreview();
           updateShareUrl();
         });
@@ -1105,6 +1109,7 @@
       if (checkboxEnableFooterLink) {
         checkboxEnableFooterLink.addEventListener('change', (e) => {
           appState.disableFooterLink = !e.target.checked;
+          renderSubCardPanel2();
           updatePreview();
           updateShareUrl();
         });
@@ -1117,6 +1122,8 @@
     if (!subCardPanel2) return;
 
     const bannerVal = appState.banner || '';
+    const footerUrlVal = appState.footerUrl || '';
+    const isFooterLinkOff = !!appState.disableFooterLink || !!appState.disableFooter;
 
     if (!isSubcard2Unlocked) {
       // Locked state: disabled & greyed out with high contrast
@@ -1131,7 +1138,7 @@
           </div>
           <span class="text-[11px] unlock-link-text font-semibold underline">Star & follow to unlock</span>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Add a custom banner image displayed at the top of your profile card.</p>
+        <p class="text-[11px] builder-subtext mb-3">Add a custom banner image and custom footer link URL to your profile card.</p>
         <div class="pointer-events-none opacity-60 space-y-3">
           <div>
             <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
@@ -1140,6 +1147,16 @@
               disabled 
               value="${bannerVal.replace(/"/g, '&quot;')}" 
               placeholder="e.g. https://images.unsplash.com/photo-..." 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
+          <div class="${isFooterLinkOff ? 'opacity-40 pointer-events-none' : ''}">
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Footer URL</label>
+            <input 
+              type="text" 
+              disabled 
+              value="${footerUrlVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://yourwebsite.com" 
               class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
             />
           </div>
@@ -1162,7 +1179,7 @@
             </span>
           </div>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Add a high quality banner image URL to display at the top of your profile card.</p>
+        <p class="text-[11px] builder-subtext mb-3">Add a high quality banner image URL and custom footer link URL for your profile card.</p>
         
         <div class="space-y-3">
           <div>
@@ -1175,6 +1192,20 @@
               class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
             />
           </div>
+          <div id="footer-url-container" class="transition-all ${isFooterLinkOff ? 'opacity-40 pointer-events-none' : ''}">
+            <label for="input-footer-url" class="block text-[10px] uppercase font-bold builder-subtext mb-1 flex items-center justify-between">
+              <span>Footer URL</span>
+              ${isFooterLinkOff ? '<span class="text-[9px] lowercase font-normal italic opacity-75">(footer link disabled)</span>' : ''}
+            </label>
+            <input 
+              type="text" 
+              id="input-footer-url" 
+              ${isFooterLinkOff ? 'disabled' : ''}
+              value="${footerUrlVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://yourwebsite.com" 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
         </div>
       `;
 
@@ -1182,6 +1213,15 @@
       if (inputBanner) {
         inputBanner.addEventListener('input', (e) => {
           appState.banner = e.target.value;
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      const inputFooterUrl = document.getElementById('input-footer-url');
+      if (inputFooterUrl) {
+        inputFooterUrl.addEventListener('input', (e) => {
+          appState.footerUrl = e.target.value;
           updatePreview();
           updateShareUrl();
         });
@@ -1521,7 +1561,7 @@
     }
 
     // Watermark link target & text
-    const isFooterLinkDisabled = !!appState.disableFooterLink;
+    const isFooterLinkDisabled = !!appState.disableFooterLink || !!appState.disableFooter;
     if (isFooterLinkDisabled) {
       watermarkLink.removeAttribute('href');
       watermarkLink.removeAttribute('target');
@@ -1531,10 +1571,11 @@
       watermarkLink.classList.remove('cursor-pointer', 'underline');
       watermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
-      watermarkLink.href = window.location.origin + window.location.pathname;
+      const customUrl = (appState.footerUrl && appState.footerUrl.trim()) ? sanitizeUrl(appState.footerUrl) : null;
+      watermarkLink.href = customUrl || (window.location.origin + window.location.pathname);
       watermarkLink.target = '_blank';
       watermarkLink.rel = 'noopener noreferrer';
-      watermarkLink.setAttribute('title', 'Create your own zero-database link-in-bio page');
+      watermarkLink.setAttribute('title', customUrl ? 'Visit footer URL' : 'Create your own zero-database link-in-bio page');
       watermarkLink.classList.remove('cursor-default', 'no-underline');
       watermarkLink.classList.add('cursor-pointer', 'underline');
       watermarkLink.onclick = null;
@@ -1706,7 +1747,7 @@
     }
 
     // Watermark
-    const isFooterLinkDisabled = !!(data.disableFooterLink || data.footerLinkDisabled || (data.enableFooterLink !== undefined && !data.enableFooterLink));
+    const isFooterLinkDisabled = !!(data.disableFooterLink || data.footerLinkDisabled || data.disableFooter || data.footerDisabled || (data.enableFooterLink !== undefined && !data.enableFooterLink));
     if (isFooterLinkDisabled) {
       viewWatermarkLink.removeAttribute('href');
       viewWatermarkLink.removeAttribute('target');
@@ -1715,7 +1756,8 @@
       viewWatermarkLink.classList.remove('cursor-pointer', 'underline');
       viewWatermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
-      viewWatermarkLink.href = window.location.origin + window.location.pathname;
+      const customUrl = (data.footerUrl && String(data.footerUrl).trim()) ? sanitizeUrl(data.footerUrl) : null;
+      viewWatermarkLink.href = customUrl || (window.location.origin + window.location.pathname);
       viewWatermarkLink.target = '_blank';
       viewWatermarkLink.rel = 'noopener noreferrer';
       viewWatermarkLink.classList.remove('cursor-default', 'no-underline');
