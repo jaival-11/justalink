@@ -505,6 +505,8 @@
   function updateUnlockModalTicks() {
     const tickX = document.getElementById('unlock-tick-x');
     const tickTelegram = document.getElementById('unlock-tick-telegram');
+    const linkX = document.getElementById('unlock-link-x');
+    const linkTelegram = document.getElementById('unlock-link-telegram');
 
     const greenTickHTML = `<span class="w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold inline-flex items-center justify-center text-xs shadow-none">✓</span>`;
     const verifyingHTML = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold unlock-verifying-badge flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verifying...</span>`;
@@ -527,6 +529,14 @@
       } else {
         tickTelegram.innerHTML = `<span class="w-5 h-5 rounded-full border border-zinc-500 inline-flex items-center justify-center text-[10px] builder-subtext font-mono">2</span>`;
       }
+    }
+
+    if (linkX) {
+      linkX.classList.remove('opacity-60', 'opacity-50', 'pointer-events-none');
+    }
+
+    if (linkTelegram) {
+      linkTelegram.classList.remove('opacity-60', 'opacity-50', 'pointer-events-none');
     }
 
     const successMsg = document.getElementById('unlock-success-msg');
@@ -1761,7 +1771,8 @@
 
     if (linkX) {
       linkX.addEventListener('click', () => {
-        if (unlockState.xOpened || verifyingState.x) return;
+        if (unlockState.xOpened || verifyingState.x || verifyingState.telegram) return;
+
         verifyingState.x = true;
         updateUnlockModalTicks();
 
@@ -1777,7 +1788,8 @@
 
     if (linkTelegram) {
       linkTelegram.addEventListener('click', () => {
-        if (unlockState.telegramOpened || verifyingState.telegram) return;
+        if (unlockState.telegramOpened || verifyingState.telegram || verifyingState.x) return;
+
         verifyingState.telegram = true;
         updateUnlockModalTicks();
 
