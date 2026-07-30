@@ -41,6 +41,7 @@
     customBg: '#0f172a',
     customAccent: '#10b981',
     customFooter: '',
+    githubUsername: localStorage.getItem('justalink_github_username') || '',
     socials: [],
     links: []
   };
@@ -219,6 +220,12 @@
   function encodeData(dataObj) {
     try {
       const payload = Object.assign({ tag: 'v1.0' }, dataObj);
+      if (!payload.githubUsername) {
+        const storedUser = localStorage.getItem('justalink_github_username');
+        if (storedUser) {
+          payload.githubUsername = storedUser;
+        }
+      }
       const jsonStr = JSON.stringify(payload);
       const bytes = new TextEncoder().encode(jsonStr);
       let binString = '';
@@ -241,6 +248,9 @@
       if (parsed && typeof parsed === 'object') {
         if (!parsed.tag) {
           parsed.tag = 'v1.0';
+        }
+        if (!parsed.githubUsername && (parsed.githubUser || parsed.unlockedBy)) {
+          parsed.githubUsername = parsed.githubUser || parsed.unlockedBy;
         }
       }
       return parsed;
@@ -410,7 +420,12 @@
       }
       modal.classList.remove('hidden');
       const usernameInput = document.getElementById('input-star-username');
-      if (usernameInput) usernameInput.focus();
+      if (usernameInput) {
+        if (!usernameInput.value) {
+          usernameInput.value = appState.githubUsername || localStorage.getItem('justalink_github_username') || '';
+        }
+        usernameInput.focus();
+      }
     }
   }
 
@@ -444,12 +459,16 @@
     try {
       const hasStarred = await checkIfUserStarred(username);
       if (hasStarred) {
+        const cleanUser = validateGitHubUsername(username);
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
+        localStorage.setItem('justalink_github_username', cleanUser);
+        appState.githubUsername = cleanUser;
+        updateShareUrl();
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono bg-emerald-950/40 border-emerald-700 text-emerald-300';
-          statusDiv.textContent = `🎉 Star verified! Sub-card features unlocked for user "${username}".`;
+          statusDiv.textContent = `🎉 Star verified! Sub-card features unlocked for user "${cleanUser}".`;
         }
 
         showToast('Sub-card features unlocked!', 'check');
@@ -558,9 +577,13 @@
 
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
-      if (decoded.customFooter && String(decoded.customFooter).trim()) {
+      const ghUser = decoded.githubUsername || decoded.githubUser || decoded.unlockedBy || '';
+      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim())) {
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
+        if (ghUser) {
+          localStorage.setItem('justalink_github_username', ghUser);
+        }
       }
       appState = {
         tag: decoded.tag || 'v1.0',
@@ -572,6 +595,7 @@
         customBg: decoded.customBg || '#0f172a',
         customAccent: decoded.customAccent || '#10b981',
         customFooter: decoded.customFooter || '',
+        githubUsername: ghUser || localStorage.getItem('justalink_github_username') || '',
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
           id: l.id || ('link_' + Math.random().toString(36).substring(2, 9)),
@@ -581,6 +605,7 @@
         })) : []
       };
       populateBuilderInputs();
+      updateShareUrl();
       return { success: true };
     } else {
       return { success: false, error: 'Could not decode profile details. Invalid or corrupted payload.' };
@@ -1840,6 +1865,8 @@
     checkIfUserFollows,
     checkIfUserStarredAndFollowed,
   };
+  window.encodeData = encodeData;
+  window.decodeData = decodeData;
   window.validateGitHubUsername = validateGitHubUsername;
   window.checkIfUserStarred = checkIfUserStarred;
   window.checkIfUserFollows = checkIfUserFollows;
