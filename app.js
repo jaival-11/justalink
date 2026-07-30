@@ -54,6 +54,7 @@
   // --- Custom Theme & Sub-Card Unlock Feature State ---
   let isCustomUnlocked = localStorage.getItem('justalink_custom_colors_unlocked') === 'true';
   let isSubcardUnlocked = localStorage.getItem('justalink_subcard_unlocked') === 'true';
+  let isSubcard2Unlocked = localStorage.getItem('justalink_subcard2_unlocked') === 'true';
   let unlockState = {
     xOpened: localStorage.getItem('justalink_link_x_opened') === 'true',
     telegramOpened: localStorage.getItem('justalink_link_telegram_opened') === 'true'
@@ -502,6 +503,97 @@
     }
   }
 
+  function openStarFollowModal() {
+    const modal = document.getElementById('star-follow-repo-modal');
+    if (modal) {
+      const statusDiv = document.getElementById('star-follow-verify-status');
+      if (statusDiv) {
+        statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
+        statusDiv.textContent = '';
+      }
+      modal.classList.remove('hidden');
+      const usernameInput = document.getElementById('input-star-follow-username');
+      if (usernameInput) {
+        if (!usernameInput.value) {
+          usernameInput.value = appState.githubUsername || localStorage.getItem('justalink_github_username') || '';
+        }
+        usernameInput.focus();
+      }
+    }
+  }
+
+  function closeStarFollowModal() {
+    const modal = document.getElementById('star-follow-repo-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  async function handleVerifyStarFollow() {
+    const usernameInput = document.getElementById('input-star-follow-username');
+    const verifyBtn = document.getElementById('btn-verify-star-follow');
+    const statusDiv = document.getElementById('star-follow-verify-status');
+
+    const username = usernameInput ? usernameInput.value.trim() : '';
+    if (!username) {
+      if (statusDiv) {
+        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+        statusDiv.textContent = '⚠️ Please enter your GitHub username.';
+      }
+      return;
+    }
+
+    if (verifyBtn) verifyBtn.disabled = true;
+    if (statusDiv) {
+      statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-loading';
+      statusDiv.textContent = `⏳ Checking GitHub star and follow status for "${username}"...`;
+    }
+
+    try {
+      const result = await checkIfUserStarredAndFollowed(username);
+      const cleanUser = validateGitHubUsername(username);
+
+      if (result.hasDoneBoth) {
+        isSubcard2Unlocked = true;
+        localStorage.setItem('justalink_subcard2_unlocked', 'true');
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+        localStorage.setItem('justalink_github_username', cleanUser);
+        appState.githubUsername = cleanUser;
+        updateShareUrl();
+
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-success';
+          statusDiv.textContent = `🎉 Verified! You starred jaival-11/justalink AND followed @jaival-11.\nBanner sub-card features unlocked for user "${cleanUser}".`;
+        }
+
+        showToast('Banner sub-card features unlocked!', 'check');
+        renderSubCardPanel();
+        renderSubCardPanel2();
+
+        setTimeout(() => {
+          closeStarFollowModal();
+        }, 1500);
+      } else {
+        let missing = [];
+        if (!result.hasStarred) missing.push('⭐ Star repository (jaival-11/justalink)');
+        if (!result.isFollowing) missing.push('👤 Follow author (@jaival-11)');
+
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.textContent = `❌ Verification incomplete for user "${username}".\n\nMissing requirements:\n• ${missing.join('\n• ')}\n\nPlease complete the missing actions and try again.`;
+        }
+      }
+    } catch (err) {
+      if (statusDiv) {
+        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+        statusDiv.textContent = `Error: ${err.message}`;
+      }
+    } finally {
+      if (verifyBtn) verifyBtn.disabled = false;
+    }
+  }
+
   function updateUnlockModalTicks() {
     const tickX = document.getElementById('unlock-tick-x');
     const tickTelegram = document.getElementById('unlock-tick-telegram');
@@ -601,12 +693,16 @@
       const isFooterLinkDisabled = decoded.disableFooterLink !== undefined 
         ? !!decoded.disableFooterLink 
         : (decoded.enableFooterLink !== undefined ? !decoded.enableFooterLink : !!decoded.footerLinkDisabled);
-      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || (bannerVal && String(bannerVal).trim()) || decoded.disableFooter || decoded.footerDisabled || isFooterLinkDisabled) {
+      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || decoded.disableFooter || decoded.footerDisabled || isFooterLinkDisabled) {
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         if (ghUser) {
           localStorage.setItem('justalink_github_username', ghUser);
         }
+      }
+      if (bannerVal && String(bannerVal).trim()) {
+        isSubcard2Unlocked = true;
+        localStorage.setItem('justalink_subcard2_unlocked', 'true');
       }
       appState = {
         tag: decoded.tag || 'v1.0',
@@ -729,6 +825,7 @@
 
     renderCustomThemeControls();
     renderSubCardPanel();
+    renderSubCardPanel2();
   }
 
   function renderCustomThemeControls() {
@@ -882,7 +979,6 @@
     if (!subCardPanel) return;
 
     const footerVal = appState.customFooter || '';
-    const bannerVal = appState.banner || '';
     const isFooterDisabled = !!appState.disableFooter;
     const isFooterLinkDisabled = !!appState.disableFooterLink;
 
@@ -892,7 +988,7 @@
       subCardPanel.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Customization Sub-Card</span>
+            <span class="text-xs font-bold">Customization Sub-Card 1</span>
             <span class="badge-locked">
               <span>Locked</span>
             </span>
@@ -924,16 +1020,6 @@
                 <span>Enable Footer Link</span>
               </label>
             </div>
-            <div>
-              <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
-              <input 
-                type="text" 
-                disabled 
-                value="${bannerVal.replace(/"/g, '&quot;')}" 
-                placeholder="e.g. https://images.unsplash.com/photo-..." 
-                class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
-              />
-            </div>
           </div>
         </div>
       `;
@@ -948,13 +1034,13 @@
       subCardPanel.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Customization Sub-Card</span>
+            <span class="text-xs font-bold">Customization Sub-Card 1</span>
             <span class="badge-unlocked">
               <span>Unlocked</span>
             </span>
           </div>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer, custom branding, or add a banner image to top of your card. Markdown supported.</p>
+        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or custom branding. Markdown supported.</p>
         
         <div class="mb-3">
           <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold builder-subtext text-current">
@@ -993,18 +1079,6 @@
               <span>Enable Footer Link</span>
             </label>
           </div>
-
-          <div>
-            <label for="input-custom-banner" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
-            <input 
-              type="text" 
-              id="input-custom-banner" 
-              ${isFooterDisabled ? 'disabled' : ''}
-              value="${bannerVal.replace(/"/g, '&quot;')}" 
-              placeholder="e.g. https://images.unsplash.com/photo-..." 
-              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
-            />
-          </div>
         </div>
       `;
 
@@ -1035,6 +1109,74 @@
           updateShareUrl();
         });
       }
+    }
+  }
+
+  function renderSubCardPanel2() {
+    let subCardPanel2 = document.getElementById('sub-card-panel-2');
+    if (!subCardPanel2) return;
+
+    const bannerVal = appState.banner || '';
+
+    if (!isSubcard2Unlocked) {
+      // Locked state: disabled & greyed out with high contrast
+      subCardPanel2.className = 'mt-3 p-3.5 rounded-lg border border-dashed custom-theme-locked-bg cursor-pointer transition-all hover:opacity-90 relative select-none';
+      subCardPanel2.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Customization Sub-Card 2</span>
+            <span class="badge-locked">
+              <span>Locked</span>
+            </span>
+          </div>
+          <span class="text-[11px] unlock-link-text font-semibold underline">Star & follow to unlock</span>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Add a custom banner image displayed at the top of your profile card.</p>
+        <div class="pointer-events-none opacity-60 space-y-3">
+          <div>
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
+            <input 
+              type="text" 
+              disabled 
+              value="${bannerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://images.unsplash.com/photo-..." 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
+        </div>
+      `;
+      subCardPanel2.onclick = (e) => {
+        e.preventDefault();
+        openStarFollowModal();
+      };
+    } else {
+      // Unlocked state: active sub-card controls
+      subCardPanel2.className = 'mt-3 p-3.5 rounded-lg border border-zinc-700/60 builder-card transition-all relative';
+      subCardPanel2.onclick = null;
+      subCardPanel2.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Customization Sub-Card 2</span>
+            <span class="badge-unlocked">
+              <span>Unlocked</span>
+            </span>
+          </div>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Add a high quality banner image URL to display at the top of your profile card.</p>
+        
+        <div class="space-y-3">
+          <div>
+            <label for="input-custom-banner" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
+            <input 
+              type="text" 
+              id="input-custom-banner" 
+              value="${bannerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://images.unsplash.com/photo-..." 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
+        </div>
+      `;
 
       const inputBanner = document.getElementById('input-custom-banner');
       if (inputBanner) {
@@ -1434,6 +1576,7 @@
     renderSocialInputs();
     renderLinkInputs();
     renderSubCardPanel();
+    renderSubCardPanel2();
     updatePreview();
     updateShareUrl();
   }
@@ -1734,6 +1877,21 @@
         return;
       }
 
+      const btnCloseStarFollow = e.target.closest('#btn-close-star-follow-modal');
+      const btnCancelStarFollow = e.target.closest('#btn-cancel-star-follow-modal');
+      if (btnCloseStarFollow || btnCancelStarFollow) {
+        e.preventDefault();
+        closeStarFollowModal();
+        return;
+      }
+
+      const btnVerifyStarFollow = e.target.closest('#btn-verify-star-follow');
+      if (btnVerifyStarFollow) {
+        e.preventDefault();
+        handleVerifyStarFollow();
+        return;
+      }
+
       const modal = document.getElementById('restore-modal');
       if (modal && e.target === modal) {
         closeRestoreModal();
@@ -1747,6 +1905,11 @@
       const starModal = document.getElementById('star-repo-modal');
       if (starModal && e.target === starModal) {
         closeStarModal();
+      }
+
+      const starFollowModal = document.getElementById('star-follow-repo-modal');
+      if (starFollowModal && e.target === starFollowModal) {
+        closeStarFollowModal();
       }
     });
 
@@ -1762,6 +1925,10 @@
       const starModal = document.getElementById('star-repo-modal');
       if (e.key === 'Escape' && starModal && !starModal.classList.contains('hidden')) {
         closeStarModal();
+      }
+      const starFollowModal = document.getElementById('star-follow-repo-modal');
+      if (e.key === 'Escape' && starFollowModal && !starFollowModal.classList.contains('hidden')) {
+        closeStarFollowModal();
       }
     });
 
@@ -1823,6 +1990,20 @@
         if (input && document.activeElement === input && modal && !modal.classList.contains('hidden')) {
           e.preventDefault();
           handleRestoreSubmit();
+        }
+
+        const starInput = document.getElementById('input-star-username');
+        const starModal = document.getElementById('star-repo-modal');
+        if (starInput && document.activeElement === starInput && starModal && !starModal.classList.contains('hidden')) {
+          e.preventDefault();
+          handleVerifyStar();
+        }
+
+        const starFollowInput = document.getElementById('input-star-follow-username');
+        const starFollowModal = document.getElementById('star-follow-repo-modal');
+        if (starFollowInput && document.activeElement === starFollowInput && starFollowModal && !starFollowModal.classList.contains('hidden')) {
+          e.preventDefault();
+          handleVerifyStarFollow();
         }
       }
     });
@@ -2088,6 +2269,10 @@
   window.checkIfUserStarred = checkIfUserStarred;
   window.checkIfUserFollows = checkIfUserFollows;
   window.checkIfUserStarredAndFollowed = checkIfUserStarredAndFollowed;
+  window.openStarFollowModal = openStarFollowModal;
+  window.closeStarFollowModal = closeStarFollowModal;
+  window.handleVerifyStarFollow = handleVerifyStarFollow;
+  window.renderSubCardPanel2 = renderSubCardPanel2;
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {

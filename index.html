@@ -174,8 +174,13 @@
                   <!-- Dynamic content loaded via app.js -->
                 </div>
 
-                <!-- Customization Sub-Card (Rendered & managed by JavaScript) -->
+                <!-- Customization Sub-Card 1: Footer Options (Rendered & managed by JavaScript) -->
                 <div id="sub-card-panel">
+                  <!-- Dynamic content loaded via app.js -->
+                </div>
+
+                <!-- Customization Sub-Card 2: Banner Options (Rendered & managed by JavaScript) -->
+                <div id="sub-card-panel-2">
                   <!-- Dynamic content loaded via app.js -->
                 </div>
               </div>
@@ -631,6 +636,83 @@
 
       <div class="flex items-center justify-end pt-2 border-t modal-divider">
         <button id="btn-cancel-star-modal" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Star & Follow Repo Modal Dialog (Sub-Card 2 Banner Unlock) -->
+  <div id="star-follow-repo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
+    <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
+      <div class="flex items-center justify-between border-b pb-3 modal-divider">
+        <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+          <span>⭐👤 Star & Follow to Unlock Banner Sub-Card</span>
+        </h3>
+        <button id="btn-close-star-follow-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <p class="text-sm font-semibold builder-subtext">
+          Follow @jaival-11 and star the repository on GitHub to unlock Banner Image options.
+        </p>
+
+        <div class="p-3 rounded-lg border modal-step-card space-y-2.5">
+          <p class="text-xs builder-subtext">
+            1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> & Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <a 
+              href="https://github.com/jaival-11/justalink" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3 py-2 rounded flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span>Star Repo</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <a 
+              href="https://github.com/jaival-11" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs px-3 py-2 rounded flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/></svg>
+              <span>Follow Author</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label for="input-star-follow-username" class="block text-xs font-semibold builder-subtext uppercase tracking-wider">
+            2. Enter your GitHub username
+          </label>
+          <div class="flex gap-2">
+            <input 
+              type="text" 
+              id="input-star-follow-username" 
+              placeholder="e.g. octocat" 
+              class="w-full builder-input border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none"
+            />
+            <button 
+              id="btn-verify-star-follow" 
+              type="button" 
+              class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded shrink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              Verify
+            </button>
+          </div>
+        </div>
+
+        <div id="star-follow-verify-status" class="hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box"></div>
+      </div>
+
+      <div class="flex items-center justify-end pt-2 border-t modal-divider">
+        <button id="btn-cancel-star-follow-modal" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
           Cancel
         </button>
       </div>
