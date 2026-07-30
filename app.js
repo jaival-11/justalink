@@ -620,19 +620,13 @@
         renderSubCardPanel();
         renderSubCardPanel2();
 
-        let missing = [];
-        if (!result.hasStarred) missing.push('⭐ Star repository (jaival-11/justalink)');
-        if (!result.isFollowing) missing.push('👤 Follow author (@jaival-11)');
+        let missingActions = [];
+        if (!result.hasStarred) missingActions.push('star jaival-11/justalink');
+        if (!result.isFollowing) missingActions.push('follow @jaival-11');
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          let noteMsg = '';
-          if (result.hasStarred && !result.isFollowing) {
-            noteMsg = '\n\n💡 Note: Customization Sub-card 1 remains unlocked since you starred the repository.';
-          } else if (!result.hasStarred) {
-            noteMsg = '\n\n⚠️ Note: Customization Sub-card 1 is locked because repository star was not found.';
-          }
-          statusDiv.textContent = `❌ Verification incomplete for user "${username}".\n\nMissing requirements:\n• ${missing.join('\n• ')}${noteMsg}\n\nPlease complete the missing actions and try again.`;
+          statusDiv.textContent = `❌ Verification incomplete for user "${username}". Please ${missingActions.join(' and ')}.`;
         }
       }
     } catch (err) {
