@@ -35,6 +35,7 @@
     tag: 'v1.0',
     name: '',
     avatar: '',
+    banner: '',
     bio: '',
     message: '',
     theme: 'slate',
@@ -160,6 +161,9 @@
 
   // Preview elements (Builder mode)
   const previewFrame = document.getElementById('preview-card-frame');
+  const previewBannerContainer = document.getElementById('preview-banner-container');
+  const previewBannerImg = document.getElementById('preview-banner-img');
+  const previewAvatarContainer = document.getElementById('preview-avatar-container');
   const previewAvatarImg = document.getElementById('preview-avatar-img');
   const previewAvatarFallback = document.getElementById('preview-avatar-fallback');
   const previewName = document.getElementById('preview-name');
@@ -172,6 +176,9 @@
 
   // View mode elements
   const viewCardContainer = document.getElementById('view-card-container');
+  const viewBannerContainer = document.getElementById('view-banner-container');
+  const viewBannerImg = document.getElementById('view-banner-img');
+  const viewAvatarContainer = document.getElementById('view-avatar-container');
   const viewAvatarImg = document.getElementById('view-avatar-img');
   const viewAvatarFallback = document.getElementById('view-avatar-fallback');
   const viewName = document.getElementById('view-name');
@@ -580,10 +587,11 @@
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
       const ghUser = decoded.githubUsername || decoded.githubUser || decoded.unlockedBy || '';
+      const bannerVal = decoded.banner || decoded.bannerImage || '';
       const isFooterLinkDisabled = decoded.disableFooterLink !== undefined 
         ? !!decoded.disableFooterLink 
         : (decoded.enableFooterLink !== undefined ? !decoded.enableFooterLink : !!decoded.footerLinkDisabled);
-      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || decoded.disableFooter || decoded.footerDisabled || isFooterLinkDisabled) {
+      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || (bannerVal && String(bannerVal).trim()) || decoded.disableFooter || decoded.footerDisabled || isFooterLinkDisabled) {
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         if (ghUser) {
@@ -594,6 +602,7 @@
         tag: decoded.tag || 'v1.0',
         name: decoded.name || '',
         avatar: decoded.avatar || '',
+        banner: bannerVal,
         bio: decoded.bio || '',
         message: decoded.message || decoded.shortMessage || '',
         theme: decoded.theme || 'slate',
@@ -654,6 +663,28 @@
       imgEl.classList.add('hidden');
       fallbackEl.classList.remove('hidden');
     };
+  }
+
+  // --- Helper to handle banner image fallback & avatar overlap ---
+  function setupBannerImage(bannerUrl, containerEl, imgEl, avatarWrapEl, defaultAvatarClass, overlapAvatarClass) {
+    if (!containerEl || !imgEl || !avatarWrapEl) return;
+    if (!bannerUrl || !bannerUrl.trim()) {
+      containerEl.classList.add('hidden');
+      imgEl.src = '';
+      avatarWrapEl.className = defaultAvatarClass;
+      return;
+    }
+
+    const cleanUrl = bannerUrl.trim();
+    imgEl.onload = function () {
+      containerEl.classList.remove('hidden');
+      avatarWrapEl.className = overlapAvatarClass;
+    };
+    imgEl.onerror = function () {
+      containerEl.classList.add('hidden');
+      avatarWrapEl.className = defaultAvatarClass;
+    };
+    imgEl.src = cleanUrl;
   }
 
   // --- Render Functions ---
@@ -841,6 +872,7 @@
     if (!subCardPanel) return;
 
     const footerVal = appState.customFooter || '';
+    const bannerVal = appState.banner || '';
     const isFooterDisabled = !!appState.disableFooter;
     const isFooterLinkDisabled = !!appState.disableFooterLink;
 
@@ -882,6 +914,16 @@
                 <span>Enable Footer Link</span>
               </label>
             </div>
+            <div>
+              <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
+              <input 
+                type="text" 
+                disabled 
+                value="${bannerVal.replace(/"/g, '&quot;')}" 
+                placeholder="e.g. https://images.unsplash.com/photo-..." 
+                class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+              />
+            </div>
           </div>
         </div>
       `;
@@ -902,7 +944,7 @@
             </span>
           </div>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or replace default "Built with JustALink" footer with your custom branding or text. Markdown supported.</p>
+        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer, custom branding, or add a banner image to top of your card. Markdown supported.</p>
         
         <div class="mb-3">
           <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold builder-subtext text-current">
@@ -941,6 +983,18 @@
               <span>Enable Footer Link</span>
             </label>
           </div>
+
+          <div>
+            <label for="input-custom-banner" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
+            <input 
+              type="text" 
+              id="input-custom-banner" 
+              ${isFooterDisabled ? 'disabled' : ''}
+              value="${bannerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://images.unsplash.com/photo-..." 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
+            />
+          </div>
         </div>
       `;
 
@@ -967,6 +1021,15 @@
       if (checkboxEnableFooterLink) {
         checkboxEnableFooterLink.addEventListener('change', (e) => {
           appState.disableFooterLink = !e.target.checked;
+          updatePreview();
+          updateShareUrl();
+        });
+      }
+
+      const inputBanner = document.getElementById('input-custom-banner');
+      if (inputBanner) {
+        inputBanner.addEventListener('input', (e) => {
+          appState.banner = e.target.value;
           updatePreview();
           updateShareUrl();
         });
@@ -1213,7 +1276,15 @@
     previewName.innerHTML = parseMarkdown(appState.name || 'Your Name', true);
     previewBio.innerHTML = parseMarkdown(appState.bio || 'Your bio details will be displayed here.', true);
 
-    // Avatar
+    // Banner Image & Avatar
+    setupBannerImage(
+      appState.banner,
+      previewBannerContainer,
+      previewBannerImg,
+      previewAvatarContainer,
+      'flex justify-center mb-4 relative z-10',
+      'flex justify-center mb-4 relative z-10 -mt-12 sm:-mt-14'
+    );
     if (appState.avatar) {
       previewAvatarImg.src = appState.avatar;
       setupAvatarFallback(previewAvatarImg, previewAvatarFallback, appState.name);
@@ -1388,7 +1459,15 @@
     viewName.innerHTML = parseMarkdown(data.name || 'Anonymous', true);
     viewBio.innerHTML = parseMarkdown(data.bio || '', true);
 
-    // Avatar
+    // Banner Image & Avatar
+    setupBannerImage(
+      data.banner || data.bannerImage,
+      viewBannerContainer,
+      viewBannerImg,
+      viewAvatarContainer,
+      'flex justify-center mb-5 relative z-10',
+      'flex justify-center mb-5 relative z-10 -mt-16 sm:-mt-20'
+    );
     if (data.avatar) {
       viewAvatarImg.src = data.avatar;
       setupAvatarFallback(viewAvatarImg, viewAvatarFallback, data.name);

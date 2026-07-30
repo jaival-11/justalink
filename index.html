@@ -330,10 +330,15 @@
             </div>
 
             <!-- Preview Card Container Frame -->
-            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-xl border transition-all duration-300" id="preview-card-frame">
+            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-xl border transition-all duration-300 relative overflow-hidden" id="preview-card-frame">
               
-              <!-- Avatar -->
-              <div class="flex justify-center mb-4">
+              <!-- Banner Image Container -->
+              <div id="preview-banner-container" class="relative -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 mb-4 h-28 sm:h-32 overflow-hidden rounded-t-xl hidden">
+                <img id="preview-banner-img" src="" alt="Banner Image" class="w-full h-full object-cover" />
+              </div>
+
+              <!-- Avatar Container -->
+              <div id="preview-avatar-container" class="flex justify-center mb-4 relative z-10">
                 <div class="relative">
                   <img 
                     id="preview-avatar-img" 
@@ -402,10 +407,15 @@
 
     <!-- VIEW MODE UI (Full Screen / Standalone Profile View - No top header banner) -->
     <section id="view-mode" class="hidden min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6">
-      <div id="view-card-container" class="w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto">
+      <div id="view-card-container" class="w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto relative overflow-hidden">
         
+        <!-- View Mode Banner Container -->
+        <div id="view-banner-container" class="relative -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-5 h-32 sm:h-36 overflow-hidden rounded-t-2xl hidden">
+          <img id="view-banner-img" src="" alt="Banner Image" class="w-full h-full object-cover" />
+        </div>
+
         <!-- View Mode Profile Info -->
-        <div class="flex justify-center mb-5">
+        <div id="view-avatar-container" class="flex justify-center mb-5 relative z-10">
           <div class="relative">
             <img 
               id="view-avatar-img" 
