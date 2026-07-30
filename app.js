@@ -1304,16 +1304,16 @@
       watermarkLink.removeAttribute('target');
       watermarkLink.removeAttribute('rel');
       watermarkLink.removeAttribute('title');
-      watermarkLink.classList.add('cursor-default');
-      watermarkLink.classList.remove('cursor-pointer');
+      watermarkLink.classList.add('cursor-default', 'no-underline');
+      watermarkLink.classList.remove('cursor-pointer', 'underline');
       watermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
       watermarkLink.href = window.location.origin + window.location.pathname;
       watermarkLink.target = '_blank';
       watermarkLink.rel = 'noopener noreferrer';
       watermarkLink.setAttribute('title', 'Create your own zero-database link-in-bio page');
-      watermarkLink.classList.remove('cursor-default');
-      watermarkLink.classList.add('cursor-pointer');
+      watermarkLink.classList.remove('cursor-default', 'no-underline');
+      watermarkLink.classList.add('cursor-pointer', 'underline');
       watermarkLink.onclick = null;
     }
 
@@ -1479,15 +1479,15 @@
       viewWatermarkLink.removeAttribute('href');
       viewWatermarkLink.removeAttribute('target');
       viewWatermarkLink.removeAttribute('rel');
-      viewWatermarkLink.classList.add('cursor-default');
-      viewWatermarkLink.classList.remove('cursor-pointer');
+      viewWatermarkLink.classList.add('cursor-default', 'no-underline');
+      viewWatermarkLink.classList.remove('cursor-pointer', 'underline');
       viewWatermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
       viewWatermarkLink.href = window.location.origin + window.location.pathname;
       viewWatermarkLink.target = '_blank';
       viewWatermarkLink.rel = 'noopener noreferrer';
-      viewWatermarkLink.classList.remove('cursor-default');
-      viewWatermarkLink.classList.add('cursor-pointer');
+      viewWatermarkLink.classList.remove('cursor-default', 'no-underline');
+      viewWatermarkLink.classList.add('cursor-pointer', 'underline');
       viewWatermarkLink.onclick = null;
     }
 
@@ -1501,7 +1501,11 @@
     if (data.customFooter && data.customFooter.trim()) {
       viewWatermarkLink.innerHTML = parseMarkdown(data.customFooter.trim(), false);
     } else {
-      viewWatermarkLink.innerHTML = 'Built with JustALink';
+      if (isFooterLinkDisabled) {
+        viewWatermarkLink.innerHTML = 'Built with JustALink';
+      } else {
+        viewWatermarkLink.innerHTML = 'Built with <span class="underline">JustALink</span>';
+      }
     }
   }
 
