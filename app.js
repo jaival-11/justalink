@@ -484,6 +484,7 @@
 
         showToast('Sub-card features unlocked!', 'check');
         renderSubCardPanel();
+        renderSubCardPanel2();
 
         setTimeout(() => {
           closeStarModal();
@@ -512,6 +513,33 @@
         statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
         statusDiv.textContent = '';
       }
+
+      const titleEl = document.getElementById('star-follow-modal-title');
+      const descEl = document.getElementById('star-follow-modal-desc');
+      const step1LabelEl = document.getElementById('star-follow-modal-step1-label');
+      const starBtn = document.getElementById('star-follow-modal-star-btn');
+      const buttonsContainer = document.getElementById('star-follow-modal-buttons');
+
+      if (isSubcardUnlocked) {
+        if (titleEl) titleEl.innerHTML = '<span>👤 Also Follow to Unlock Banner Sub-Card</span>';
+        if (descEl) descEl.textContent = 'Also follow @jaival-11 on GitHub to unlock Banner Image options.';
+        if (step1LabelEl) step1LabelEl.innerHTML = '1. Also follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code> on GitHub:';
+        if (starBtn) starBtn.classList.add('hidden');
+        if (buttonsContainer) {
+          buttonsContainer.classList.remove('sm:grid-cols-2');
+          buttonsContainer.classList.add('grid-cols-1');
+        }
+      } else {
+        if (titleEl) titleEl.innerHTML = '<span>⭐👤 Star & Follow to Unlock Banner Sub-Card</span>';
+        if (descEl) descEl.textContent = 'Follow @jaival-11 and star the repository on GitHub to unlock Banner Image options.';
+        if (step1LabelEl) step1LabelEl.innerHTML = '1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> & Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>:';
+        if (starBtn) starBtn.classList.remove('hidden');
+        if (buttonsContainer) {
+          buttonsContainer.classList.remove('grid-cols-1');
+          buttonsContainer.classList.add('sm:grid-cols-2');
+        }
+      }
+
       modal.classList.remove('hidden');
       const usernameInput = document.getElementById('input-star-follow-username');
       if (usernameInput) {
@@ -576,13 +604,35 @@
           closeStarFollowModal();
         }, 1500);
       } else {
+        isSubcard2Unlocked = false;
+        localStorage.setItem('justalink_subcard2_unlocked', 'false');
+
+        if (result.hasStarred) {
+          // Keep sub-card 1 unlocked if user has only starred, not followed
+          isSubcardUnlocked = true;
+          localStorage.setItem('justalink_subcard_unlocked', 'true');
+        } else {
+          // Lock sub-card 1 too if user have not starred and followed
+          isSubcardUnlocked = false;
+          localStorage.setItem('justalink_subcard_unlocked', 'false');
+        }
+
+        renderSubCardPanel();
+        renderSubCardPanel2();
+
         let missing = [];
         if (!result.hasStarred) missing.push('⭐ Star repository (jaival-11/justalink)');
         if (!result.isFollowing) missing.push('👤 Follow author (@jaival-11)');
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.textContent = `❌ Verification incomplete for user "${username}".\n\nMissing requirements:\n• ${missing.join('\n• ')}\n\nPlease complete the missing actions and try again.`;
+          let noteMsg = '';
+          if (result.hasStarred && !result.isFollowing) {
+            noteMsg = '\n\n💡 Note: Customization Sub-card 1 remains unlocked since you starred the repository.';
+          } else if (!result.hasStarred) {
+            noteMsg = '\n\n⚠️ Note: Customization Sub-card 1 is locked because repository star was not found.';
+          }
+          statusDiv.textContent = `❌ Verification incomplete for user "${username}".\n\nMissing requirements:\n• ${missing.join('\n• ')}${noteMsg}\n\nPlease complete the missing actions and try again.`;
         }
       }
     } catch (err) {
@@ -1136,7 +1186,7 @@
               <span>Locked</span>
             </span>
           </div>
-          <span class="text-[11px] unlock-link-text font-semibold underline">Star & follow to unlock</span>
+          <span class="text-[11px] unlock-link-text font-semibold underline">${isSubcardUnlocked ? 'Also follow to unlock' : 'Star & follow to unlock'}</span>
         </div>
         <p class="text-[11px] builder-subtext mb-3">Add a custom banner image and custom footer link URL to your profile card.</p>
         <div class="pointer-events-none opacity-60 space-y-3">

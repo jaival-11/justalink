@@ -646,7 +646,7 @@
   <div id="star-follow-repo-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
       <div class="flex items-center justify-between border-b pb-3 modal-divider">
-        <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+        <h3 id="star-follow-modal-title" class="text-base sm:text-lg font-extrabold flex items-center gap-2">
           <span>⭐👤 Star & Follow to Unlock Banner Sub-Card</span>
         </h3>
         <button id="btn-close-star-follow-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
@@ -655,16 +655,17 @@
       </div>
 
       <div class="space-y-4">
-        <p class="text-sm font-semibold builder-subtext">
+        <p id="star-follow-modal-desc" class="text-sm font-semibold builder-subtext">
           Follow @jaival-11 and star the repository on GitHub to unlock Banner Image options.
         </p>
 
         <div class="p-3 rounded-lg border modal-step-card space-y-2.5">
-          <p class="text-xs builder-subtext">
+          <p id="star-follow-modal-step1-label" class="text-xs builder-subtext">
             1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> & Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>:
           </p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div id="star-follow-modal-buttons" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <a 
+              id="star-follow-modal-star-btn"
               href="https://github.com/jaival-11/justalink" 
               target="_blank" 
               rel="noopener noreferrer" 
