@@ -237,6 +237,22 @@
           payload.githubUsername = storedUser;
         }
       }
+
+      if (!isSubcardUnlocked) {
+        delete payload.customFooter;
+        delete payload.disableFooter;
+        delete payload.disableFooterLink;
+        delete payload.footerDisabled;
+        delete payload.footerLinkDisabled;
+      }
+
+      if (!isSubcard2Unlocked) {
+        delete payload.banner;
+        delete payload.bannerImage;
+        delete payload.footerUrl;
+        delete payload.customFooterUrl;
+      }
+
       const jsonStr = JSON.stringify(payload);
       const bytes = new TextEncoder().encode(jsonStr);
       let binString = '';
@@ -421,6 +437,52 @@
     }
   }
 
+  let pendingRestoredState = null;
+
+  function openRestoreSubcardModal(options) {
+    const modal = document.getElementById('restore-subcard-modal');
+    if (!modal) return;
+    const titleEl = document.getElementById('restore-subcard-title');
+    const messageEl = document.getElementById('restore-subcard-message');
+    const unlockBtn = document.getElementById('btn-unlock-restore-subcard');
+
+    if (titleEl && options.title) titleEl.innerHTML = `<span>${options.title}</span>`;
+    if (messageEl && options.message) messageEl.innerHTML = options.message;
+    if (unlockBtn && options.unlockBtnText) unlockBtn.textContent = options.unlockBtnText;
+
+    modal._onUnlock = options.onUnlock;
+    modal._onContinue = options.onContinue;
+
+    modal.classList.remove('hidden');
+  }
+
+  function closeRestoreSubcardModal() {
+    const modal = document.getElementById('restore-subcard-modal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function applyRestoredWithoutSubcard1() {
+    if (pendingRestoredState) {
+      pendingRestoredState.customFooter = '';
+      pendingRestoredState.disableFooter = false;
+      pendingRestoredState.disableFooterLink = false;
+      appState = pendingRestoredState;
+      pendingRestoredState = null;
+    } else {
+      appState.customFooter = '';
+      appState.disableFooter = false;
+      appState.disableFooterLink = false;
+    }
+    isSubcardUnlocked = false;
+    localStorage.setItem('justalink_subcard_unlocked', 'false');
+    populateBuilderInputs();
+    renderSubCardPanel();
+    renderSubCardPanel2();
+    updatePreview();
+    updateShareUrl();
+    showToast('Profile restored (sub-card 1 features locked)', 'warning');
+  }
+
   function openStarModal() {
     const modal = document.getElementById('star-repo-modal');
     if (modal) {
@@ -432,7 +494,9 @@
       modal.classList.remove('hidden');
       const usernameInput = document.getElementById('input-star-username');
       if (usernameInput) {
-        usernameInput.value = '';
+        if (!usernameInput.value) {
+          usernameInput.value = localStorage.getItem('justalink_github_username') || '';
+        }
         usernameInput.focus();
       }
     }
@@ -451,6 +515,9 @@
     if (statusDiv) {
       statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
       statusDiv.textContent = '';
+    }
+    if (pendingRestoredState && !isSubcardUnlocked) {
+      applyRestoredWithoutSubcard1();
     }
   }
 
@@ -481,7 +548,14 @@
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         localStorage.setItem('justalink_github_username', cleanUser);
-        appState.githubUsername = cleanUser;
+        if (pendingRestoredState) {
+          pendingRestoredState.githubUsername = cleanUser;
+          appState = pendingRestoredState;
+          pendingRestoredState = null;
+        } else {
+          appState.githubUsername = cleanUser;
+        }
+        populateBuilderInputs();
         updateShareUrl();
 
         if (statusDiv) {
@@ -492,6 +566,7 @@
         showToast('Sub-card features unlocked!', 'check');
         renderSubCardPanel();
         renderSubCardPanel2();
+        updatePreview();
 
         setTimeout(() => {
           closeStarModal();
@@ -512,7 +587,37 @@
     }
   }
 
-  function openStarFollowModal() {
+  function applyRestoredWithoutSubcard2() {
+    if (pendingRestoredState) {
+      pendingRestoredState.banner = '';
+      pendingRestoredState.footerUrl = '';
+      if (!isSubcardUnlocked) {
+        pendingRestoredState.customFooter = '';
+        pendingRestoredState.disableFooter = false;
+        pendingRestoredState.disableFooterLink = false;
+      }
+      appState = pendingRestoredState;
+      pendingRestoredState = null;
+    } else {
+      appState.banner = '';
+      appState.footerUrl = '';
+      if (!isSubcardUnlocked) {
+        appState.customFooter = '';
+        appState.disableFooter = false;
+        appState.disableFooterLink = false;
+      }
+    }
+    isSubcard2Unlocked = false;
+    localStorage.setItem('justalink_subcard2_unlocked', 'false');
+    populateBuilderInputs();
+    renderSubCardPanel();
+    renderSubCardPanel2();
+    updatePreview();
+    updateShareUrl();
+    showToast('Profile restored (sub-card 2 features locked)', 'warning');
+  }
+
+  function openStarFollowModal(userStatus) {
     const modal = document.getElementById('star-follow-repo-modal');
     if (modal) {
       const statusDiv = document.getElementById('star-follow-verify-status');
@@ -525,13 +630,35 @@
       const descEl = document.getElementById('star-follow-modal-desc');
       const step1LabelEl = document.getElementById('star-follow-modal-step1-label');
       const starBtn = document.getElementById('star-follow-modal-star-btn');
+      const followBtn = document.getElementById('star-follow-modal-follow-btn');
       const buttonsContainer = document.getElementById('star-follow-modal-buttons');
 
-      if (isSubcardUnlocked) {
+      if (userStatus && userStatus.hasStarred && !userStatus.isFollowing) {
+        if (titleEl) titleEl.innerHTML = '<span>👤 Follow @jaival-11 to Unlock Banner Sub-Card</span>';
+        if (descEl) descEl.textContent = 'You have starred the repo! Now follow @jaival-11 on GitHub to unlock Banner Image & Custom Link options.';
+        if (step1LabelEl) step1LabelEl.innerHTML = '1. Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code> on GitHub:';
+        if (starBtn) starBtn.classList.add('hidden');
+        if (followBtn) followBtn.classList.remove('hidden');
+        if (buttonsContainer) {
+          buttonsContainer.classList.remove('sm:grid-cols-2');
+          buttonsContainer.classList.add('grid-cols-1');
+        }
+      } else if (userStatus && !userStatus.hasStarred && userStatus.isFollowing) {
+        if (titleEl) titleEl.innerHTML = '<span>⭐ Star Repo to Unlock Banner Sub-Card</span>';
+        if (descEl) descEl.textContent = 'You are following @jaival-11! Now star jaival-11/justalink on GitHub to unlock Banner Image & Custom Link options.';
+        if (step1LabelEl) step1LabelEl.innerHTML = '1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> on GitHub:';
+        if (starBtn) starBtn.classList.remove('hidden');
+        if (followBtn) followBtn.classList.add('hidden');
+        if (buttonsContainer) {
+          buttonsContainer.classList.remove('sm:grid-cols-2');
+          buttonsContainer.classList.add('grid-cols-1');
+        }
+      } else if (isSubcardUnlocked && (!userStatus || (!userStatus.hasStarred && !userStatus.isFollowing))) {
         if (titleEl) titleEl.innerHTML = '<span>👤 Also Follow to Unlock Banner Sub-Card</span>';
         if (descEl) descEl.textContent = 'Also follow @jaival-11 on GitHub to unlock Banner Image options.';
         if (step1LabelEl) step1LabelEl.innerHTML = '1. Also follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code> on GitHub:';
         if (starBtn) starBtn.classList.add('hidden');
+        if (followBtn) followBtn.classList.remove('hidden');
         if (buttonsContainer) {
           buttonsContainer.classList.remove('sm:grid-cols-2');
           buttonsContainer.classList.add('grid-cols-1');
@@ -541,6 +668,7 @@
         if (descEl) descEl.textContent = 'Follow @jaival-11 and star the repository on GitHub to unlock Banner Image options.';
         if (step1LabelEl) step1LabelEl.innerHTML = '1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> & Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>:';
         if (starBtn) starBtn.classList.remove('hidden');
+        if (followBtn) followBtn.classList.remove('hidden');
         if (buttonsContainer) {
           buttonsContainer.classList.remove('grid-cols-1');
           buttonsContainer.classList.add('sm:grid-cols-2');
@@ -550,7 +678,9 @@
       modal.classList.remove('hidden');
       const usernameInput = document.getElementById('input-star-follow-username');
       if (usernameInput) {
-        usernameInput.value = '';
+        if (!usernameInput.value) {
+          usernameInput.value = localStorage.getItem('justalink_github_username') || '';
+        }
         usernameInput.focus();
       }
     }
@@ -569,6 +699,9 @@
     if (statusDiv) {
       statusDiv.className = 'hidden p-3 rounded-lg border text-xs font-mono whitespace-pre-wrap verify-status-box';
       statusDiv.textContent = '';
+    }
+    if (pendingRestoredState && !isSubcard2Unlocked) {
+      applyRestoredWithoutSubcard2();
     }
   }
 
@@ -596,11 +729,8 @@
       const result = await checkIfUserStarredAndFollowed(username);
       const cleanUser = validateGitHubUsername(username);
 
-      // If no error occurred during verification (user exists and format is valid),
-      // replace stored username with the just used username
       localStorage.setItem('justalink_github_username', cleanUser);
       appState.githubUsername = cleanUser;
-      updateShareUrl();
 
       if (result.hasDoneBoth) {
         isSubcard2Unlocked = true;
@@ -608,14 +738,24 @@
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
 
+        if (pendingRestoredState) {
+          pendingRestoredState.githubUsername = cleanUser;
+          appState = pendingRestoredState;
+          pendingRestoredState = null;
+        }
+
+        populateBuilderInputs();
+        updateShareUrl();
+        renderSubCardPanel();
+        renderSubCardPanel2();
+        updatePreview();
+
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-success';
           statusDiv.textContent = `🎉 Verified! You starred jaival-11/justalink AND followed @jaival-11.\nBanner sub-card features unlocked for user "${cleanUser}".`;
         }
 
         showToast('Banner sub-card features unlocked!', 'check');
-        renderSubCardPanel();
-        renderSubCardPanel2();
 
         setTimeout(() => {
           closeStarFollowModal();
@@ -625,17 +765,25 @@
         localStorage.setItem('justalink_subcard2_unlocked', 'false');
 
         if (result.hasStarred) {
-          // Keep sub-card 1 unlocked if user has only starred, not followed
           isSubcardUnlocked = true;
           localStorage.setItem('justalink_subcard_unlocked', 'true');
         } else {
-          // Lock sub-card 1 too if user have not starred and followed
           isSubcardUnlocked = false;
           localStorage.setItem('justalink_subcard_unlocked', 'false');
         }
 
-        renderSubCardPanel();
-        renderSubCardPanel2();
+        if (pendingRestoredState) {
+          applyRestoredWithoutSubcard2();
+        } else {
+          appState.banner = '';
+          appState.footerUrl = '';
+          populateBuilderInputs();
+          renderSubCardPanel();
+          renderSubCardPanel2();
+          updatePreview();
+          updateShareUrl();
+        }
+        updatePreview();
 
         let missingActions = [];
         if (!result.hasStarred) missingActions.push('star jaival-11/justalink');
@@ -715,7 +863,7 @@
     }
   }
 
-  function processRestoreInput(inputUrl) {
+  async function processRestoreInput(inputUrl) {
     if (!inputUrl || !inputUrl.trim()) {
       return { success: false, error: 'Please enter a URL or hash payload.' };
     }
@@ -750,24 +898,27 @@
 
     const decoded = decodeData(base64Str);
     if (decoded && typeof decoded === 'object') {
-      const ghUser = decoded.githubUsername || decoded.githubUser || decoded.unlockedBy || '';
       const bannerVal = decoded.banner || decoded.bannerImage || '';
       const footerUrlVal = decoded.footerUrl || decoded.customFooterUrl || '';
       const isFooterLinkDisabled = decoded.disableFooterLink !== undefined 
         ? !!decoded.disableFooterLink 
         : (decoded.enableFooterLink !== undefined ? !decoded.enableFooterLink : !!decoded.footerLinkDisabled);
-      if (ghUser || (decoded.customFooter && String(decoded.customFooter).trim()) || decoded.disableFooter || decoded.footerDisabled || isFooterLinkDisabled) {
-        isSubcardUnlocked = true;
-        localStorage.setItem('justalink_subcard_unlocked', 'true');
-        if (ghUser) {
-          localStorage.setItem('justalink_github_username', ghUser);
-        }
-      }
+      
+      const hasCustomFooterText = !!(decoded.customFooter && String(decoded.customFooter).trim());
+      const isFooterDisabled = !!(decoded.disableFooter || decoded.footerDisabled);
+      const hasSubcard1Features = hasCustomFooterText || isFooterDisabled || isFooterLinkDisabled;
+
       if ((bannerVal && String(bannerVal).trim()) || (footerUrlVal && String(footerUrlVal).trim())) {
         isSubcard2Unlocked = true;
         localStorage.setItem('justalink_subcard2_unlocked', 'true');
       }
-      appState = {
+
+      const hasSubcard2Features = !!(bannerVal && String(bannerVal).trim()) || !!(footerUrlVal && String(footerUrlVal).trim());
+
+      // Rule 5: If the username in restored is different from saved one, use the saved one for verification and include that only in the payload. Discard the one which was in restored url.
+      const savedUser = localStorage.getItem('justalink_github_username') || '';
+
+      const candidateState = {
         tag: decoded.tag || 'v1.0',
         name: decoded.name || '',
         avatar: decoded.avatar || '',
@@ -779,9 +930,9 @@
         customAccent: decoded.customAccent || '#10b981',
         customFooter: decoded.customFooter || '',
         footerUrl: footerUrlVal,
-        disableFooter: !!(decoded.disableFooter || decoded.footerDisabled),
+        disableFooter: isFooterDisabled,
         disableFooterLink: isFooterLinkDisabled,
-        githubUsername: ghUser || localStorage.getItem('justalink_github_username') || '',
+        githubUsername: savedUser,
         socials: Array.isArray(decoded.socials) ? decoded.socials : [],
         links: Array.isArray(decoded.links) ? decoded.links.map(l => ({
           id: l.id || ('link_' + Math.random().toString(36).substring(2, 9)),
@@ -790,9 +941,147 @@
           description: l.description || ''
         })) : []
       };
-      populateBuilderInputs();
-      updateShareUrl();
-      return { success: true };
+
+      if (hasSubcard2Features) {
+        if (savedUser) {
+          let checkResult = { hasStarred: false, isFollowing: false, hasDoneBoth: false };
+          try {
+            checkResult = await checkIfUserStarredAndFollowed(savedUser);
+          } catch (err) {
+            console.warn('Error checking star & follow status for saved user:', err);
+          }
+
+          if (checkResult.hasDoneBoth) {
+            isSubcard2Unlocked = true;
+            localStorage.setItem('justalink_subcard2_unlocked', 'true');
+            isSubcardUnlocked = true;
+            localStorage.setItem('justalink_subcard_unlocked', 'true');
+            appState = candidateState;
+            populateBuilderInputs();
+            renderSubCardPanel();
+            renderSubCardPanel2();
+            updatePreview();
+            updateShareUrl();
+            closeRestoreModal();
+            return { success: true };
+          } else {
+            pendingRestoredState = candidateState;
+            closeRestoreModal();
+
+            let titleStr = '';
+            let msgStr = '';
+            let btnText = '';
+
+            if (checkResult.hasStarred && !checkResult.isFollowing) {
+              titleStr = '👤 Follow Required for Sub-Card 2';
+              msgStr = `The restored profile contains Customization Sub-Card 2 features (banner image / custom footer link). You have starred the repository, but you need to follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code> on GitHub to keep these features.`;
+              btnText = 'Follow & Verify';
+            } else if (!checkResult.hasStarred && checkResult.isFollowing) {
+              titleStr = '⭐ Star Required for Sub-Card 2';
+              msgStr = `The restored profile contains Customization Sub-Card 2 features (banner image / custom footer link). You are following @jaival-11, but you need to star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> on GitHub to keep these features.`;
+              btnText = 'Star Repo & Verify';
+            } else {
+              titleStr = '⭐👤 Star & Follow Required for Sub-Card 2';
+              msgStr = `The restored profile contains Customization Sub-Card 2 features (banner image / custom footer link), but your saved GitHub username (<code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">${savedUser}</code>) has not starred the repo and followed @jaival-11 yet.<br><br>Please star and follow to keep these features, or continue without them.`;
+              btnText = 'Star & Follow to Verify';
+            }
+
+            openRestoreSubcardModal({
+              title: titleStr,
+              message: msgStr,
+              unlockBtnText: btnText,
+              onUnlock: () => {
+                openStarFollowModal(checkResult);
+                const input = document.getElementById('input-star-follow-username');
+                if (input) input.value = savedUser;
+              },
+              onContinue: () => {
+                applyRestoredWithoutSubcard2();
+              }
+            });
+            return { success: true, pendingModal: true };
+          }
+        } else {
+          pendingRestoredState = candidateState;
+          closeRestoreModal();
+          openRestoreSubcardModal({
+            title: '🔒 Locked Feature Detected (Sub-Card 2)',
+            message: `This restored profile uses Customization Sub-Card 2 features (banner image / custom footer link), but no verified GitHub username was found in your local storage.<br><br>Would you like to unlock this feature by starring the repo and following on GitHub, or continue without it?`,
+            unlockBtnText: 'Unlock Feature',
+            onUnlock: () => {
+              openStarFollowModal();
+            },
+            onContinue: () => {
+              applyRestoredWithoutSubcard2();
+            }
+          });
+          return { success: true, pendingModal: true };
+        }
+      } else if (hasSubcard1Features) {
+        if (savedUser) {
+          let hasStarred = false;
+          try {
+            hasStarred = await checkIfUserStarred(savedUser);
+          } catch (err) {
+            console.warn('Error checking star status for saved user:', err);
+            hasStarred = false;
+          }
+
+          if (hasStarred) {
+            isSubcardUnlocked = true;
+            localStorage.setItem('justalink_subcard_unlocked', 'true');
+            appState = candidateState;
+            populateBuilderInputs();
+            renderSubCardPanel();
+            renderSubCardPanel2();
+            updatePreview();
+            updateShareUrl();
+            closeRestoreModal();
+            return { success: true };
+          } else {
+            pendingRestoredState = candidateState;
+            closeRestoreModal();
+            openRestoreSubcardModal({
+              title: '⭐ Star Repo Required',
+              message: `The restored profile contains Customization Sub-Card 1 features, but your saved GitHub username (<code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">${savedUser}</code>) has not starred the repository yet.<br><br>Please star the repository to keep these features, or continue without them.`,
+              unlockBtnText: 'Star Repo & Verify',
+              onUnlock: () => {
+                openStarModal();
+                const input = document.getElementById('input-star-username');
+                if (input) input.value = savedUser;
+              },
+              onContinue: () => {
+                applyRestoredWithoutSubcard1();
+              }
+            });
+            return { success: true, pendingModal: true };
+          }
+        } else {
+          pendingRestoredState = candidateState;
+          closeRestoreModal();
+          openRestoreSubcardModal({
+            title: '🔒 Locked Feature Detected',
+            message: `This restored profile uses Customization Sub-Card 1 features (custom footer / branding), but no verified GitHub username was found in your local storage.<br><br>Would you like to unlock this feature by starring the repository, or continue without it?`,
+            unlockBtnText: 'Unlock Feature',
+            onUnlock: () => {
+              openStarModal();
+            },
+            onContinue: () => {
+              applyRestoredWithoutSubcard1();
+            }
+          });
+          return { success: true, pendingModal: true };
+        }
+      } else {
+        appState = candidateState;
+        populateBuilderInputs();
+        renderSubCardPanel();
+        renderSubCardPanel2();
+        updatePreview();
+        updateShareUrl();
+        closeRestoreModal();
+        return { success: true };
+      }
     } else {
       return { success: false, error: 'Could not decode profile details. Invalid or corrupted payload.' };
     }
@@ -1530,8 +1819,9 @@
     previewBio.innerHTML = parseMarkdown(appState.bio || 'Your bio details will be displayed here.', true);
 
     // Banner Image & Avatar
+    const activeBanner = isSubcard2Unlocked ? (appState.banner || '') : '';
     setupBannerImage(
-      appState.banner,
+      activeBanner,
       previewBannerContainer,
       previewBannerImg,
       previewAvatarContainer,
@@ -1622,7 +1912,11 @@
     }
 
     // Watermark link target & text
-    const isFooterLinkDisabled = !!appState.disableFooterLink || !!appState.disableFooter;
+    const activeDisableFooter = isSubcardUnlocked ? !!appState.disableFooter : false;
+    const activeDisableFooterLink = isSubcardUnlocked ? !!appState.disableFooterLink : false;
+    const activeCustomFooter = isSubcardUnlocked ? (appState.customFooter || '') : '';
+
+    const isFooterLinkDisabled = activeDisableFooterLink || activeDisableFooter;
     if (isFooterLinkDisabled) {
       watermarkLink.removeAttribute('href');
       watermarkLink.removeAttribute('target');
@@ -1632,7 +1926,8 @@
       watermarkLink.classList.remove('cursor-pointer', 'underline');
       watermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
-      const customUrl = (appState.footerUrl && appState.footerUrl.trim()) ? sanitizeUrl(appState.footerUrl) : null;
+      const activeFooterUrl = isSubcard2Unlocked ? (appState.footerUrl || '') : '';
+      const customUrl = (activeFooterUrl && activeFooterUrl.trim()) ? sanitizeUrl(activeFooterUrl) : null;
       watermarkLink.href = customUrl || (window.location.origin + window.location.pathname);
       watermarkLink.target = '_blank';
       watermarkLink.rel = 'noopener noreferrer';
@@ -1643,14 +1938,14 @@
     }
 
     if (watermarkLink.parentElement) {
-      if (appState.disableFooter) {
+      if (activeDisableFooter) {
         watermarkLink.parentElement.classList.add('hidden');
       } else {
         watermarkLink.parentElement.classList.remove('hidden');
       }
     }
-    if (appState.customFooter && appState.customFooter.trim()) {
-      watermarkLink.innerHTML = parseMarkdown(appState.customFooter.trim(), false);
+    if (activeCustomFooter && activeCustomFooter.trim()) {
+      watermarkLink.innerHTML = parseMarkdown(activeCustomFooter.trim(), false);
     } else {
       if (isFooterLinkDisabled) {
         watermarkLink.innerHTML = 'Built with JustALink';
@@ -1995,9 +2290,42 @@
         return;
       }
 
+      const btnCloseRestoreSubcard = e.target.closest('#btn-close-restore-subcard-modal');
+      if (btnCloseRestoreSubcard) {
+        e.preventDefault();
+        closeRestoreSubcardModal();
+        const subcardModal = document.getElementById('restore-subcard-modal');
+        if (subcardModal && subcardModal._onContinue) subcardModal._onContinue();
+        return;
+      }
+
+      const btnContinueSubcard = e.target.closest('#btn-continue-restore-subcard');
+      if (btnContinueSubcard) {
+        e.preventDefault();
+        closeRestoreSubcardModal();
+        const subcardModal = document.getElementById('restore-subcard-modal');
+        if (subcardModal && subcardModal._onContinue) subcardModal._onContinue();
+        return;
+      }
+
+      const btnUnlockSubcard = e.target.closest('#btn-unlock-restore-subcard');
+      if (btnUnlockSubcard) {
+        e.preventDefault();
+        closeRestoreSubcardModal();
+        const subcardModal = document.getElementById('restore-subcard-modal');
+        if (subcardModal && subcardModal._onUnlock) subcardModal._onUnlock();
+        return;
+      }
+
       const modal = document.getElementById('restore-modal');
       if (modal && e.target === modal) {
         closeRestoreModal();
+      }
+
+      const subcardModal = document.getElementById('restore-subcard-modal');
+      if (subcardModal && e.target === subcardModal) {
+        closeRestoreSubcardModal();
+        if (subcardModal._onContinue) subcardModal._onContinue();
       }
 
       const unlockModal = document.getElementById('unlock-colors-modal');
@@ -2020,6 +2348,11 @@
       const modal = document.getElementById('restore-modal');
       if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
         closeRestoreModal();
+      }
+      const subcardModal = document.getElementById('restore-subcard-modal');
+      if (e.key === 'Escape' && subcardModal && !subcardModal.classList.contains('hidden')) {
+        closeRestoreSubcardModal();
+        if (subcardModal._onContinue) subcardModal._onContinue();
       }
       const unlockModal = document.getElementById('unlock-colors-modal');
       if (e.key === 'Escape' && unlockModal && !unlockModal.classList.contains('hidden')) {
@@ -2073,16 +2406,34 @@
       });
     }
 
-    function handleRestoreSubmit() {
+    async function handleRestoreSubmit() {
       hideRestoreError();
       const input = document.getElementById('input-restore-url');
+      const submitBtn = document.getElementById('btn-submit-restore');
       const val = input ? input.value : '';
-      const result = processRestoreInput(val);
-      if (result.success) {
-        closeRestoreModal();
-        showToast('Profile restored successfully!', 'check');
-      } else {
-        showRestoreError(result.error);
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Verifying & Restoring...';
+      }
+
+      try {
+        const result = await processRestoreInput(val);
+        if (result && result.success) {
+          if (!result.pendingModal) {
+            closeRestoreModal();
+            showToast('Profile restored successfully!', 'check');
+          }
+        } else if (result && result.error) {
+          showRestoreError(result.error);
+        }
+      } catch (err) {
+        showRestoreError(err.message || 'Error restoring profile.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Restore Profile';
+        }
       }
     }
 
@@ -2379,6 +2730,14 @@
   window.closeStarFollowModal = closeStarFollowModal;
   window.handleVerifyStarFollow = handleVerifyStarFollow;
   window.renderSubCardPanel2 = renderSubCardPanel2;
+  window.processRestoreInput = processRestoreInput;
+  window.openRestoreSubcardModal = openRestoreSubcardModal;
+  window.closeRestoreSubcardModal = closeRestoreSubcardModal;
+  window.applyRestoredWithoutSubcard1 = applyRestoredWithoutSubcard1;
+  window.applyRestoredWithoutSubcard2 = applyRestoredWithoutSubcard2;
+  window.getAppState = () => appState;
+
+
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {

@@ -511,6 +511,36 @@
     </div>
   </div>
 
+  <!-- Restore Sub-Card 1 Locked Feature Modal Dialog -->
+  <div id="restore-subcard-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
+    <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
+      <div class="flex items-center justify-between border-b pb-3 modal-divider">
+        <h3 id="restore-subcard-title" class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+          <span>🔒 Locked Feature Detected</span>
+        </h3>
+        <button id="btn-close-restore-subcard-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <p id="restore-subcard-message" class="text-sm font-semibold builder-subtext leading-relaxed">
+          This restored profile uses Customization Sub-Card 1 features, but no verified GitHub username was found on this device.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-end gap-2 pt-2 border-t modal-divider">
+        <button id="btn-continue-restore-subcard" type="button" class="w-full sm:w-auto builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
+          Continue Without It
+        </button>
+        <button id="btn-unlock-restore-subcard" type="button" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
+          Unlock Feature
+        </button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Unlock Custom Colors Modal Dialog -->
   <div id="unlock-colors-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
@@ -676,6 +706,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
             <a 
+              id="star-follow-modal-follow-btn"
               href="https://github.com/jaival-11" 
               target="_blank" 
               rel="noopener noreferrer" 
