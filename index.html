@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JustALink - Zero-Database Hash Bio Link Builder</title>
-  <meta name="description" content="Create elegant, high-contrast, zero-database link-in-bio pages powered purely by URL hash fragments." />
+  <title>JustALink - Zero-login Bio Link Builder</title>
+  <meta name="description" content="Create elegant, link-in-bio pages powered purely by URL hash fragments." />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -147,7 +147,7 @@
                   <textarea 
                     id="input-bio" 
                     rows="3" 
-                    placeholder="Software engineer & digital creator. Building **open-source** tools with *high impact*." 
+                    placeholder="Software engineer & digital creator. Building **open-source** tools." 
                     class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none resize-y"
                   ></textarea>
                   <p class="text-[11px] builder-subtext mt-1.5 font-mono flex flex-wrap items-center gap-x-2.5 gap-y-1">
@@ -167,7 +167,7 @@
           <!-- Color Theme Selection Card -->
           <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="2">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-base sm:text-lg font-bold">2. Choose Theme Style (Flat Solid Colors)</h2>
+              <h2 class="text-base sm:text-lg font-bold">2. Choose Theme</h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </span>
@@ -175,7 +175,7 @@
             
             <div class="builder-card-body-wrapper">
               <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-3">Select a flat, high-contrast palette. Gradients and blurs are disabled by design philosophy.</p>
+                <p class="text-xs builder-subtext mb-3">Select a theme. Gradients are disabled by design philosophy.</p>
                 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
                   <!-- Theme choices populated by JavaScript -->
@@ -301,7 +301,7 @@
             <div class="builder-card-body-wrapper">
               <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
                 <p class="text-xs builder-subtext mb-3">
-                  Copy this link to share it on social media. Your data is compressed and encoded in the URL. You can also use this same URL to restore and edit your profile anytime using the Restore button at the top.
+                  Copy this link to share it on social media. Your data is compressed and encoded in the URL. You can also use this same URL to restore your profile anytime using the Restore button at the top. The URL will be very long so it is highly recommended to use a link shortner 
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-2">
@@ -400,7 +400,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity underline"
-                  title="Create your own zero-database link-in-bio page"
+                  title="Create your own zero-login link-in-bio page"
                 >
                   Built with <span class="underline">JustALink</span>
                 </a>
@@ -538,7 +538,7 @@
 
       <div class="space-y-3">
         <p id="restore-subcard-message" class="text-sm font-semibold builder-subtext leading-relaxed">
-          This restored profile uses Customization Sub-Card 1 features, but no verified GitHub username was found on this device.
+          This restored profile uses Footer Customisation features, but no verified GitHub username was found on this device.
         </p>
       </div>
 
@@ -547,7 +547,7 @@
           Continue Without It
         </button>
         <button id="btn-unlock-restore-subcard" type="button" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
-          Unlock Feature
+          Unlock Features
         </button>
       </div>
     </div>
@@ -558,7 +558,7 @@
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
       <div class="flex items-center justify-between border-b pb-3 modal-divider">
         <h3 id="auto-check-failed-title" class="text-base sm:text-lg font-extrabold flex items-center gap-2 text-rose-500">
-          <span>⚠️ Verification Status Changed</span>
+          <span>Verification Status Changed</span>
         </h3>
       </div>
 
@@ -595,7 +595,7 @@
 
       <div class="space-y-4">
         <p class="text-sm font-semibold builder-subtext">
-          Unlock custom colors by opening links below
+          Unlock custom colors by opening links below:
         </p>
 
         <div class="space-y-2.5">
@@ -635,7 +635,7 @@
         </div>
 
         <div id="unlock-success-msg" class="hidden unlock-success-banner">
-          🎉 Custom colors unlocked! You can now choose custom background and accent colors.
+          Custom colors unlocked! You can now choose custom background and accent colors.
         </div>
       </div>
 
@@ -652,7 +652,7 @@
     <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative">
       <div class="flex items-center justify-between border-b pb-3 modal-divider">
         <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
-          <span>⭐ Star Repo to Unlock Sub-Card</span>
+          <span>Star Repo to Unlock Footer Customisation</span>
         </h3>
         <button id="btn-close-star-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -661,7 +661,7 @@
 
       <div class="space-y-4">
         <p class="text-sm font-semibold builder-subtext">
-          Star the repository on GitHub to unlock custom footer options and sub-card features.
+          Star the repository on GitHub to unlock custom footer options.
         </p>
 
         <div class="p-3 rounded-lg border modal-step-card space-y-2">

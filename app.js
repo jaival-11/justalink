@@ -521,7 +521,7 @@
     renderSubCardPanel2();
     updatePreview();
     updateShareUrl();
-    showToast('Profile restored (sub-card 1 features locked)', 'warning');
+    showToast('Profile restored (footer customisation locked)', 'warning');
   }
 
   function openStarModal() {
@@ -571,7 +571,7 @@
     if (!username) {
       if (statusDiv) {
         statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-        statusDiv.textContent = '⚠️ Please enter your GitHub username.';
+        statusDiv.textContent = 'Please enter your GitHub username.';
       }
       return;
     }
@@ -579,7 +579,7 @@
     if (verifyBtn) verifyBtn.disabled = true;
     if (statusDiv) {
       statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-loading';
-      statusDiv.textContent = `⏳ Checking stargazers list for "${username}"...`;
+      statusDiv.textContent = `Checking stargazers list for "${username}"...`;
     }
 
     try {
@@ -603,10 +603,10 @@
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-success';
-          statusDiv.textContent = `🎉 Star verified! Sub-card features unlocked for user "${cleanUser}".`;
+          statusDiv.textContent = `Star verified! footer customisation features unlocked for user "${cleanUser}".`;
         }
 
-        showToast('Sub-card features unlocked!', 'check');
+        showToast('Footer customisation unlocked!', 'check');
         renderSubCardPanel();
         renderSubCardPanel2();
         updatePreview();
@@ -617,7 +617,7 @@
       } else {
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.textContent = `❌ Star not found for user "${username}".\nPlease make sure you have starred jaival-11/justalink on GitHub and try again.`;
+          statusDiv.textContent = `Star not found for user "${username}".\nPlease make sure you have starred jaival-11/justalink on GitHub and try again.`;
         }
       }
     } catch (err) {
@@ -634,7 +634,7 @@
         });
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.innerHTML = `⚠️ API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
+          statusDiv.innerHTML = `API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
         }
       } else if (err.isApiDown) {
         isSubcardUnlocked = true;
@@ -661,10 +661,10 @@
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-warning';
-          statusDiv.innerHTML = `⚠️ GitHub API is currently down. Temporary 30-minute access granted to Sub-card 1 features!\nPlease check status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.`;
+          statusDiv.innerHTML = `GitHub API is currently down. Temporary 30-minute access granted to footer customisation features!\nPlease check status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.`;
         }
 
-        showToast('GitHub API down: Temporary 30-min access granted to Sub-card 1!', 'bolt');
+        showToast('GitHub API down: Temporary 30-min access granted to footer customisation!', 'bolt');
 
         setTimeout(() => {
           closeStarModal();
@@ -707,7 +707,7 @@
     renderSubCardPanel2();
     updatePreview();
     updateShareUrl();
-    showToast('Profile restored (sub-card 2 features locked)', 'warning');
+    showToast('Profile restored (additional customisation locked)', 'warning');
   }
 
   function openStarFollowModal(userStatus) {
@@ -727,8 +727,8 @@
       const buttonsContainer = document.getElementById('star-follow-modal-buttons');
 
       if (userStatus && userStatus.hasStarred && !userStatus.isFollowing) {
-        if (titleEl) titleEl.innerHTML = '<span>👤 Follow @jaival-11 to Unlock Banner Sub-Card</span>';
-        if (descEl) descEl.textContent = 'You have starred the repo! Now follow @jaival-11 on GitHub to unlock Banner Image & Custom Link options.';
+        if (titleEl) titleEl.innerHTML = '<span>Follow @jaival-11 to Unlock Additional customisation</span>';
+        if (descEl) descEl.textContent = 'You have starred the repo! Now follow @jaival-11 on GitHub to additional customisation.';
         if (step1LabelEl) step1LabelEl.innerHTML = '1. Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code> on GitHub:';
         if (starBtn) starBtn.classList.add('hidden');
         if (followBtn) followBtn.classList.remove('hidden');
@@ -737,8 +737,8 @@
           buttonsContainer.classList.add('grid-cols-1');
         }
       } else if (userStatus && !userStatus.hasStarred && userStatus.isFollowing) {
-        if (titleEl) titleEl.innerHTML = '<span>⭐ Star Repo to Unlock Banner Sub-Card</span>';
-        if (descEl) descEl.textContent = 'You are following @jaival-11! Now star jaival-11/justalink on GitHub to unlock Banner Image & Custom Link options.';
+        if (titleEl) titleEl.innerHTML = '<span>Star Repo to Unlock Additional customisation</span>';
+        if (descEl) descEl.textContent = 'You are following @jaival-11! Now star jaival-11/justalink on GitHub to unlock additional customisation.';
         if (step1LabelEl) step1LabelEl.innerHTML = '1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> on GitHub:';
         if (starBtn) starBtn.classList.remove('hidden');
         if (followBtn) followBtn.classList.add('hidden');
@@ -747,8 +747,8 @@
           buttonsContainer.classList.add('grid-cols-1');
         }
       } else if (isSubcardUnlocked && (!userStatus || (!userStatus.hasStarred && !userStatus.isFollowing))) {
-        if (titleEl) titleEl.innerHTML = '<span>👤 Also Follow to Unlock Banner Sub-Card</span>';
-        if (descEl) descEl.textContent = 'Also follow @jaival-11 on GitHub to unlock Banner Image options.';
+        if (titleEl) titleEl.innerHTML = '<span>Also Follow to Unlock Additional customisation</span>';
+        if (descEl) descEl.textContent = 'Also follow @jaival-11 on GitHub to unlock additional customisation.';
         if (step1LabelEl) step1LabelEl.innerHTML = '1. Also follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code> on GitHub:';
         if (starBtn) starBtn.classList.add('hidden');
         if (followBtn) followBtn.classList.remove('hidden');
@@ -757,8 +757,8 @@
           buttonsContainer.classList.add('grid-cols-1');
         }
       } else {
-        if (titleEl) titleEl.innerHTML = '<span>⭐👤 Star & Follow to Unlock Banner Sub-Card</span>';
-        if (descEl) descEl.textContent = 'Follow @jaival-11 and star the repository on GitHub to unlock Banner Image options.';
+        if (titleEl) titleEl.innerHTML = '<span>Star & Follow to Unlock Additional customisation</span>';
+        if (descEl) descEl.textContent = 'Follow @jaival-11 and star the repository on GitHub to unlock additional customisation.';
         if (step1LabelEl) step1LabelEl.innerHTML = '1. Star <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> & Follow <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>:';
         if (starBtn) starBtn.classList.remove('hidden');
         if (followBtn) followBtn.classList.remove('hidden');
@@ -807,7 +807,7 @@
     if (!username) {
       if (statusDiv) {
         statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-        statusDiv.textContent = '⚠️ Please enter your GitHub username.';
+        statusDiv.textContent = 'Please enter your GitHub username.';
       }
       return;
     }
@@ -815,7 +815,7 @@
     if (verifyBtn) verifyBtn.disabled = true;
     if (statusDiv) {
       statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-loading';
-      statusDiv.textContent = `⏳ Checking GitHub star and follow status for "${username}"...`;
+      statusDiv.textContent = `Checking GitHub star and follow status for "${username}"...`;
     }
 
     try {
@@ -847,10 +847,10 @@
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-success';
-          statusDiv.textContent = `🎉 Verified! You starred jaival-11/justalink AND followed @jaival-11.\nBanner sub-card features unlocked for user "${cleanUser}".`;
+          statusDiv.textContent = `Verified! You starred jaival-11/justalink AND followed @jaival-11.\nAdditional customisation features unlocked for user "${cleanUser}".`;
         }
 
-        showToast('Banner sub-card features unlocked!', 'check');
+        showToast('Additional customisation features unlocked!', 'check');
 
         setTimeout(() => {
           closeStarFollowModal();
@@ -889,12 +889,12 @@
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-warning';
           if (result.hasStarred && !result.isFollowing) {
-            statusDiv.textContent = `⭐ Star verified! Sub-card 1 features unlocked for "${username}".\nPlease also follow @jaival-11 on GitHub to unlock Sub-card 2.`;
-            showToast('Sub-card 1 unlocked! Follow @jaival-11 to unlock Sub-card 2.', 'info');
+            statusDiv.textContent = `Star verified! Footer customisation features unlocked for "${username}".\nPlease also follow @jaival-11 on GitHub to unlock additional customisation.`;
+            showToast('Footer customisations unlocked! Follow @jaival-11 to additional customisation.', 'info');
           } else if (!result.hasStarred && result.isFollowing) {
-            statusDiv.textContent = `❌ Follow detected, but star is required. Nothing unlocked for user "${username}".\nPlease star jaival-11/justalink on GitHub.`;
+            statusDiv.textContent = `Follow detected, but star is required1.\nPlease star jaival-11/justalink on GitHub.`;
           } else {
-            statusDiv.textContent = `❌ Verification incomplete for user "${username}". Please star jaival-11/justalink and follow @jaival-11.`;
+            statusDiv.textContent = `Verification incomplete for user "${username}". Please star jaival-11/justalink and follow @jaival-11.`;
           }
         }
       }
@@ -912,7 +912,7 @@
         });
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.innerHTML = `⚠️ API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
+          statusDiv.innerHTML = `API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
         }
       } else if (err.isApiDown) {
         isSubcardUnlocked = true;
@@ -941,7 +941,7 @@
 
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-warning';
-          statusDiv.innerHTML = `⚠️ GitHub API is currently down. Temporary 30-minute access granted to all features!\nPlease check status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.`;
+          statusDiv.innerHTML = `GitHub API is currently down. Temporary 30-minute access granted to all features!\nPlease check status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.`;
         }
 
         showToast('GitHub API down: Temporary 30-min access granted to all features!', 'bolt');
@@ -1499,14 +1499,14 @@
       subCardPanel.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Customization Sub-Card 1</span>
+            <span class="text-xs font-bold">Footer Customisation</span>
             <span class="badge-locked">
               <span>Locked</span>
             </span>
           </div>
-          <span class="text-[11px] unlock-link-text font-semibold underline">Star repo to unlock</span>
+          <span class="text-[11px] unlock-link-text font-semibold underline">Click here to unlock</span>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or replace default "Built with JustALink" footer with your custom branding or text.</p>
+        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or replace default "Built with JustALink" footer with your custom branding.</p>
         <div class="pointer-events-none opacity-60 space-y-3">
           <div>
             <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold">
@@ -1521,7 +1521,7 @@
                 type="text" 
                 disabled 
                 value="${footerVal.replace(/"/g, '&quot;')}" 
-                placeholder="e.g. Built with ❤ by Alex" 
+                placeholder="e.g. Built with ❤" 
                 class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
               />
             </div>
@@ -1545,7 +1545,7 @@
       subCardPanel.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Customization Sub-Card 1</span>
+            <span class="text-xs font-bold">Footer Customisation</span>
             <span class="badge-unlocked">
               <span>Unlocked</span>
             </span>
@@ -1573,7 +1573,7 @@
               id="input-custom-footer" 
               ${isFooterDisabled ? 'disabled' : ''}
               value="${footerVal.replace(/"/g, '&quot;')}" 
-              placeholder="e.g. Built with ❤ by Alex" 
+              placeholder="e.g. Built with ❤" 
               class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none" 
             />
           </div>
@@ -1639,14 +1639,14 @@
       subCardPanel2.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Customization Sub-Card 2</span>
+            <span class="text-xs font-bold">Additional Customisation</span>
             <span class="badge-locked">
               <span>Locked</span>
             </span>
           </div>
-          <span class="text-[11px] unlock-link-text font-semibold underline">${isSubcardUnlocked ? 'Also follow to unlock' : 'Star & follow to unlock'}</span>
+          <span class="text-[11px] unlock-link-text font-semibold underline">${isSubcardUnlocked ? 'Also follow to unlock' : 'Click here to unlock'}</span>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Add a custom banner image and custom footer link URL to your profile card.</p>
+        <p class="text-[11px] builder-subtext mb-3">Add a custom banner image and custom footer link URL to your profile.</p>
         <div class="pointer-events-none opacity-60 space-y-3">
           <div>
             <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
@@ -1681,13 +1681,13 @@
       subCardPanel2.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Customization Sub-Card 2</span>
+            <span class="text-xs font-bold">Additional Customisation</span>
             <span class="badge-unlocked">
               <span>Unlocked</span>
             </span>
           </div>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Add a high quality banner image URL and custom footer link URL for your profile card.</p>
+        <p class="text-[11px] builder-subtext mb-3">Add a banner image URL and custom footer link URL for your profile card. Recommended aspect ratio for banner is 3:1 (or 16:5)</p>
         
         <div class="space-y-3">
           <div>
