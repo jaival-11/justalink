@@ -595,17 +595,38 @@
           statusDiv.innerHTML = `⚠️ API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
         }
       } else if (err.isApiDown) {
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+        if (userForAttempt) {
+          localStorage.setItem('justalink_github_username', userForAttempt);
+          appState.githubUsername = userForAttempt;
+        }
+
         saveFailedAttempt({
           username: userForAttempt,
-          type: 'api_down',
+          type: 'api_down_temp_access',
+          targetCard: 'subcard1',
           failedTime: Date.now(),
           resetTime: Date.now() + 30 * 60 * 1000,
           retryAfterMinutes: 30
         });
+
+        populateBuilderInputs();
+        renderSubCardPanel();
+        renderSubCardPanel2();
+        updatePreview();
+        updateShareUrl();
+
         if (statusDiv) {
-          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.innerHTML = `⚠️ GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold text-blue-500 hover:text-blue-600">githubstatus.com</a>.`;
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-warning';
+          statusDiv.innerHTML = `⚠️ GitHub API is currently down. Temporary 30-minute access granted to Sub-card 1 features!\nPlease check status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.`;
         }
+
+        showToast('GitHub API down: Temporary 30-min access granted to Sub-card 1!', 'bolt');
+
+        setTimeout(() => {
+          closeStarModal();
+        }, 2500);
       } else {
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
@@ -850,17 +871,40 @@
           statusDiv.innerHTML = `⚠️ API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
         }
       } else if (err.isApiDown) {
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+        isSubcard2Unlocked = true;
+        localStorage.setItem('justalink_subcard2_unlocked', 'true');
+        if (userForAttempt) {
+          localStorage.setItem('justalink_github_username', userForAttempt);
+          appState.githubUsername = userForAttempt;
+        }
+
         saveFailedAttempt({
           username: userForAttempt,
-          type: 'api_down',
+          type: 'api_down_temp_access',
+          targetCard: 'subcard2',
           failedTime: Date.now(),
           resetTime: Date.now() + 30 * 60 * 1000,
           retryAfterMinutes: 30
         });
+
+        populateBuilderInputs();
+        renderSubCardPanel();
+        renderSubCardPanel2();
+        updatePreview();
+        updateShareUrl();
+
         if (statusDiv) {
-          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.innerHTML = `⚠️ GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold text-blue-500 hover:text-blue-600">githubstatus.com</a>.`;
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-warning';
+          statusDiv.innerHTML = `⚠️ GitHub API is currently down. Temporary 30-minute access granted to all features!\nPlease check status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.`;
         }
+
+        showToast('GitHub API down: Temporary 30-min access granted to all features!', 'bolt');
+
+        setTimeout(() => {
+          closeStarFollowModal();
+        }, 2500);
       } else {
         if (statusDiv) {
           statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
@@ -2705,9 +2749,10 @@
       }
       const data = {
         username: username,
-        type: attemptInfo.type, // 'rate_limit' | 'api_down'
+        type: attemptInfo.type, // 'rate_limit' | 'api_down' | 'api_down_temp_access'
+        targetCard: attemptInfo.targetCard || 'subcard2',
         failedTime: attemptInfo.failedTime || Date.now(),
-        resetTime: attemptInfo.resetTime || (Date.now() + (attemptInfo.type === 'api_down' ? 30 * 60 * 1000 : (attemptInfo.minutesLeft || 60) * 60 * 1000)),
+        resetTime: attemptInfo.resetTime || (Date.now() + (attemptInfo.type.startsWith('api_down') ? 30 * 60 * 1000 : (attemptInfo.minutesLeft || 60) * 60 * 1000)),
         minutesLeft: attemptInfo.minutesLeft || null
       };
       localStorage.setItem('justalink_failed_verify_attempt', JSON.stringify(data));
@@ -2733,13 +2778,13 @@
   }
 
   async function performAutoCheckOnPageLoad() {
-    if (isSubcardUnlocked && isSubcard2Unlocked) {
+    const attempt = getSavedFailedAttempt();
+    if (!attempt) return;
+
+    if (isSubcardUnlocked && isSubcard2Unlocked && attempt.type !== 'api_down_temp_access' && attempt.type !== 'api_down') {
       clearSavedFailedAttempt();
       return;
     }
-
-    const attempt = getSavedFailedAttempt();
-    if (!attempt) return;
 
     let savedUser = attempt.username;
     if (!savedUser) {
@@ -2750,35 +2795,26 @@
     if (!savedUser) return;
 
     const now = Date.now();
-    const resetTime = attempt.resetTime || (attempt.failedTime + (attempt.type === 'api_down' ? 30 * 60 * 1000 : 60 * 60 * 1000));
+    const resetTime = attempt.resetTime || (attempt.failedTime + (attempt.type === 'api_down_temp_access' ? 30 * 60 * 1000 : 60 * 60 * 1000));
 
     if (now < resetTime) {
-      // Quota reset or 30-min retry time has not passed yet
+      // Temporary 30-min window or rate limit reset time has not passed yet
       return;
     }
 
-    // Silent auto-check: DO NOT SHOW ANY DIALOG IF IT FAILS
+    // Auto-check time elapsed! Try auto-verification
     try {
       const cleanUser = validateGitHubUsername(savedUser);
       const result = await checkIfUserStarredAndFollowed(cleanUser);
 
-      let newlyUnlocked = false;
-
-      if (result.hasStarred) {
-        if (!isSubcardUnlocked) newlyUnlocked = true;
+      if (result.hasDoneBoth) {
+        // Star & Follow verified: Grant permanent full access
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
-      }
-
-      if (result.hasDoneBoth) {
-        if (!isSubcard2Unlocked) newlyUnlocked = true;
         isSubcard2Unlocked = true;
         localStorage.setItem('justalink_subcard2_unlocked', 'true');
-        isSubcardUnlocked = true;
-        localStorage.setItem('justalink_subcard_unlocked', 'true');
-      }
+        clearSavedFailedAttempt();
 
-      if (newlyUnlocked) {
         try { localStorage.setItem('justalink_github_username', cleanUser); } catch (e) {}
         try { if (appState) appState.githubUsername = cleanUser; } catch (e) {}
         try { populateBuilderInputs(); } catch (e) {}
@@ -2786,15 +2822,71 @@
         try { renderSubCardPanel2(); } catch (e) {}
         try { updatePreview(); } catch (e) {}
         try { updateShareUrl(); } catch (e) {}
-        try { showToast('GitHub verification auto-checked! Features unlocked.', 'check'); } catch (e) {}
-      }
+        try { showToast('GitHub star & follow verified! Permanent access granted.', 'check'); } catch (e) {}
 
-      if (result.hasDoneBoth || result.hasStarred) {
+      } else if (result.hasStarred) {
+        // Star only: Grant Sub-card 1, Revoke Sub-card 2
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+        isSubcard2Unlocked = false;
+        localStorage.setItem('justalink_subcard2_unlocked', 'false');
         clearSavedFailedAttempt();
+
+        if (appState) {
+          appState.banner = '';
+          appState.footerUrl = '';
+        }
+        try { localStorage.setItem('justalink_github_username', cleanUser); } catch (e) {}
+        try { populateBuilderInputs(); } catch (e) {}
+        try { renderSubCardPanel(); } catch (e) {}
+        try { renderSubCardPanel2(); } catch (e) {}
+        try { updatePreview(); } catch (e) {}
+        try { updateShareUrl(); } catch (e) {}
+        try { showToast('Verification incomplete: Follow @jaival-11 required to access all features.', 'warning'); } catch (e) {}
+
+      } else {
+        // Follow only or Neither: Revoke all access!
+        isSubcardUnlocked = false;
+        localStorage.setItem('justalink_subcard_unlocked', 'false');
+        isSubcard2Unlocked = false;
+        localStorage.setItem('justalink_subcard2_unlocked', 'false');
+        clearSavedFailedAttempt();
+
+        if (appState) {
+          appState.banner = '';
+          appState.footerUrl = '';
+          appState.customFooter = '';
+          appState.disableFooter = false;
+          appState.disableFooterLink = false;
+        }
+        try { populateBuilderInputs(); } catch (e) {}
+        try { renderSubCardPanel(); } catch (e) {}
+        try { renderSubCardPanel2(); } catch (e) {}
+        try { updatePreview(); } catch (e) {}
+        try { updateShareUrl(); } catch (e) {}
+        try { showToast('Temporary access expired. Please complete GitHub verification to access all features.', 'warning'); } catch (e) {}
       }
     } catch (err) {
-      // CRITICAL: "If verification fails do not show any dialog."
-      if (err.isRateLimit) {
+      // Verification failed during auto-check
+      if (err.isApiDown) {
+        // GitHub API is STILL down! Extend temporary 30-minute access for targeted card!
+        const cardTarget = attempt.targetCard || 'subcard2';
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+        if (cardTarget === 'subcard2') {
+          isSubcard2Unlocked = true;
+          localStorage.setItem('justalink_subcard2_unlocked', 'true');
+        }
+
+        saveFailedAttempt({
+          username: savedUser,
+          type: 'api_down_temp_access',
+          targetCard: cardTarget,
+          failedTime: Date.now(),
+          resetTime: Date.now() + 30 * 60 * 1000,
+          retryAfterMinutes: 30
+        });
+      } else if (err.isRateLimit) {
         saveFailedAttempt({
           username: savedUser,
           type: 'rate_limit',
@@ -2802,15 +2894,8 @@
           resetTime: err.resetTime,
           minutesLeft: err.minutesLeft
         });
-      } else if (err.isApiDown) {
-        saveFailedAttempt({
-          username: savedUser,
-          type: 'api_down',
-          failedTime: Date.now(),
-          resetTime: Date.now() + 30 * 60 * 1000
-        });
       }
-      // Silent failure, no modal dialog shown!
+      // Silent failure, no modal error dialog shown!
     }
   }
 
@@ -2852,6 +2937,9 @@
 
     while (true) {
       const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/starred?per_page=${perPage}&page=${page}`;
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        throw new Error('You appear to be offline. Please connect to the internet to verify your GitHub account.');
+      }
       let response;
       try {
         response = await fetch(url, { headers: GITHUB_HEADERS });
@@ -2908,6 +2996,9 @@
     const cleanUsername = validateGitHubUsername(username);
 
     const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/following/${GITHUB_TARGET_OWNER}`;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      throw new Error('You appear to be offline. Please connect to the internet to verify your GitHub account.');
+    }
     let response;
     try {
       response = await fetch(url, { headers: GITHUB_HEADERS });
