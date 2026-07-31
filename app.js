@@ -2266,6 +2266,7 @@
       viewWatermarkLink.removeAttribute('href');
       viewWatermarkLink.removeAttribute('target');
       viewWatermarkLink.removeAttribute('rel');
+      viewWatermarkLink.removeAttribute('title');
       viewWatermarkLink.classList.add('cursor-default', 'no-underline');
       viewWatermarkLink.classList.remove('cursor-pointer', 'underline');
       viewWatermarkLink.onclick = (e) => { e.preventDefault(); };
@@ -2274,6 +2275,7 @@
       viewWatermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink?ref=footer';
       viewWatermarkLink.target = '_blank';
       viewWatermarkLink.rel = 'noopener noreferrer';
+      viewWatermarkLink.setAttribute('title', customUrl ? 'Visit footer URL' : 'Create your own zero-database link-in-bio page');
       viewWatermarkLink.classList.remove('cursor-default', 'no-underline');
       viewWatermarkLink.classList.add('cursor-pointer', 'underline');
       viewWatermarkLink.onclick = null;
