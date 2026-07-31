@@ -2899,11 +2899,13 @@
     if (!modal) return;
 
     const titleEl = document.getElementById('auto-check-failed-title');
+    const descEl = document.getElementById('auto-check-failed-desc');
     const messageEl = document.getElementById('auto-check-failed-message');
     const verifyBtn = document.getElementById('btn-auto-check-verify');
     const continueBtn = document.getElementById('btn-auto-check-continue');
 
     if (titleEl && options.title) titleEl.innerHTML = `<span>${options.title}</span>`;
+    if (descEl && options.description) descEl.textContent = options.description;
     if (messageEl && options.message) messageEl.innerHTML = options.message;
     if (verifyBtn && options.verifyBtnText) verifyBtn.textContent = options.verifyBtnText;
     if (continueBtn && options.continueBtnText) continueBtn.textContent = options.continueBtnText;
