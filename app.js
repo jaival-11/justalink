@@ -5,7 +5,6 @@
 
 (function () {
   'use strict';
-
   // --- Available Flat Color Themes ---
   const THEMES = [
     { id: 'slate', name: 'Slate Dark', bg: 'bg-slate-900', text: 'text-slate-100', border: 'border-slate-700', accent: 'bg-slate-500' },
@@ -51,6 +50,47 @@
   };
 
   let appState = JSON.parse(JSON.stringify(defaultState));
+
+  // --- Analytics Event Queue & Safe Dispatcher ---
+  window.umamiQueue = window.umamiQueue || [];
+
+  function dispatchUmami(eventName, eventData) {
+    if (!window.umami || typeof window.umami.track !== 'function') return;
+    if (eventName === 'pageview') {
+      const url = (eventData && eventData.url) || '/';
+      const title = (eventData && eventData.title) || document.title;
+      window.umami.track((props) => ({ ...props, url, title }));
+    } else if (eventName) {
+      window.umami.track(eventName, eventData);
+    } else {
+      window.umami.track((props) => ({ ...props, url: '/', title: document.title }));
+    }
+  }
+
+  function trackUmamiEvent(eventName, eventData) {
+    if (window.umami && typeof window.umami.track === 'function') {
+      while (window.umamiQueue.length > 0) {
+        const queued = window.umamiQueue.shift();
+        dispatchUmami(queued.name, queued.data);
+      }
+      dispatchUmami(eventName, eventData);
+    } else {
+      window.umamiQueue.push({ name: eventName, data: eventData });
+    }
+  }
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('load', () => {
+      if (window.umami && window.umamiQueue && window.umamiQueue.length > 0) {
+        while (window.umamiQueue.length > 0) {
+          const queued = window.umamiQueue.shift();
+          dispatchUmami(queued.name, queued.data);
+        }
+      }
+    });
+  }
+
+  window.trackUmamiEvent = trackUmamiEvent;
 
   // --- Custom Theme & Sub-Card Unlock Feature State ---
   let isCustomUnlocked = localStorage.getItem('justalink_custom_colors_unlocked') === 'true';
@@ -2045,7 +2085,7 @@
     } else {
       const activeFooterUrl = isSubcard2Unlocked ? (appState.footerUrl || '') : '';
       const customUrl = (activeFooterUrl && activeFooterUrl.trim()) ? sanitizeUrl(activeFooterUrl) : null;
-      watermarkLink.href = customUrl || (window.location.origin + window.location.pathname);
+      watermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink?ref=footer';
       watermarkLink.target = '_blank';
       watermarkLink.rel = 'noopener noreferrer';
       watermarkLink.setAttribute('title', customUrl ? 'Visit footer URL' : 'Create your own zero-database link-in-bio page');
@@ -2230,7 +2270,7 @@
       viewWatermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
       const customUrl = (data.footerUrl && String(data.footerUrl).trim()) ? sanitizeUrl(data.footerUrl) : null;
-      viewWatermarkLink.href = customUrl || (window.location.origin + window.location.pathname);
+      viewWatermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink?ref=footer';
       viewWatermarkLink.target = '_blank';
       viewWatermarkLink.rel = 'noopener noreferrer';
       viewWatermarkLink.classList.remove('cursor-default', 'no-underline');
@@ -2305,6 +2345,8 @@
     });
   }
 
+  let previousRouteWasHashData = false;
+
   // --- Router Logic ---
   function handleRoute() {
     const hash = window.location.hash;
@@ -2314,6 +2356,11 @@
       const decodedData = decodeData(base64Str);
 
       if (decodedData) {
+        previousRouteWasHashData = true;
+        // Track pageview for /view (aggregate profile view - strictly no user payload data passed!)
+        trackUmamiEvent('pageview', { url: '/view', title: `${decodedData.name || 'Profile'} | JustALink` });
+        
+
         const tag = decodedData.tag || 'v1.0';
         // Show View Mode: Hide Header Banner completely per user requirement
         if (mainHeader) mainHeader.classList.add('hidden');
@@ -2323,10 +2370,27 @@
         document.title = `${decodedData.name || 'Profile'} | JustALink`;
         return;
       } else {
+        trackUmamiEvent('corrupted_hash_arrival');
         showToast('Invalid or corrupted link. Loading Builder Mode.', 'warning');
         window.location.hash = '';
       }
     }
+
+    if (previousRouteWasHashData) {
+      trackUmamiEvent('hash_removal_traffic');
+      previousRouteWasHashData = false;
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('ref') === 'footer') {
+      searchParams.delete('ref');
+      const newSearch = searchParams.toString();
+      const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + window.location.hash;
+      window.history.replaceState(null, '', newUrl);
+    }
+
+    // Log Native Pageview for Homepage (url: '/')
+    trackUmamiEvent('pageview', { url: '/', title: 'JustALink - Zero-Database Hash Bio Link Builder' });
 
     // Default: Show Builder Mode & Top Header Banner
     if (mainHeader) mainHeader.classList.remove('hidden');
@@ -2339,13 +2403,19 @@
   // --- Event Listeners Initialization ---
 
   function initEvents() {
-    // Delegated click listener for Restore button (header)
+    // Delegated click listener for Restore button (header) and Open Preview button
     document.addEventListener('click', (e) => {
       const btnRestore = e.target.closest('#btn-restore-url');
       if (btnRestore) {
         e.preventDefault();
+        trackUmamiEvent('restore_click');
         openRestoreModal();
         return;
+      }
+
+      const btnPreview = e.target.closest('#btn-open-preview');
+      if (btnPreview) {
+        trackUmamiEvent('open_preview_link');
       }
 
       const btnClose = e.target.closest('#btn-close-restore-modal');
@@ -2557,6 +2627,7 @@
       try {
         const result = await processRestoreInput(val);
         if (result && result.success) {
+          sessionStorage.setItem('justalink_is_restored', 'true');
           if (!result.pendingModal) {
             closeRestoreModal();
             showToast('Profile restored successfully!', 'check');
@@ -2683,6 +2754,9 @@
     btnCopyUrl.addEventListener('click', () => {
       const shareUrl = outputShareUrl.value;
       if (!shareUrl) return;
+
+      const isRestored = sessionStorage.getItem('justalink_is_restored') === 'true';
+      trackUmamiEvent('copy_link', { profile_type: isRestored ? 'restored' : 'new' });
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(shareUrl).then(() => {
@@ -3265,6 +3339,9 @@
   window.getLastVerifiedTime = getLastVerifiedTime;
   window.openAutoCheckFailedModal = openAutoCheckFailedModal;
   window.closeAutoCheckFailedModal = closeAutoCheckFailedModal;
+  window.renderViewMode = renderViewMode;
+  window.updatePreview = updatePreview;
+  window.setSubcardState = (s1, s2) => { isSubcardUnlocked = s1; isSubcard2Unlocked = s2; };
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
