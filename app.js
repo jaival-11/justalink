@@ -548,6 +548,7 @@
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         localStorage.setItem('justalink_github_username', cleanUser);
+        saveLastVerifiedTime();
         clearSavedFailedAttempt();
         if (pendingRestoredState) {
           pendingRestoredState.githubUsername = cleanUser;
@@ -788,6 +789,7 @@
         localStorage.setItem('justalink_subcard2_unlocked', 'true');
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
+        saveLastVerifiedTime();
         clearSavedFailedAttempt();
 
         if (pendingRestoredState) {
@@ -819,6 +821,7 @@
         if (result.hasStarred) {
           isSubcardUnlocked = true;
           localStorage.setItem('justalink_subcard_unlocked', 'true');
+          saveLastVerifiedTime();
         } else {
           isSubcardUnlocked = false;
           localStorage.setItem('justalink_subcard_unlocked', 'false');
@@ -1068,6 +1071,7 @@
             localStorage.setItem('justalink_subcard2_unlocked', 'true');
             isSubcardUnlocked = true;
             localStorage.setItem('justalink_subcard_unlocked', 'true');
+            saveLastVerifiedTime();
             appState = candidateState;
             populateBuilderInputs();
             renderSubCardPanel();
@@ -1142,6 +1146,7 @@
           if (hasStarred) {
             isSubcardUnlocked = true;
             localStorage.setItem('justalink_subcard_unlocked', 'true');
+            saveLastVerifiedTime();
             appState = candidateState;
             populateBuilderInputs();
             renderSubCardPanel();
@@ -2429,6 +2434,26 @@
         return;
       }
 
+      const btnAutoCheckVerify = e.target.closest('#btn-auto-check-verify');
+      if (btnAutoCheckVerify) {
+        e.preventDefault();
+        const autoModal = document.getElementById('auto-check-failed-modal');
+        const cb = autoModal ? autoModal._onVerifyAgain : null;
+        closeAutoCheckFailedModal();
+        if (cb) cb();
+        return;
+      }
+
+      const btnAutoCheckContinue = e.target.closest('#btn-auto-check-continue');
+      if (btnAutoCheckContinue) {
+        e.preventDefault();
+        const autoModal = document.getElementById('auto-check-failed-modal');
+        const cb = autoModal ? autoModal._onContinueWithout : null;
+        closeAutoCheckFailedModal();
+        if (cb) cb();
+        return;
+      }
+
       const modal = document.getElementById('restore-modal');
       if (modal && e.target === modal) {
         closeRestoreModal();
@@ -2777,110 +2802,233 @@
     } catch (e) {}
   }
 
-  async function performAutoCheckOnPageLoad() {
-    const attempt = getSavedFailedAttempt();
-    if (!attempt) return;
-
-    if (isSubcardUnlocked && isSubcard2Unlocked && attempt.type !== 'api_down_temp_access' && attempt.type !== 'api_down') {
-      clearSavedFailedAttempt();
-      return;
-    }
-
-    let savedUser = attempt.username;
-    if (!savedUser) {
-      try {
-        savedUser = localStorage.getItem('justalink_github_username');
-      } catch (e) {}
-    }
-    if (!savedUser) return;
-
-    const now = Date.now();
-    const resetTime = attempt.resetTime || (attempt.failedTime + (attempt.type === 'api_down_temp_access' ? 30 * 60 * 1000 : 60 * 60 * 1000));
-
-    if (now < resetTime) {
-      // Temporary 30-min window or rate limit reset time has not passed yet
-      return;
-    }
-
-    // Auto-check time elapsed! Try auto-verification
+  function saveLastVerifiedTime(time = Date.now()) {
     try {
-      const cleanUser = validateGitHubUsername(savedUser);
-      const result = await checkIfUserStarredAndFollowed(cleanUser);
+      localStorage.setItem('justalink_last_verified_at', time.toString());
+    } catch (e) {}
+  }
 
-      if (result.hasDoneBoth) {
-        // Star & Follow verified: Grant permanent full access
-        isSubcardUnlocked = true;
-        localStorage.setItem('justalink_subcard_unlocked', 'true');
-        isSubcard2Unlocked = true;
-        localStorage.setItem('justalink_subcard2_unlocked', 'true');
-        clearSavedFailedAttempt();
+  function getLastVerifiedTime() {
+    try {
+      const val = localStorage.getItem('justalink_last_verified_at');
+      return val ? parseInt(val, 10) : null;
+    } catch (e) {
+      return null;
+    }
+  }
 
-        try { localStorage.setItem('justalink_github_username', cleanUser); } catch (e) {}
-        try { if (appState) appState.githubUsername = cleanUser; } catch (e) {}
-        try { populateBuilderInputs(); } catch (e) {}
-        try { renderSubCardPanel(); } catch (e) {}
-        try { renderSubCardPanel2(); } catch (e) {}
-        try { updatePreview(); } catch (e) {}
-        try { updateShareUrl(); } catch (e) {}
-        try { showToast('GitHub star & follow verified! Permanent access granted.', 'check'); } catch (e) {}
+  function openAutoCheckFailedModal(options) {
+    const modal = document.getElementById('auto-check-failed-modal');
+    if (!modal) return;
 
-      } else if (result.hasStarred) {
-        // Star only: Grant Sub-card 1, Revoke Sub-card 2
-        isSubcardUnlocked = true;
-        localStorage.setItem('justalink_subcard_unlocked', 'true');
-        isSubcard2Unlocked = false;
-        localStorage.setItem('justalink_subcard2_unlocked', 'false');
-        clearSavedFailedAttempt();
+    const titleEl = document.getElementById('auto-check-failed-title');
+    const messageEl = document.getElementById('auto-check-failed-message');
+    const verifyBtn = document.getElementById('btn-auto-check-verify');
+    const continueBtn = document.getElementById('btn-auto-check-continue');
 
-        if (appState) {
-          appState.banner = '';
-          appState.footerUrl = '';
+    if (titleEl && options.title) titleEl.innerHTML = `<span>${options.title}</span>`;
+    if (messageEl && options.message) messageEl.innerHTML = options.message;
+    if (verifyBtn && options.verifyBtnText) verifyBtn.textContent = options.verifyBtnText;
+    if (continueBtn && options.continueBtnText) continueBtn.textContent = options.continueBtnText;
+
+    modal._onVerifyAgain = options.onVerifyAgain;
+    modal._onContinueWithout = options.onContinueWithout;
+
+    modal.classList.remove('hidden');
+  }
+
+  function closeAutoCheckFailedModal() {
+    const modal = document.getElementById('auto-check-failed-modal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  let isAutoChecking = false;
+
+  async function performAutoCheckOnPageLoad() {
+    if (isAutoChecking) return;
+    isAutoChecking = true;
+
+    let attempt = null;
+    let savedUser = '';
+
+    try {
+      attempt = getSavedFailedAttempt();
+
+      // Auto-check should be performed for unlocked sub-cards or pending temp access retries
+      if (!isSubcardUnlocked && !isSubcard2Unlocked && (!attempt || attempt.type !== 'api_down_temp_access')) return;
+
+      savedUser = (attempt && attempt.username) || localStorage.getItem('justalink_github_username');
+      if (!savedUser && appState) savedUser = appState.githubUsername;
+      if (!savedUser) return;
+
+      const now = Date.now();
+
+      if (attempt) {
+        const resetTime = attempt.resetTime || (attempt.failedTime + (attempt.type.startsWith('api_down') ? 30 * 60 * 1000 : 60 * 60 * 1000));
+        if (now < resetTime) {
+          // Still within retry delay (30 mins for api_down or rate_limit reset time)
+          return;
         }
-        try { localStorage.setItem('justalink_github_username', cleanUser); } catch (e) {}
-        try { populateBuilderInputs(); } catch (e) {}
-        try { renderSubCardPanel(); } catch (e) {}
-        try { renderSubCardPanel2(); } catch (e) {}
-        try { updatePreview(); } catch (e) {}
-        try { updateShareUrl(); } catch (e) {}
-        try { showToast('Verification incomplete: Follow @jaival-11 required to access all features.', 'warning'); } catch (e) {}
-
       } else {
-        // Follow only or Neither: Revoke all access!
-        isSubcardUnlocked = false;
-        localStorage.setItem('justalink_subcard_unlocked', 'false');
-        isSubcard2Unlocked = false;
-        localStorage.setItem('justalink_subcard2_unlocked', 'false');
-        clearSavedFailedAttempt();
-
-        if (appState) {
-          appState.banner = '';
-          appState.footerUrl = '';
-          appState.customFooter = '';
-          appState.disableFooter = false;
-          appState.disableFooterLink = false;
+        const lastVerified = getLastVerifiedTime();
+        const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+        if (lastVerified && (now - lastVerified < TWO_HOURS_MS)) {
+          // 2 hours have not passed since last verified state
+          return;
         }
-        try { populateBuilderInputs(); } catch (e) {}
-        try { renderSubCardPanel(); } catch (e) {}
-        try { renderSubCardPanel2(); } catch (e) {}
-        try { updatePreview(); } catch (e) {}
-        try { updateShareUrl(); } catch (e) {}
-        try { showToast('Temporary access expired. Please complete GitHub verification to access all features.', 'warning'); } catch (e) {}
       }
-    } catch (err) {
-      // Verification failed during auto-check
-      if (err.isApiDown) {
-        // GitHub API is STILL down! Extend temporary 30-minute access for targeted card!
-        const cardTarget = attempt.targetCard || 'subcard2';
-        isSubcardUnlocked = true;
-        localStorage.setItem('justalink_subcard_unlocked', 'true');
-        if (cardTarget === 'subcard2') {
+
+      // Auto-check time reached! Perform verification API request
+      const cleanUser = validateGitHubUsername(savedUser);
+
+      if (isSubcard2Unlocked || (attempt && attempt.targetCard === 'subcard2')) {
+        // Sub-card 2 unlock - check if user starred and followed
+        const result = await checkIfUserStarredAndFollowed(cleanUser);
+        if (result.hasDoneBoth) {
           isSubcard2Unlocked = true;
           localStorage.setItem('justalink_subcard2_unlocked', 'true');
-        }
+          isSubcardUnlocked = true;
+          localStorage.setItem('justalink_subcard_unlocked', 'true');
+          saveLastVerifiedTime(now);
+          clearSavedFailedAttempt();
+        } else if (attempt && attempt.type === 'api_down_temp_access') {
+          if (result.hasStarred) {
+            isSubcardUnlocked = true;
+            localStorage.setItem('justalink_subcard_unlocked', 'true');
+            isSubcard2Unlocked = false;
+            localStorage.setItem('justalink_subcard2_unlocked', 'false');
+            clearSavedFailedAttempt();
+            if (appState) {
+              appState.banner = '';
+              appState.footerUrl = '';
+            }
+            populateBuilderInputs();
+            renderSubCardPanel();
+            renderSubCardPanel2();
+            updatePreview();
+            updateShareUrl();
+            showToast('Verification incomplete: Follow @jaival-11 required to access all features.', 'warning');
+          } else {
+            isSubcardUnlocked = false;
+            localStorage.setItem('justalink_subcard_unlocked', 'false');
+            isSubcard2Unlocked = false;
+            localStorage.setItem('justalink_subcard2_unlocked', 'false');
+            clearSavedFailedAttempt();
+            if (appState) {
+              appState.banner = '';
+              appState.footerUrl = '';
+              appState.customFooter = '';
+              appState.disableFooter = false;
+              appState.disableFooterLink = false;
+            }
+            populateBuilderInputs();
+            renderSubCardPanel();
+            renderSubCardPanel2();
+            updatePreview();
+            updateShareUrl();
+            showToast('Temporary access expired. Please complete GitHub verification to access all features.', 'warning');
+          }
+        } else {
+          clearSavedFailedAttempt();
+          const unstarred = !result.hasStarred;
+          const unfollowed = !result.isFollowing;
+          let actionUndidStr = '';
+          if (unstarred && unfollowed) {
+            actionUndidStr = 'unstarred the repository <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> and unfollowed <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>';
+          } else if (unstarred) {
+            actionUndidStr = 'unstarred the repository <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code>';
+          } else if (unfollowed) {
+            actionUndidStr = 'unfollowed <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">@jaival-11</code>';
+          }
 
+          openAutoCheckFailedModal({
+            title: '⚠️ Verification Status Changed',
+            message: `You have ${actionUndidStr} on GitHub.<br><br>Customization Sub-Card 2 features are now locked.`,
+            verifyBtnText: 'Verify again',
+            continueBtnText: 'Continue without those features',
+            onVerifyAgain: () => {
+              openStarFollowModal(result);
+            },
+            onContinueWithout: () => {
+              isSubcard2Unlocked = false;
+              localStorage.setItem('justalink_subcard2_unlocked', 'false');
+              if (unstarred) {
+                isSubcardUnlocked = false;
+                localStorage.setItem('justalink_subcard_unlocked', 'false');
+              }
+              if (appState) {
+                appState.banner = '';
+                appState.footerUrl = '';
+                if (unstarred) {
+                  appState.customFooter = '';
+                  appState.disableFooter = false;
+                  appState.disableFooterLink = false;
+                }
+              }
+              populateBuilderInputs();
+              renderSubCardPanel();
+              renderSubCardPanel2();
+              updatePreview();
+              updateShareUrl();
+            }
+          });
+        }
+      } else if (isSubcardUnlocked) {
+        // Sub-card 1 unlock - check if user starred
+        const hasStarred = await checkIfUserStarred(cleanUser);
+        if (hasStarred) {
+          isSubcardUnlocked = true;
+          localStorage.setItem('justalink_subcard_unlocked', 'true');
+          saveLastVerifiedTime(now);
+          clearSavedFailedAttempt();
+        } else if (attempt && attempt.type === 'api_down_temp_access') {
+          isSubcardUnlocked = false;
+          localStorage.setItem('justalink_subcard_unlocked', 'false');
+          clearSavedFailedAttempt();
+          if (appState) {
+            appState.customFooter = '';
+            appState.disableFooter = false;
+            appState.disableFooterLink = false;
+          }
+          populateBuilderInputs();
+          renderSubCardPanel();
+          renderSubCardPanel2();
+          updatePreview();
+          updateShareUrl();
+          showToast('Temporary access expired. Please complete GitHub verification to access all features.', 'warning');
+        } else {
+          clearSavedFailedAttempt();
+          openAutoCheckFailedModal({
+            title: '⚠️ Verification Status Changed',
+            message: `You have unstarred the repository <code class="modal-code font-mono font-semibold px-1.5 py-0.5 rounded">jaival-11/justalink</code> on GitHub.<br><br>Customization Sub-Card 1 features are now locked.`,
+            verifyBtnText: 'Verify again',
+            continueBtnText: 'Continue without those features',
+            onVerifyAgain: () => {
+              openStarModal();
+            },
+            onContinueWithout: () => {
+              isSubcardUnlocked = false;
+              localStorage.setItem('justalink_subcard_unlocked', 'false');
+              if (appState) {
+                appState.customFooter = '';
+                appState.disableFooter = false;
+                appState.disableFooterLink = false;
+              }
+              populateBuilderInputs();
+              renderSubCardPanel();
+              renderSubCardPanel2();
+              updatePreview();
+              updateShareUrl();
+            }
+          });
+        }
+      }
+    } catch (err) {
+      if (err.isApiDown) {
+        const cardTarget = (attempt && attempt.targetCard) || (isSubcard2Unlocked ? 'subcard2' : 'subcard1');
         saveFailedAttempt({
           username: savedUser,
-          type: 'api_down_temp_access',
+          type: (attempt && attempt.type === 'api_down_temp_access') ? 'api_down_temp_access' : 'api_down',
           targetCard: cardTarget,
           failedTime: Date.now(),
           resetTime: Date.now() + 30 * 60 * 1000,
@@ -2895,7 +3043,8 @@
           minutesLeft: err.minutesLeft
         });
       }
-      // Silent failure, no modal error dialog shown!
+    } finally {
+      isAutoChecking = false;
     }
   }
 
@@ -3084,6 +3233,10 @@
     getSavedFailedAttempt,
     clearSavedFailedAttempt,
     performAutoCheckOnPageLoad,
+    saveLastVerifiedTime,
+    getLastVerifiedTime,
+    openAutoCheckFailedModal,
+    closeAutoCheckFailedModal,
   };
   window.encodeData = encodeData;
   window.decodeData = decodeData;
@@ -3108,6 +3261,10 @@
   window.getSavedFailedAttempt = getSavedFailedAttempt;
   window.clearSavedFailedAttempt = clearSavedFailedAttempt;
   window.performAutoCheckOnPageLoad = performAutoCheckOnPageLoad;
+  window.saveLastVerifiedTime = saveLastVerifiedTime;
+  window.getLastVerifiedTime = getLastVerifiedTime;
+  window.openAutoCheckFailedModal = openAutoCheckFailedModal;
+  window.closeAutoCheckFailedModal = closeAutoCheckFailedModal;
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
@@ -3118,4 +3275,5 @@
   });
 
 })();
+
 
