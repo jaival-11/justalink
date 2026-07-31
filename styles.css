@@ -9,6 +9,16 @@
   background-image: none !important;
 }
 
+/* Typography & Font Definitions */
+body {
+  font-family: 'Google Sans Flex', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#view-mode,
+#preview-card-frame {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 /* Custom Scrollbar for clean aesthetics */
 ::-webkit-scrollbar {
   width: 6px;

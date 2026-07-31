@@ -13,10 +13,10 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Google Sans Flex & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css?v=1.1.1" />
 
@@ -36,7 +36,8 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
+            sans: ['"Google Sans Flex"', 'Inter', 'sans-serif'],
+            profile: ['Inter', 'sans-serif'],
           },
         },
       },
@@ -348,7 +349,7 @@
             </div>
 
             <!-- Preview Card Container Frame -->
-            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-xl border transition-all duration-300 relative overflow-hidden" id="preview-card-frame">
+            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-xl border transition-all duration-300 relative overflow-hidden font-profile" id="preview-card-frame">
               
               <!-- Banner Image Container -->
               <div id="preview-banner-container" class="relative -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 mb-4 h-28 sm:h-32 overflow-hidden rounded-t-xl hidden">
@@ -424,7 +425,7 @@
     </section>
 
     <!-- VIEW MODE UI (Full Screen / Standalone Profile View - No top header banner) -->
-    <section id="view-mode" class="hidden min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6">
+    <section id="view-mode" class="hidden min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 font-profile">
       <div id="view-card-container" class="w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto relative overflow-hidden">
         
         <!-- View Mode Banner Container -->

@@ -1961,7 +1961,7 @@
       const accent = appState.customAccent || '#10b981';
       const textColor = getContrastTextColor(bg);
 
-      previewFrame.className = 'w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300';
+      previewFrame.className = 'w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 font-profile';
       previewFrame.style.backgroundColor = bg;
       previewFrame.style.color = textColor;
       previewFrame.style.borderColor = accent;
@@ -1971,7 +1971,7 @@
       previewFrame.style.color = '';
       previewFrame.style.borderColor = '';
       if (previewMessage) previewMessage.style.borderColor = '';
-      previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 theme-${appState.theme}`;
+      previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 font-profile theme-${appState.theme}`;
     }
     
     // Name & Bio
