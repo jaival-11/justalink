@@ -99,10 +99,6 @@ body.builder-dark .builder-muted-btn:hover {
   background-color: #27272a;
   color: #ffffff;
 }
-body.builder-dark #brand-badge {
-  background-color: #ffffff;
-  color: #000000;
-}
 body.builder-dark .builder-footer {
   border-color: #27272a;
 }
@@ -140,10 +136,6 @@ body.builder-light .builder-muted-btn {
 body.builder-light .builder-muted-btn:hover {
   background-color: #d4d4d8;
   color: #000000;
-}
-body.builder-light #brand-badge {
-  background-color: #000000;
-  color: #ffffff;
 }
 body.builder-light .builder-footer {
   border-color: #e4e4e7;

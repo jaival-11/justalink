@@ -2397,13 +2397,13 @@
     }
 
     // Log Native Pageview for Homepage (url: '/')
-    trackUmamiEvent('pageview', { url: '/', title: 'JustALink - Zero-Database Hash Bio Link Builder' });
+    trackUmamiEvent('pageview', { url: '/', title: 'JustALink - The URL is all' });
 
     // Default: Show Builder Mode & Top Header Banner
     if (mainHeader) mainHeader.classList.remove('hidden');
     viewModeSec.classList.add('hidden');
     builderModeSec.classList.remove('hidden');
-    document.title = 'JustALink - Zero-Database Hash Bio Link Builder';
+    document.title = 'JustALink - The URL is all';
     populateBuilderInputs();
   }
 
