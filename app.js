@@ -548,6 +548,7 @@
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
         localStorage.setItem('justalink_github_username', cleanUser);
+        clearSavedFailedAttempt();
         if (pendingRestoredState) {
           pendingRestoredState.githubUsername = cleanUser;
           appState = pendingRestoredState;
@@ -578,9 +579,38 @@
         }
       }
     } catch (err) {
-      if (statusDiv) {
-        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-        statusDiv.textContent = `Error: ${err.message}`;
+      let userForAttempt = username;
+      try { userForAttempt = validateGitHubUsername(username); } catch (e) {}
+
+      if (err.isRateLimit) {
+        saveFailedAttempt({
+          username: userForAttempt,
+          type: 'rate_limit',
+          failedTime: Date.now(),
+          resetTime: err.resetTime,
+          minutesLeft: err.minutesLeft
+        });
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.innerHTML = `⚠️ API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
+        }
+      } else if (err.isApiDown) {
+        saveFailedAttempt({
+          username: userForAttempt,
+          type: 'api_down',
+          failedTime: Date.now(),
+          resetTime: Date.now() + 30 * 60 * 1000,
+          retryAfterMinutes: 30
+        });
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.innerHTML = `⚠️ GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold text-blue-500 hover:text-blue-600">githubstatus.com</a>.`;
+        }
+      } else {
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.textContent = `Error: ${err.message}`;
+        }
       }
     } finally {
       if (verifyBtn) verifyBtn.disabled = false;
@@ -737,6 +767,7 @@
         localStorage.setItem('justalink_subcard2_unlocked', 'true');
         isSubcardUnlocked = true;
         localStorage.setItem('justalink_subcard_unlocked', 'true');
+        clearSavedFailedAttempt();
 
         if (pendingRestoredState) {
           pendingRestoredState.githubUsername = cleanUser;
@@ -773,7 +804,12 @@
         }
 
         if (pendingRestoredState) {
-          applyRestoredWithoutSubcard2();
+          if (result.hasStarred) {
+            // Apply subcard 1 restored features, but lock subcard 2
+            applyRestoredWithoutSubcard2();
+          } else {
+            applyRestoredWithoutSubcard2();
+          }
         } else {
           appState.banner = '';
           appState.footerUrl = '';
@@ -785,19 +821,51 @@
         }
         updatePreview();
 
-        let missingActions = [];
-        if (!result.hasStarred) missingActions.push('star jaival-11/justalink');
-        if (!result.isFollowing) missingActions.push('follow @jaival-11');
-
         if (statusDiv) {
-          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-          statusDiv.textContent = `❌ Verification incomplete for user "${username}". Please ${missingActions.join(' and ')}.`;
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-warning';
+          if (result.hasStarred && !result.isFollowing) {
+            statusDiv.textContent = `⭐ Star verified! Sub-card 1 features unlocked for "${username}".\nPlease also follow @jaival-11 on GitHub to unlock Sub-card 2.`;
+            showToast('Sub-card 1 unlocked! Follow @jaival-11 to unlock Sub-card 2.', 'info');
+          } else if (!result.hasStarred && result.isFollowing) {
+            statusDiv.textContent = `❌ Follow detected, but star is required. Nothing unlocked for user "${username}".\nPlease star jaival-11/justalink on GitHub.`;
+          } else {
+            statusDiv.textContent = `❌ Verification incomplete for user "${username}". Please star jaival-11/justalink and follow @jaival-11.`;
+          }
         }
       }
     } catch (err) {
-      if (statusDiv) {
-        statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
-        statusDiv.textContent = `Error: ${err.message}`;
+      let userForAttempt = username;
+      try { userForAttempt = validateGitHubUsername(username); } catch (e) {}
+
+      if (err.isRateLimit) {
+        saveFailedAttempt({
+          username: userForAttempt,
+          type: 'rate_limit',
+          failedTime: Date.now(),
+          resetTime: err.resetTime,
+          minutesLeft: err.minutesLeft
+        });
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.innerHTML = `⚠️ API requests reached. Please try again in ${err.minutesLeft} minute${err.minutesLeft === 1 ? '' : 's'}.`;
+        }
+      } else if (err.isApiDown) {
+        saveFailedAttempt({
+          username: userForAttempt,
+          type: 'api_down',
+          failedTime: Date.now(),
+          resetTime: Date.now() + 30 * 60 * 1000,
+          retryAfterMinutes: 30
+        });
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.innerHTML = `⚠️ GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold text-blue-500 hover:text-blue-600">githubstatus.com</a>.`;
+        }
+      } else {
+        if (statusDiv) {
+          statusDiv.className = 'p-3 rounded-lg border text-xs font-mono verify-status-box verify-status-error';
+          statusDiv.textContent = `Error: ${err.message}`;
+        }
       }
     } finally {
       if (verifyBtn) verifyBtn.disabled = false;
@@ -2581,6 +2649,171 @@
     'User-Agent': 'JustALink-App',
   };
 
+  class GitHubRateLimitError extends Error {
+    constructor(minutesLeft, resetTime) {
+      const msg = `API requests reached. Please try again in ${minutesLeft} minute${minutesLeft === 1 ? '' : 's'}.`;
+      super(msg);
+      this.name = 'GitHubRateLimitError';
+      this.isRateLimit = true;
+      this.minutesLeft = minutesLeft;
+      this.resetTime = resetTime || (Date.now() + minutesLeft * 60 * 1000);
+    }
+  }
+
+  class GitHubApiDownError extends Error {
+    constructor(customMsg) {
+      const msg = customMsg || 'GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.';
+      super(msg);
+      this.name = 'GitHubApiDownError';
+      this.isApiDown = true;
+      this.retryAfterMinutes = 30;
+    }
+  }
+
+  function getRateLimitResetMinutes(response) {
+    const resetHeader = response && response.headers && response.headers.get('x-ratelimit-reset');
+    if (resetHeader) {
+      const resetTimeSec = parseInt(resetHeader, 10);
+      if (!isNaN(resetTimeSec) && resetTimeSec > 0) {
+        const resetMs = resetTimeSec * 1000;
+        const diffMs = resetMs - Date.now();
+        const diffMinutes = Math.ceil(diffMs / 60000);
+        return Math.max(1, diffMinutes);
+      }
+    }
+    return 60;
+  }
+
+  function getRateLimitResetTimestamp(response, minutesLeft) {
+    const resetHeader = response && response.headers && response.headers.get('x-ratelimit-reset');
+    if (resetHeader) {
+      const resetTimeSec = parseInt(resetHeader, 10);
+      if (!isNaN(resetTimeSec) && resetTimeSec > 0) {
+        return resetTimeSec * 1000;
+      }
+    }
+    return Date.now() + (minutesLeft || 60) * 60 * 1000;
+  }
+
+  function saveFailedAttempt(attemptInfo) {
+    try {
+      let username = attemptInfo.username || '';
+      if (!username) {
+        try {
+          username = localStorage.getItem('justalink_github_username') || '';
+        } catch (e) {}
+      }
+      const data = {
+        username: username,
+        type: attemptInfo.type, // 'rate_limit' | 'api_down'
+        failedTime: attemptInfo.failedTime || Date.now(),
+        resetTime: attemptInfo.resetTime || (Date.now() + (attemptInfo.type === 'api_down' ? 30 * 60 * 1000 : (attemptInfo.minutesLeft || 60) * 60 * 1000)),
+        minutesLeft: attemptInfo.minutesLeft || null
+      };
+      localStorage.setItem('justalink_failed_verify_attempt', JSON.stringify(data));
+    } catch (e) {
+      console.warn('Failed to save verify attempt to localStorage:', e);
+    }
+  }
+
+  function getSavedFailedAttempt() {
+    try {
+      const raw = localStorage.getItem('justalink_failed_verify_attempt');
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function clearSavedFailedAttempt() {
+    try {
+      localStorage.removeItem('justalink_failed_verify_attempt');
+    } catch (e) {}
+  }
+
+  async function performAutoCheckOnPageLoad() {
+    if (isSubcardUnlocked && isSubcard2Unlocked) {
+      clearSavedFailedAttempt();
+      return;
+    }
+
+    const attempt = getSavedFailedAttempt();
+    if (!attempt) return;
+
+    let savedUser = attempt.username;
+    if (!savedUser) {
+      try {
+        savedUser = localStorage.getItem('justalink_github_username');
+      } catch (e) {}
+    }
+    if (!savedUser) return;
+
+    const now = Date.now();
+    const resetTime = attempt.resetTime || (attempt.failedTime + (attempt.type === 'api_down' ? 30 * 60 * 1000 : 60 * 60 * 1000));
+
+    if (now < resetTime) {
+      // Quota reset or 30-min retry time has not passed yet
+      return;
+    }
+
+    // Silent auto-check: DO NOT SHOW ANY DIALOG IF IT FAILS
+    try {
+      const cleanUser = validateGitHubUsername(savedUser);
+      const result = await checkIfUserStarredAndFollowed(cleanUser);
+
+      let newlyUnlocked = false;
+
+      if (result.hasStarred) {
+        if (!isSubcardUnlocked) newlyUnlocked = true;
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+      }
+
+      if (result.hasDoneBoth) {
+        if (!isSubcard2Unlocked) newlyUnlocked = true;
+        isSubcard2Unlocked = true;
+        localStorage.setItem('justalink_subcard2_unlocked', 'true');
+        isSubcardUnlocked = true;
+        localStorage.setItem('justalink_subcard_unlocked', 'true');
+      }
+
+      if (newlyUnlocked) {
+        try { localStorage.setItem('justalink_github_username', cleanUser); } catch (e) {}
+        try { if (appState) appState.githubUsername = cleanUser; } catch (e) {}
+        try { populateBuilderInputs(); } catch (e) {}
+        try { renderSubCardPanel(); } catch (e) {}
+        try { renderSubCardPanel2(); } catch (e) {}
+        try { updatePreview(); } catch (e) {}
+        try { updateShareUrl(); } catch (e) {}
+        try { showToast('GitHub verification auto-checked! Features unlocked.', 'check'); } catch (e) {}
+      }
+
+      if (result.hasDoneBoth || result.hasStarred) {
+        clearSavedFailedAttempt();
+      }
+    } catch (err) {
+      // CRITICAL: "If verification fails do not show any dialog."
+      if (err.isRateLimit) {
+        saveFailedAttempt({
+          username: savedUser,
+          type: 'rate_limit',
+          failedTime: Date.now(),
+          resetTime: err.resetTime,
+          minutesLeft: err.minutesLeft
+        });
+      } else if (err.isApiDown) {
+        saveFailedAttempt({
+          username: savedUser,
+          type: 'api_down',
+          failedTime: Date.now(),
+          resetTime: Date.now() + 30 * 60 * 1000
+        });
+      }
+      // Silent failure, no modal dialog shown!
+    }
+  }
+
   /**
    * Validates a GitHub username format.
    * GitHub usernames can only contain alphanumeric characters and single hyphens (-).
@@ -2619,14 +2852,25 @@
 
     while (true) {
       const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/starred?per_page=${perPage}&page=${page}`;
-      const response = await fetch(url, { headers: GITHUB_HEADERS });
+      let response;
+      try {
+        response = await fetch(url, { headers: GITHUB_HEADERS });
+      } catch (fetchErr) {
+        throw new GitHubApiDownError('GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.');
+      }
+
+      if (response.status === 403 || response.status === 429) {
+        const resetMinutes = getRateLimitResetMinutes(response);
+        const resetTimestamp = getRateLimitResetTimestamp(response, resetMinutes);
+        throw new GitHubRateLimitError(resetMinutes, resetTimestamp);
+      }
+
+      if (response.status >= 500) {
+        throw new GitHubApiDownError('GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.');
+      }
 
       if (response.status === 404) {
         throw new Error(`Cannot find GitHub user "${cleanUsername}". Please check the username.`);
-      }
-
-      if (response.status === 403) {
-        throw new Error('GitHub API rate limit exceeded. Unauthenticated limit is 60 requests/hour. Please try again later.');
       }
 
       if (!response.ok) {
@@ -2664,21 +2908,48 @@
     const cleanUsername = validateGitHubUsername(username);
 
     const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/following/${GITHUB_TARGET_OWNER}`;
-    const response = await fetch(url, { headers: GITHUB_HEADERS });
+    let response;
+    try {
+      response = await fetch(url, { headers: GITHUB_HEADERS });
+    } catch (fetchErr) {
+      throw new GitHubApiDownError('GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.');
+    }
 
     if (response.status === 204) return true;
 
+    if (response.status === 403 || response.status === 429) {
+      const resetMinutes = getRateLimitResetMinutes(response);
+      const resetTimestamp = getRateLimitResetTimestamp(response, resetMinutes);
+      throw new GitHubRateLimitError(resetMinutes, resetTimestamp);
+    }
+
+    if (response.status >= 500) {
+      throw new GitHubApiDownError('GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.');
+    }
+
     if (response.status === 404) {
       // Confirm if the user exists or if 404 is simply because they don't follow
-      const userCheck = await fetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}`, { headers: GITHUB_HEADERS });
+      let userCheck;
+      try {
+        userCheck = await fetch(`https://api.github.com/users/${encodeURIComponent(cleanUsername)}`, { headers: GITHUB_HEADERS });
+      } catch (err) {
+        throw new GitHubApiDownError('GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.');
+      }
+
+      if (userCheck.status === 403 || userCheck.status === 429) {
+        const resetMinutes = getRateLimitResetMinutes(userCheck);
+        const resetTimestamp = getRateLimitResetTimestamp(userCheck, resetMinutes);
+        throw new GitHubRateLimitError(resetMinutes, resetTimestamp);
+      }
+
+      if (userCheck.status >= 500) {
+        throw new GitHubApiDownError('GitHub API is down. Please try again or check github status at <a href="https://www.githubstatus.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:opacity-80">githubstatus.com</a>.');
+      }
+
       if (userCheck.status === 404) {
         throw new Error(`Cannot find GitHub user "${cleanUsername}". Please check the username.`);
       }
       return false; // User exists, but does not follow jaival-11
-    }
-
-    if (response.status === 403) {
-      throw new Error('GitHub API rate limit exceeded. Unauthenticated limit is 60 requests/hour. Please try again later.');
     }
 
     if (!response.ok) {
@@ -2716,6 +2987,12 @@
     checkIfUserStarred,
     checkIfUserFollows,
     checkIfUserStarredAndFollowed,
+    GitHubRateLimitError,
+    GitHubApiDownError,
+    saveFailedAttempt,
+    getSavedFailedAttempt,
+    clearSavedFailedAttempt,
+    performAutoCheckOnPageLoad,
   };
   window.encodeData = encodeData;
   window.decodeData = decodeData;
@@ -2736,14 +3013,17 @@
   window.applyRestoredWithoutSubcard1 = applyRestoredWithoutSubcard1;
   window.applyRestoredWithoutSubcard2 = applyRestoredWithoutSubcard2;
   window.getAppState = () => appState;
-
-
+  window.saveFailedAttempt = saveFailedAttempt;
+  window.getSavedFailedAttempt = getSavedFailedAttempt;
+  window.clearSavedFailedAttempt = clearSavedFailedAttempt;
+  window.performAutoCheckOnPageLoad = performAutoCheckOnPageLoad;
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
     applyBuilderTheme(builderTheme);
     initEvents();
     handleRoute();
+    performAutoCheckOnPageLoad();
   });
 
 })();
