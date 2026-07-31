@@ -1965,10 +1965,12 @@
       previewFrame.style.backgroundColor = bg;
       previewFrame.style.color = textColor;
       previewFrame.style.borderColor = accent;
+      if (previewMessage) previewMessage.style.borderColor = accent;
     } else {
       previewFrame.style.backgroundColor = '';
       previewFrame.style.color = '';
       previewFrame.style.borderColor = '';
+      if (previewMessage) previewMessage.style.borderColor = '';
       previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 theme-${appState.theme}`;
     }
     
@@ -2150,11 +2152,13 @@
       viewCardContainer.style.backgroundColor = bg;
       viewCardContainer.style.color = textColor;
       viewCardContainer.style.borderColor = accent;
+      if (viewMessage) viewMessage.style.borderColor = accent;
     } else {
       viewModeSec.style.backgroundColor = '';
       viewCardContainer.style.backgroundColor = '';
       viewCardContainer.style.color = '';
       viewCardContainer.style.borderColor = '';
+      if (viewMessage) viewMessage.style.borderColor = '';
 
       const themeClass = `theme-${data.theme || 'slate'}`;
       const pageThemeClass = `page-theme-${data.theme || 'slate'}`;

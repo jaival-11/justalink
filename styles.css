@@ -244,6 +244,23 @@ body.builder-light .builder-footer {
 .page-theme-berry { background-color: #2e1065; }
 .page-theme-neo { background-color: #ffedd5; }
 
+/* Profile Card Inner Elements (Short message box & horizontal line above footer) match main container border color */
+.theme-slate #preview-message, .theme-slate #view-message { border-color: #334155; }
+.theme-light #preview-message, .theme-light #view-message { border-color: #cbd5e1; }
+.theme-cyber #preview-message, .theme-cyber #view-message { border-color: #facc15; }
+.theme-emerald #preview-message, .theme-emerald #view-message { border-color: #059669; }
+.theme-berry #preview-message, .theme-berry #view-message { border-color: #7c3aed; }
+.theme-neo #preview-message, .theme-neo #view-message { border-color: #1c1917; }
+
+#preview-message-wrap,
+#view-message-wrap,
+#preview-message,
+#view-message,
+#preview-card-frame .border-t,
+#view-card-container .border-t {
+  border-color: inherit;
+}
+
 /* Social Icons (Simple Icons via SVG Mask) */
 .social-icon-mask {
   display: inline-block;
