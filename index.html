@@ -47,13 +47,13 @@
 <body class="builder-light font-sans min-h-screen flex flex-col antialiased">
 
   <!-- Header / Navigation Bar (Homepage Builder Header) -->
-  <header id="main-header" class="border-b px-4 py-3 sticky top-0 z-40 transition-colors">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
+  <header id="main-header" class="border-b px-4 py-3 transition-colors">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
       <a href="#" id="brand-logo" class="flex items-center gap-2 font-extrabold text-xl tracking-tight hover:opacity-90">
         <span id="brand-badge" class="px-2 py-0.5 rounded text-sm uppercase tracking-wider font-mono font-bold transition-colors">#</span>
         <span>JustALink</span>
       </a>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
         <!-- Restore Button -->
         <button id="btn-restore-url" type="button" data-umami-event="restore_data" class="builder-muted-btn text-xs font-bold px-3 py-1.5 rounded border transition-colors flex items-center gap-1.5 cursor-pointer" aria-label="Restore profile from URL">
           <span class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span>
