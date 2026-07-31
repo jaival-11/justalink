@@ -1,3 +1,4 @@
+// © 2026 Jaival Patel
 /**
  * JustALink - Zero-Database Hash Bio Link Builder
  * Frontend Logic & Hash Routing
