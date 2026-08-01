@@ -94,7 +94,7 @@
   window.trackUmamiEvent = trackUmamiEvent;
 
   // --- Custom Theme & Sub-Card Unlock Feature State ---
-  let isCustomUnlocked = localStorage.getItem('justalink_custom_colors_unlocked') === 'true';
+  let isCustomUnlocked = true;
   let isSubcardUnlocked = localStorage.getItem('justalink_subcard_unlocked') === 'true';
   let isSubcard2Unlocked = localStorage.getItem('justalink_subcard2_unlocked') === 'true';
   let unlockState = {
@@ -103,7 +103,7 @@
   };
 
   function canUseCustomColors() {
-    return isCustomUnlocked || (appState && appState.theme === 'custom');
+    return true;
   }
 
   function getContrastTextColor(hexColor) {
@@ -1347,61 +1347,22 @@
     const bgVal = appState.customBg || '#0f172a';
     const accentVal = appState.customAccent || '#d4845a';
 
-    if (!canUseCustomColors()) {
-      // Locked state: disabled & greyed out with high contrast
-      customPanel.className = 'mt-4 p-3.5 rounded-lg border border-dashed custom-theme-locked-bg cursor-pointer transition-all hover:opacity-90 relative select-none';
-      customPanel.innerHTML = `
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Custom Theme</span>
-            <span class="badge-locked">
-              <span>Locked</span>
-            </span>
-          </div>
-          <span class="text-[11px] unlock-link-text font-semibold underline">Click to unlock</span>
+    // Active custom theme controls (unlocked by default)
+    customPanel.className = `mt-4 p-3.5 rounded-lg border transition-all ${
+      isCustomSelected ? 'ring-2 ring-inset ring-emerald-500 border-emerald-500 builder-card' : 'border-zinc-700/60 builder-card'
+    }`;
+    customPanel.onclick = null;
+    customPanel.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold">Custom Theme</span>
         </div>
-        <p class="text-[11px] builder-subtext mb-3">Choose your own custom background & accent colors.</p>
-        <div class="grid grid-cols-2 gap-3 pointer-events-none opacity-60">
-          <div>
-            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Background Color</label>
-            <div class="flex items-center gap-2 border rounded p-1.5 builder-input">
-              <div class="w-5 h-5 rounded border border-zinc-500" style="background-color: ${bgVal}"></div>
-              <span class="text-xs font-mono">${bgVal}</span>
-            </div>
-          </div>
-          <div>
-            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Accent Color</label>
-            <div class="flex items-center gap-2 border rounded p-1.5 builder-input">
-              <div class="w-5 h-5 rounded border border-zinc-500" style="background-color: ${accentVal}"></div>
-              <span class="text-xs font-mono">${accentVal}</span>
-            </div>
-          </div>
-        </div>
-      `;
-      customPanel.onclick = (e) => {
-        e.preventDefault();
-        openUnlockModal();
-      };
-    } else {
-      // Unlocked state: active custom theme controls
-      customPanel.className = `mt-4 p-3.5 rounded-lg border transition-all ${
-        isCustomSelected ? 'ring-2 ring-inset ring-emerald-500 border-emerald-500 builder-card' : 'border-zinc-700/60 builder-card'
-      }`;
-      customPanel.onclick = null;
-      customPanel.innerHTML = `
-        <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold">Custom Theme</span>
-            <span class="badge-unlocked">
-              <span>Unlocked</span>
-            </span>
-          </div>
-          <button type="button" id="btn-select-custom-theme" class="text-xs font-bold px-2.5 py-1 rounded transition-colors ${
-            isCustomSelected ? 'bg-emerald-600 text-white' : 'builder-muted-btn'
-          }">
-            ${isCustomSelected ? 'Active' : 'Use Custom Theme'}
-          </button>
-        </div>
+        <button type="button" id="btn-select-custom-theme" class="text-xs font-bold px-2.5 py-1 rounded transition-colors ${
+          isCustomSelected ? 'bg-emerald-600 text-white' : 'builder-muted-btn'
+        }">
+          ${isCustomSelected ? 'Active' : 'Use Custom Theme'}
+        </button>
+      </div>
         <p class="text-[11px] builder-subtext mb-3">Select your custom background color and accent color.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -1478,12 +1439,10 @@
           }
           appState.theme = 'custom';
           renderThemeSelector();
-          updatePreview();
           updateShareUrl();
         });
       }
     }
-  }
 
   function renderSubCardPanel() {
     let subCardPanel = document.getElementById('sub-card-panel');
