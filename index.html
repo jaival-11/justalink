@@ -16,12 +16,13 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Google Sans Flex & Inter -->
+  <!-- Google Fonts: Google Sans Flex, Inter & Material Symbols Rounded -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
-  <link rel="stylesheet" href="styles.css?v=1.1.1" />
+  <link rel="stylesheet" href="styles.css?v=2.0.0" />
 
   <!-- Umami Analytics (Proxied via Cloudflare Worker for Ad-Block Resistance) -->
   <script 
@@ -42,6 +43,36 @@
             sans: ['"Google Sans Flex"', 'Inter', 'sans-serif'],
             profile: ['Inter', 'sans-serif'],
           },
+          colors: {
+            /* Remap emerald palette → warm amber/coral (LastWave-inspired) */
+            emerald: {
+              50:  'hsl(25, 60%, 97%)',
+              100: 'hsl(25, 55%, 92%)',
+              200: 'hsl(25, 50%, 82%)',
+              300: 'hsl(25, 55%, 72%)',
+              400: 'hsl(25, 70%, 65%)',
+              500: 'hsl(25, 75%, 58%)',
+              600: 'hsl(25, 70%, 48%)',
+              700: 'hsl(25, 65%, 38%)',
+              800: 'hsl(25, 55%, 28%)',
+              900: 'hsl(25, 50%, 18%)',
+              950: 'hsl(25, 45%, 10%)',
+            },
+            /* Warm zinc replacement for builder surfaces */
+            zinc: {
+              50:  'hsl(30, 25%, 97%)',
+              100: 'hsl(30, 18%, 94%)',
+              200: 'hsl(25, 14%, 88%)',
+              300: 'hsl(25, 12%, 78%)',
+              400: 'hsl(20, 8%, 55%)',
+              500: 'hsl(20, 6%, 40%)',
+              600: 'hsl(20, 5%, 30%)',
+              700: 'hsl(20, 5%, 20%)',
+              800: 'hsl(20, 5%, 14%)',
+              900: 'hsl(20, 6%, 8%)',
+              950: 'hsl(20, 7%, 5%)',
+            },
+          },
         },
       },
     }
@@ -56,20 +87,20 @@
         <img src="assets/favicon.svg" alt="JustALink Logo" id="brand-badge" class="w-7 h-7 rounded-lg" />
         <span>JustALink</span>
       </a>
-      <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
+      <div class="flex flex-nowrap items-center justify-center sm:justify-end gap-1.5 sm:gap-3 w-full sm:w-auto overflow-x-auto shrink-0 py-0.5">
         <!-- Restore Button -->
-        <button id="btn-restore-url" type="button" data-umami-event="restore_data" class="builder-muted-btn text-xs font-bold px-3 py-1.5 rounded border transition-colors flex items-center gap-1.5 cursor-pointer" aria-label="Restore profile from URL">
-          <span class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span>
+        <button id="btn-restore-url" type="button" data-umami-event="restore_data" class="builder-muted-btn text-[11px] sm:text-xs font-bold px-2.5 sm:px-3.5 py-1.5 rounded-full border transition-colors flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap" aria-label="Restore profile from URL">
+          <span class="material-symbols-rounded text-sm">history</span>
           <span>Restore</span>
         </button>
         <!-- GitHub Source Link -->
-        <a href="https://github.com/jaival-11/justalink" target="_blank" rel="noopener noreferrer" class="builder-muted-btn text-xs font-bold px-3 py-1.5 rounded border transition-colors flex items-center gap-1.5 cursor-pointer" aria-label="See source code on GitHub">
-          <span class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></span>
+        <a href="https://github.com/jaival-11/justalink" target="_blank" rel="noopener noreferrer" class="builder-muted-btn text-[11px] sm:text-xs font-bold px-2.5 sm:px-3.5 py-1.5 rounded-full border transition-colors flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap" aria-label="See source code on GitHub">
+          <span class="material-symbols-rounded text-sm">code</span>
           <span>See source</span>
         </a>
         <!-- Light / Dark Mode Toggle Button -->
-        <button id="theme-toggle-btn" type="button" class="builder-muted-btn text-xs font-bold px-3 py-1.5 rounded border transition-colors flex items-center gap-1.5 cursor-pointer" aria-label="Toggle Theme Mode">
-          <span id="theme-toggle-icon" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+        <button id="theme-toggle-btn" type="button" class="builder-muted-btn text-[11px] sm:text-xs font-bold px-2.5 sm:px-3.5 py-1.5 rounded-full border transition-colors flex items-center gap-1 sm:gap-1.5 cursor-pointer shrink-0 whitespace-nowrap" aria-label="Toggle Theme Mode">
+          <span id="theme-toggle-icon" class="flex items-center"><span class="material-symbols-rounded text-sm">contrast</span></span>
           <span id="theme-toggle-text">Dark Mode</span>
         </button>
       </div>
@@ -77,19 +108,21 @@
   </header>
 
   <!-- Main Application Container -->
-  <main class="flex-grow flex flex-col justify-center">
+  <main class="flex-grow flex flex-col justify-center pb-20 sm:pb-8">
     
     <!-- BUILDER MODE UI (Homepage) -->
     <section id="builder-mode" class="max-w-6xl mx-auto w-full p-4 sm:p-6 lg:p-8">
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold">Create Your Link-in-Bio</h1>
+          <h1 class="text-2xl sm:text-3xl font-extrabold flex items-center gap-2">
+            <span>Create Your Link-in-Bio</span>
+          </h1>
           <p class="builder-subtext text-sm mt-1">
             Everything is stored inside your shareable link. No signups, no databases.
           </p>
         </div>
-        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border text-xs font-mono font-semibold shrink-0 markdown-badge">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+        <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-mono font-semibold shrink-0 markdown-badge">
+          <span class="material-symbols-rounded text-sm text-emerald-500">code</span>
           <span>Markdown Supported</span>
         </div>
       </div>
@@ -97,54 +130,55 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- Left Column: Form Controls -->
-        <div class="lg:col-span-7 space-y-3">
+        <div id="builder-form-col" class="lg:col-span-7 space-y-4">
           
           <!-- Profile Information Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="1">
+          <div class="builder-card builder-accordion-card border rounded-2xl px-4 py-4 sm:px-5 sm:py-4.5" data-card-id="1">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-base sm:text-lg font-bold">
-                1. Profile Details
+              <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-emerald-500">account_circle</span>
+                <span>1. Profile Details</span>
               </h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <span class="material-symbols-rounded">expand_more</span>
               </span>
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40 space-y-3">
+              <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40 space-y-4">
                 <!-- Name Input -->
                 <div>
-                  <label for="input-name" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                  <label for="input-name" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1.5">
                     Full Name / Display Name
                   </label>
                   <input 
                     type="text" 
                     id="input-name" 
                     placeholder="e.g. Your Name" 
-                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                    class="w-full builder-input border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none"
                   />
                 </div>
 
                 <!-- Avatar URL Input -->
                 <div>
-                  <label for="input-avatar" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                  <label for="input-avatar" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1.5">
                     Avatar Image URL
                   </label>
                   <input 
                     type="url" 
                     id="input-avatar" 
                     placeholder="https://images.unsplash.com/photo-..." 
-                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                    class="w-full builder-input border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none"
                   />
                 </div>
 
                 <!-- Bio Input -->
                 <div>
-                  <div class="flex items-center justify-between mb-1">
+                  <div class="flex items-center justify-between mb-1.5">
                     <label for="input-bio" class="block text-xs font-semibold builder-subtext uppercase tracking-wider">
                       Bio / Description
                     </label>
-                    <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
+                    <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border markdown-badge">
                       Markdown Supported
                     </span>
                   </div>
@@ -152,9 +186,9 @@
                     id="input-bio" 
                     rows="3" 
                     placeholder="Software engineer & digital creator. Building **open-source** tools." 
-                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none resize-y"
+                    class="w-full builder-input border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none resize-y"
                   ></textarea>
-                  <p class="text-[11px] builder-subtext mt-1.5 font-mono flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                  <p class="text-[11px] builder-subtext mt-2 font-mono flex flex-wrap items-center gap-x-2.5 gap-y-1">
                     <span class="font-sans font-semibold">Format:</span>
                     <span><strong class="font-bold">**bold**</strong></span>
                     <span><em class="italic">*italics*</em></span>
@@ -169,17 +203,20 @@
           </div>
 
           <!-- Color Theme Selection Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="2">
+          <div class="builder-card builder-accordion-card border rounded-2xl px-4 py-4 sm:px-5 sm:py-4.5" data-card-id="2">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-base sm:text-lg font-bold">2. Choose Theme</h2>
+              <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-emerald-500">palette</span>
+                <span>2. Choose Theme</span>
+              </h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <span class="material-symbols-rounded">expand_more</span>
               </span>
             </div>
             
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-3">Select a theme. Gradients are disabled by design philosophy.</p>
+              <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3.5">Select a theme. Gradients are disabled by design philosophy.</p>
                 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="theme-options">
                   <!-- Theme choices populated by JavaScript -->
@@ -204,25 +241,28 @@
           </div>
 
           <!-- Social Icons Manager Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="3">
+          <div class="builder-card builder-accordion-card border rounded-2xl px-4 py-4 sm:px-5 sm:py-4.5" data-card-id="3">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-base sm:text-lg font-bold">3. Social Icons</h2>
+              <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-emerald-500">share</span>
+                <span>3. Social Icons</span>
+              </h2>
               <div class="flex items-center gap-2 sm:gap-3">
-                <button id="btn-add-social" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0">
-                  <span>+</span> Add Icon
+                <button id="btn-add-social" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors cursor-pointer shrink-0">
+                  <span class="material-symbols-rounded text-xs">add</span> Add Icon
                 </button>
                 <span class="chevron-icon text-zinc-400 transition-transform duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  <span class="material-symbols-rounded">expand_more</span>
                 </span>
               </div>
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
+              <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40">
                 <p class="text-xs builder-subtext mb-2">
                   Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, twitter, instagram, linkedin).
                 </p>
-                <p class="text-xs builder-subtext mb-3">
+                <p class="text-xs builder-subtext mb-3.5">
                   <span class="font-semibold">Tip:</span> You can use <code class="font-mono text-emerald-500 font-semibold">mailto:</code> followed by an email address to add an email.
                 </p>
                 <div id="socials-container" class="space-y-3">
@@ -233,33 +273,36 @@
           </div>
 
           <!-- Short Message Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="4">
+          <div class="builder-card builder-accordion-card border rounded-2xl px-4 py-4 sm:px-5 sm:py-4.5" data-card-id="4">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
               <div class="flex items-center gap-2">
-                <h2 class="text-base sm:text-lg font-bold">4. Short Message</h2>
-                <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded border markdown-badge">
+                <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                  <span class="material-symbols-rounded text-emerald-500">chat_bubble_outline</span>
+                  <span>4. Short Message</span>
+                </h2>
+                <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border markdown-badge">
                   Markdown Supported
                 </span>
               </div>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <span class="material-symbols-rounded">expand_more</span>
               </span>
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-3">
+              <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3.5">
                   Add a brief single-line announcement or tagline displayed after social buttons and before your links.
                 </p>
                 <div>
-                  <label for="input-message" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1">
+                  <label for="input-message" class="block text-xs font-semibold builder-subtext uppercase tracking-wider mb-1.5">
                     Short Message
                   </label>
                   <input 
                     type="text" 
                     id="input-message" 
                     placeholder="e.g. 🚀 **Open** for *new projects* & <u>collaborations</u>!" 
-                    class="w-full builder-input border rounded px-3 py-2 text-sm focus:outline-none"
+                    class="w-full builder-input border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none"
                   />
                 </div>
               </div>
@@ -267,22 +310,25 @@
           </div>
 
           <!-- Links Manager Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="5">
+          <div class="builder-card builder-accordion-card border rounded-2xl px-4 py-4 sm:px-5 sm:py-4.5" data-card-id="5">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-base sm:text-lg font-bold">5. Add Links</h2>
+              <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-emerald-500">link</span>
+                <span>5. Add Links</span>
+              </h2>
               <div class="flex items-center gap-2 sm:gap-3">
-                <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer shrink-0">
-                  <span>+</span> Add Link
+                <button id="btn-add-link" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 transition-colors cursor-pointer shrink-0">
+                  <span class="material-symbols-rounded text-xs">add</span> Add Link
                 </button>
                 <span class="chevron-icon text-zinc-400 transition-transform duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                  <span class="material-symbols-rounded">expand_more</span>
                 </span>
               </div>
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-3">
+              <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3.5">
                   Link titles & descriptions support Markdown formatting (**bold**, *italics*, <u>underline</u>, ~~strikethrough~~).
                 </p>
 
@@ -294,34 +340,37 @@
           </div>
 
           <!-- Share & URL Output Card -->
-          <div class="builder-card builder-accordion-card border rounded-lg px-4 py-3.5 sm:px-5 sm:py-4" data-card-id="6">
+          <div id="share-card" class="builder-card builder-accordion-card border rounded-2xl px-4 py-4 sm:px-5 sm:py-4.5" data-card-id="6">
             <div class="builder-card-header flex items-center justify-between cursor-pointer select-none">
-              <h2 class="text-base sm:text-lg font-bold">6. Your Generated Link</h2>
+              <h2 class="text-base sm:text-lg font-bold flex items-center gap-2">
+                <span class="material-symbols-rounded text-emerald-500">bolt</span>
+                <span>6. Your Generated Link</span>
+              </h2>
               <span class="chevron-icon text-zinc-400 transition-transform duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <span class="material-symbols-rounded">expand_more</span>
               </span>
             </div>
 
             <div class="builder-card-body-wrapper">
-              <div class="builder-card-body-inner mt-3 pt-3 border-t border-zinc-700/40">
-                <p class="text-xs builder-subtext mb-3">
+              <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40">
+                <p class="text-xs builder-subtext mb-3.5">
                   Copy this link to share it on social media. Your data is compressed and encoded in the URL. You can also use this same URL to restore your profile anytime using the Restore button at the top. The URL will be very long so it is highly recommended to use a link shortner 
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-2">
+                <div class="flex flex-col sm:flex-row gap-2.5">
                   <input 
                     type="text" 
                     id="output-share-url" 
                     readonly 
-                    class="flex-grow builder-input border rounded px-3 py-2 text-xs font-mono text-emerald-500 select-all focus:outline-none" 
+                    class="flex-grow builder-input border rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-500 select-all focus:outline-none" 
                     value=""
                   />
                   <button 
                     id="btn-copy-url" 
                     type="button" 
-                    class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded shrink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-full shrink-0 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+                    <span class="material-symbols-rounded text-sm">content_copy</span>
                     <span id="copy-btn-text">Copy Link</span>
                   </button>
                   <a 
@@ -329,9 +378,10 @@
                     href="#" 
                     target="_blank" 
                     data-umami-event="open_preview_link"
-                    class="builder-muted-btn font-semibold text-xs px-4 py-2 rounded border shrink-0 transition-colors flex items-center justify-center"
+                    class="builder-muted-btn font-semibold text-xs px-4 py-2.5 rounded-full border shrink-0 transition-colors flex items-center justify-center gap-1"
                   >
-                    Launch Card ↗
+                    <span>Launch Card</span>
+                    <span class="material-symbols-rounded text-sm">open_in_new</span>
                   </a>
                 </div>
               </div>
@@ -341,21 +391,21 @@
         </div>
 
         <!-- Right Column: Live Card Preview -->
-        <div class="lg:col-span-5 lg:sticky lg:top-20">
-          <div class="builder-card border rounded-lg p-4">
-            <div class="flex items-center justify-between pb-3 mb-3 border-b border-zinc-700/40">
+        <div id="builder-preview-col" class="lg:col-span-5 lg:sticky lg:top-6 hidden sm:block">
+          <div class="builder-card border rounded-2xl p-4 sm:p-5">
+            <div class="flex items-center justify-between pb-3 mb-3.5 border-b border-zinc-700/40">
               <span class="text-xs font-semibold builder-subtext uppercase tracking-wider flex items-center gap-1.5">
-                <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="material-symbols-rounded text-emerald-500 text-sm animate-pulse">smartphone</span>
                 Live Card Preview
               </span>
               <span class="text-xs builder-subtext font-mono">View Mode</span>
             </div>
 
             <!-- Preview Card Container Frame -->
-            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-xl border transition-all duration-300 relative overflow-hidden font-profile" id="preview-card-frame">
+            <div class="w-full max-w-sm mx-auto p-4 sm:p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden font-profile preview-card-shadow" id="preview-card-frame">
               
               <!-- Banner Image Container -->
-              <div id="preview-banner-container" class="relative -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 mb-4 h-28 sm:h-32 overflow-hidden rounded-t-xl hidden">
+              <div id="preview-banner-container" class="relative -mx-4 -mt-4 sm:-mx-6 sm:-mt-6 mb-4 h-28 sm:h-32 overflow-hidden rounded-t-2xl hidden">
                 <img id="preview-banner-img" src="" alt="Banner Image" class="w-full h-full object-cover" />
               </div>
 
@@ -799,12 +849,34 @@
     </div>
   </div>
 
+  <!-- Mobile Bottom Navigation Bar (Material 3 Mobile Shell) -->
+  <nav id="mobile-bottom-nav" class="bottom-nav sm:hidden">
+    <button type="button" class="nav-item active" id="nav-btn-edit">
+      <div class="nav-indicator">
+        <span class="material-symbols-rounded nav-icon">edit_note</span>
+      </div>
+      <span class="nav-label">Edit</span>
+    </button>
+    <button type="button" class="nav-item" id="nav-btn-preview">
+      <div class="nav-indicator">
+        <span class="material-symbols-rounded nav-icon">smartphone</span>
+      </div>
+      <span class="nav-label">Preview</span>
+    </button>
+    <button type="button" class="nav-item" id="nav-btn-share">
+      <div class="nav-indicator">
+        <span class="material-symbols-rounded nav-icon">share</span>
+      </div>
+      <span class="nav-label">Share</span>
+    </button>
+  </nav>
+
   <!-- Notification Toast -->
-  <div id="toast" class="fixed bottom-5 right-5 bg-zinc-900 text-white border border-zinc-700 px-4 py-3 rounded-lg text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
-    <span id="toast-icon" class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+  <div id="toast" class="pointer-events-none fixed bottom-20 sm:bottom-6 right-5 bg-zinc-900 text-white border border-zinc-700 px-4 py-3 rounded-full text-xs font-semibold translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-2">
+    <span id="toast-icon" class="flex items-center"><span class="material-symbols-rounded text-emerald-400 text-base">info</span></span>
     <span id="toast-message">Message standard text</span>
   </div>
 
-  <script src="app.js?v=1.1.1"></script>
+  <script src="app.js?v=2.0.0"></script>
 </body>
 </html>

@@ -40,7 +40,7 @@
     message: '',
     theme: 'slate',
     customBg: '#0f172a',
-    customAccent: '#10b981',
+    customAccent: '#d4845a',
     customFooter: '',
     footerUrl: '',
     disableFooter: false,
@@ -1083,7 +1083,7 @@
         message: decoded.message || decoded.shortMessage || '',
         theme: decoded.theme || 'slate',
         customBg: decoded.customBg || '#0f172a',
-        customAccent: decoded.customAccent || '#10b981',
+        customAccent: decoded.customAccent || '#d4845a',
         customFooter: decoded.customFooter || '',
         footerUrl: footerUrlVal,
         disableFooter: isFooterDisabled,
@@ -1257,12 +1257,12 @@
   function showToast(msg, iconKey = 'info') {
     toastIcon.innerHTML = ICONS[iconKey] || ICONS.info;
     toastMessage.textContent = msg;
-    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
     toast.classList.add('translate-y-0', 'opacity-100');
     
     setTimeout(() => {
       toast.classList.remove('translate-y-0', 'opacity-100');
-      toast.classList.add('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
     }, 3000);
   }
 
@@ -1313,7 +1313,7 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `p-3 rounded-lg border text-left flex flex-col justify-between transition-all ${t.bg} ${t.text} ${
-        isSelected ? 'ring-2 ring-emerald-500 border-emerald-500 font-bold' : 'border-zinc-700/60 opacity-80 hover:opacity-100'
+        isSelected ? 'ring-2 ring-inset ring-emerald-500 border-emerald-500 font-bold' : 'border-zinc-700/60 opacity-80 hover:opacity-100'
       }`;
       btn.innerHTML = `
         <div class="flex items-center justify-between mb-2">
@@ -1345,7 +1345,7 @@
 
     const isCustomSelected = appState.theme === 'custom';
     const bgVal = appState.customBg || '#0f172a';
-    const accentVal = appState.customAccent || '#10b981';
+    const accentVal = appState.customAccent || '#d4845a';
 
     if (!canUseCustomColors()) {
       // Locked state: disabled & greyed out with high contrast
@@ -1385,7 +1385,7 @@
     } else {
       // Unlocked state: active custom theme controls
       customPanel.className = `mt-4 p-3.5 rounded-lg border transition-all ${
-        isCustomSelected ? 'ring-2 ring-emerald-500 border-emerald-500 builder-card' : 'border-zinc-700/60 builder-card'
+        isCustomSelected ? 'ring-2 ring-inset ring-emerald-500 border-emerald-500 builder-card' : 'border-zinc-700/60 builder-card'
       }`;
       customPanel.onclick = null;
       customPanel.innerHTML = `
@@ -1415,7 +1415,7 @@
             <label for="input-custom-accent-picker" class="block text-[10px] uppercase font-bold builder-subtext mb-1">Accent Color</label>
             <div class="flex items-center gap-2">
               <input type="color" id="input-custom-accent-picker" value="${accentVal}" class="w-8 h-8 rounded border border-zinc-600 p-0 cursor-pointer bg-transparent" />
-              <input type="text" id="input-custom-accent-text" value="${accentVal}" class="w-full builder-input border rounded px-2.5 py-1 text-xs font-mono focus:outline-none" placeholder="#10b981" />
+              <input type="text" id="input-custom-accent-text" value="${accentVal}" class="w-full builder-input border rounded px-2.5 py-1 text-xs font-mono focus:outline-none" placeholder="#d4845a" />
             </div>
           </div>
         </div>
@@ -1815,7 +1815,7 @@
       });
 
       if (btnUp && !btnUp.disabled) {
-        btnUp.addEventListener('click', () => {
+        bindFastTap(btnUp, () => {
           const temp = appState.socials[index];
           appState.socials[index] = appState.socials[index - 1];
           appState.socials[index - 1] = temp;
@@ -1826,7 +1826,7 @@
       }
 
       if (btnDown && !btnDown.disabled) {
-        btnDown.addEventListener('click', () => {
+        bindFastTap(btnDown, () => {
           const temp = appState.socials[index];
           appState.socials[index] = appState.socials[index + 1];
           appState.socials[index + 1] = temp;
@@ -1836,7 +1836,7 @@
         });
       }
 
-      btnDelete.addEventListener('click', () => {
+      bindFastTap(btnDelete, () => {
         appState.socials.splice(index, 1);
         renderSocialInputs();
         updatePreview();
@@ -1922,7 +1922,7 @@
       });
 
       if (btnUp && !btnUp.disabled) {
-        btnUp.addEventListener('click', () => {
+        bindFastTap(btnUp, () => {
           const temp = appState.links[index];
           appState.links[index] = appState.links[index - 1];
           appState.links[index - 1] = temp;
@@ -1933,7 +1933,7 @@
       }
 
       if (btnDown && !btnDown.disabled) {
-        btnDown.addEventListener('click', () => {
+        bindFastTap(btnDown, () => {
           const temp = appState.links[index];
           appState.links[index] = appState.links[index + 1];
           appState.links[index + 1] = temp;
@@ -1943,7 +1943,7 @@
         });
       }
 
-      btnDelete.addEventListener('click', () => {
+      bindFastTap(btnDelete, () => {
         appState.links.splice(index, 1);
         renderLinkInputs();
         updatePreview();
@@ -1958,7 +1958,7 @@
     // Theme class & inline styles on preview frame
     if (appState.theme === 'custom') {
       const bg = appState.customBg || '#0f172a';
-      const accent = appState.customAccent || '#10b981';
+      const accent = appState.customAccent || '#d4845a';
       const textColor = getContrastTextColor(bg);
 
       previewFrame.className = 'w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 font-profile';
@@ -2039,7 +2039,7 @@
       previewLinksList.innerHTML = '<div class="text-center text-xs opacity-60 italic py-2">No links created yet</div>';
     } else {
       const isCustom = appState.theme === 'custom';
-      const accent = appState.customAccent || '#10b981';
+      const accent = appState.customAccent || '#d4845a';
       const accentText = getContrastTextColor(accent);
 
       appState.links.forEach(l => {
@@ -2141,7 +2141,7 @@
   function renderViewMode(data) {
     if (data.theme === 'custom') {
       const bg = data.customBg || '#0f172a';
-      const accent = data.customAccent || '#10b981';
+      const accent = data.customAccent || '#d4845a';
       const textColor = getContrastTextColor(bg);
       const outerBg = getFaintedOuterColor(bg);
 
@@ -2230,7 +2230,7 @@
     viewLinksList.innerHTML = '';
     if (data.links && Array.isArray(data.links) && data.links.length > 0) {
       const isCustom = data.theme === 'custom';
-      const accent = data.customAccent || '#10b981';
+      const accent = data.customAccent || '#d4845a';
       const accentText = getContrastTextColor(accent);
 
       data.links.forEach(l => {
@@ -2303,6 +2303,57 @@
     }
   }
 
+  // --- Fast Touch & Click Helper for Mobile Responsiveness ---
+  function bindFastTap(element, callback) {
+    if (!element) return;
+    
+    let startX = 0;
+    let startY = 0;
+    let startTime = 0;
+    let isTouch = false;
+    let touchTimeout = null;
+
+    element.addEventListener('touchstart', (e) => {
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        startX = e.changedTouches[0].clientX;
+        startY = e.changedTouches[0].clientY;
+        startTime = Date.now();
+        isTouch = true;
+        if (touchTimeout) {
+          clearTimeout(touchTimeout);
+          touchTimeout = null;
+        }
+      }
+    }, { passive: true });
+
+    element.addEventListener('touchend', (e) => {
+      if (!isTouch || !e.changedTouches || e.changedTouches.length === 0) return;
+      
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const endTime = Date.now();
+      
+      const diffX = Math.abs(endX - startX);
+      const diffY = Math.abs(endY - startY);
+      const diffTime = endTime - startTime;
+      
+      // Tap if movement < 15px and duration < 500ms
+      if (diffX < 15 && diffY < 15 && diffTime < 500) {
+        if (e.cancelable) e.preventDefault();
+        callback(e);
+      }
+      
+      // Reset after a delay to allow future mouse clicks but block duplicate native clicks
+      touchTimeout = setTimeout(() => { isTouch = false; }, 500);
+    }, { passive: false });
+
+    element.addEventListener('click', (e) => {
+      if (!isTouch) {
+        callback(e);
+      }
+    });
+  }
+
   // --- Accordion Logic for Builder Cards (1 to 6) ---
   function toggleCard(targetCard) {
     if (!targetCard) return;
@@ -2315,6 +2366,7 @@
     document.querySelectorAll('.builder-accordion-card').forEach(card => {
       const cardWrapper = card.querySelector('.builder-card-body-wrapper');
       const chevron = card.querySelector('.chevron-icon');
+      card.classList.remove('is-active');
       if (cardWrapper) cardWrapper.classList.remove('is-open');
       if (chevron) chevron.classList.remove('rotate-180');
     });
@@ -2322,6 +2374,7 @@
     // If target card was closed, expand it smoothly
     if (!isCurrentlyOpen) {
       wrapper.classList.add('is-open');
+      targetCard.classList.add('is-active');
       const chevron = targetCard.querySelector('.chevron-icon');
       if (chevron) chevron.classList.add('rotate-180');
     }
@@ -2342,15 +2395,78 @@
     cards.forEach(card => {
       const header = card.querySelector('.builder-card-header');
       if (header) {
-        header.addEventListener('click', (e) => {
-          if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) {
+        bindFastTap(header, (e) => {
+          if (e.target && (e.target.closest('button') || e.target.closest('a') || e.target.closest('input'))) {
             return;
           }
           toggleCard(card);
         });
       }
     });
+    openCard('1');
   }
+
+  // --- Mobile Tab Switching Logic ---
+  let currentMobileTab = 'edit';
+
+  function switchMobileTab(tab) {
+    currentMobileTab = tab;
+    const formCol = document.getElementById('builder-form-col');
+    const previewCol = document.getElementById('builder-preview-col');
+    const shareCard = document.getElementById('share-card');
+    const navEdit = document.getElementById('nav-btn-edit');
+    const navPreview = document.getElementById('nav-btn-preview');
+    const navShare = document.getElementById('nav-btn-share');
+
+    if (navEdit) navEdit.classList.remove('active');
+    if (navPreview) navPreview.classList.remove('active');
+    if (navShare) navShare.classList.remove('active');
+
+    if (tab === 'edit') {
+      if (navEdit) navEdit.classList.add('active');
+      if (formCol) formCol.classList.remove('hidden');
+      if (previewCol) previewCol.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tab === 'preview') {
+      if (navPreview) navPreview.classList.add('active');
+      if (formCol) formCol.classList.add('hidden');
+      if (previewCol) previewCol.classList.remove('hidden');
+      updatePreview();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tab === 'share') {
+      if (navShare) navShare.classList.add('active');
+      if (formCol) formCol.classList.remove('hidden');
+      if (previewCol) previewCol.classList.add('hidden');
+      updateShareUrl();
+      openCard('6');
+      if (shareCard) {
+        setTimeout(() => {
+          shareCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 320);
+      }
+    }
+  }
+
+  window._lwSwitchTab = switchMobileTab;
+
+  window.addEventListener('resize', () => {
+    const formCol = document.getElementById('builder-form-col');
+    const previewCol = document.getElementById('builder-preview-col');
+    if (!formCol || !previewCol) return;
+
+    if (window.innerWidth >= 640) {
+      formCol.classList.remove('hidden');
+      previewCol.classList.remove('hidden');
+    } else {
+      if (currentMobileTab === 'preview') {
+        formCol.classList.add('hidden');
+        previewCol.classList.remove('hidden');
+      } else {
+        formCol.classList.remove('hidden');
+        previewCol.classList.add('hidden');
+      }
+    }
+  });
 
   let previousRouteWasHashData = false;
 
@@ -2369,10 +2485,12 @@
         
 
         const tag = decodedData.tag || 'v1.0';
-        // Show View Mode: Hide Header Banner completely per user requirement
+        // Show View Mode: Hide Header Banner & Mobile Bottom Nav completely
         if (mainHeader) mainHeader.classList.add('hidden');
         builderModeSec.classList.add('hidden');
         viewModeSec.classList.remove('hidden');
+        const mobileNav = document.getElementById('mobile-bottom-nav');
+        if (mobileNav) mobileNav.classList.add('hidden');
         renderViewMode(decodedData);
         document.title = `${decodedData.name || 'Profile'} | JustALink`;
         return;
@@ -2403,8 +2521,11 @@
     if (mainHeader) mainHeader.classList.remove('hidden');
     viewModeSec.classList.add('hidden');
     builderModeSec.classList.remove('hidden');
+    const mobileNav = document.getElementById('mobile-bottom-nav');
+    if (mobileNav) mobileNav.classList.remove('hidden');
     document.title = 'JustALink - The URL is all';
     populateBuilderInputs();
+    switchMobileTab(currentMobileTab || 'edit');
   }
 
   // --- Event Listeners Initialization ---
@@ -2423,6 +2544,14 @@
       const btnPreview = e.target.closest('#btn-open-preview');
       if (btnPreview) {
         trackUmamiEvent('open_preview_link');
+        updateShareUrl();
+        if (!btnPreview.href || btnPreview.href === '#' || btnPreview.href.endsWith('#')) {
+          e.preventDefault();
+          const shareUrl = outputShareUrl.value;
+          if (shareUrl) {
+            window.open(shareUrl, '_blank');
+          }
+        }
       }
 
       const btnClose = e.target.closest('#btn-close-restore-modal');
@@ -2718,7 +2847,7 @@
 
     // Add Social Icon Button
     if (btnAddSocial) {
-      btnAddSocial.addEventListener('click', () => {
+      bindFastTap(btnAddSocial, () => {
         openCard('3');
         if (!appState.socials) appState.socials = [];
         appState.socials.push({
@@ -2734,7 +2863,7 @@
 
     // Add Link Button
     if (btnAddLink) {
-      btnAddLink.addEventListener('click', () => {
+      bindFastTap(btnAddLink, () => {
         openCard('5');
         appState.links.push({
           id: 'link_' + Date.now(),
@@ -2750,7 +2879,7 @@
 
     // Load Sample Preset Button
     if (btnLoadPreset) {
-      btnLoadPreset.addEventListener('click', () => {
+      bindFastTap(btnLoadPreset, () => {
         appState = JSON.parse(JSON.stringify(defaultState));
         populateBuilderInputs();
         showToast('Form reset to default!', 'bolt');
@@ -2758,7 +2887,7 @@
     }
 
     // Copy URL Button
-    btnCopyUrl.addEventListener('click', () => {
+    bindFastTap(btnCopyUrl, () => {
       const shareUrl = outputShareUrl.value;
       if (!shareUrl) return;
 
@@ -2779,12 +2908,31 @@
     });
 
     function fallbackCopyText(text) {
-      outputShareUrl.select();
-      document.execCommand('copy');
-      copyBtnText.textContent = 'Copied!';
-      showToast('Link copied to clipboard!', 'check');
+      try {
+        outputShareUrl.focus();
+        outputShareUrl.select();
+        outputShareUrl.setSelectionRange(0, 99999);
+        const successful = document.execCommand('copy');
+        if (successful) {
+          copyBtnText.textContent = 'Copied!';
+          showToast('Link copied to clipboard!', 'check');
+        } else {
+          showToast('Select text manually to copy', 'info');
+        }
+      } catch (err) {
+        showToast('Select text manually to copy', 'info');
+      }
       setTimeout(() => { copyBtnText.textContent = 'Copy Link'; }, 2000);
     }
+
+    // Direct event listeners for Mobile Navigation Bar buttons
+    const btnNavEdit = document.getElementById('nav-btn-edit');
+    const btnNavPreview = document.getElementById('nav-btn-preview');
+    const btnNavShare = document.getElementById('nav-btn-share');
+
+    if (btnNavEdit) bindFastTap(btnNavEdit, () => switchMobileTab('edit'));
+    if (btnNavPreview) bindFastTap(btnNavPreview, () => switchMobileTab('preview'));
+    if (btnNavShare) bindFastTap(btnNavShare, () => switchMobileTab('share'));
 
     // Listen to hash route changes
     window.addEventListener('hashchange', handleRoute);
