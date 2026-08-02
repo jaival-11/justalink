@@ -849,6 +849,90 @@
     </div>
   </div>
 
+  <!-- Support the Dev Modal Dialog (shown when ENABLE_VERIFICATION_SYSTEM is false) -->
+  <div id="support-dev-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="background-color: rgba(0, 0, 0, 0.85);">
+    <div class="builder-card border rounded-xl max-w-md w-full p-6 space-y-4 relative text-left select-none">
+      <div class="flex items-center justify-between border-b pb-3 modal-divider">
+        <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+          <span>Please read</span>
+        </h3>
+        <button id="btn-close-support-dev-modal" type="button" class="builder-subtext hover:text-current p-1 rounded transition-colors cursor-pointer" aria-label="Close dialog">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <p class="text-xs sm:text-sm font-medium builder-subtext leading-relaxed">
+          Hey! Supporting me really helps motivate me to keep creating, maintaining, and improving open-source projects like this. You can support me by starring my repository on GitHub, following me on GitHub or X, or joining my Telegram channel. Every bit of support truly means a lot to me!
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- 1. Star Repo on GitHub -->
+          <a 
+            href="https://github.com/jaival-11/justalink" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs px-3 py-2.5 rounded flex items-center justify-between gap-1.5 transition-colors cursor-pointer"
+          >
+            <span class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span>Star my repo</span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <!-- 2. Follow on GitHub -->
+          <a 
+            href="https://github.com/jaival-11" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="bg-[#24292f] hover:bg-[#1f2328] text-white border border-zinc-700 font-bold text-xs px-3 py-2.5 rounded flex items-center justify-between gap-1.5 transition-colors cursor-pointer"
+          >
+            <span class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              <span>Follow on GitHub</span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <!-- 3. Follow on X -->
+          <a 
+            href="https://x.com/techironic11" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-600 font-bold text-xs px-3 py-2.5 rounded flex items-center justify-between gap-1.5 transition-colors cursor-pointer"
+          >
+            <span class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span>Follow me on X</span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <!-- 4. Join Telegram Channel -->
+          <a 
+            href="https://t.me/techironic" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="bg-[#24A1DE] hover:bg-[#2092cb] text-white font-bold text-xs px-3 py-2.5 rounded flex items-center justify-between gap-1.5 transition-colors cursor-pointer"
+          >
+            <span class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+              <span>Join Telegram channel</span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end pt-2 border-t modal-divider">
+        <button id="btn-continue-support-dev" type="button" class="bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs px-5 py-2 rounded transition-colors cursor-pointer">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile Bottom Navigation Bar (Material 3 Mobile Shell) -->
   <nav id="mobile-bottom-nav" class="bottom-nav sm:hidden">
     <button type="button" class="nav-item active" id="nav-btn-edit">

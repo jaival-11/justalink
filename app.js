@@ -23,6 +23,7 @@
     info: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-brand-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
     warning: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
     bolt: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-yellow-400 inline-block" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7V2z"/></svg>`,
+    heart: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-500 fill-red-500 inline-block" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
     link: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
   };
 
@@ -97,6 +98,7 @@
   let isCustomUnlocked = true;
   let isSubcardUnlocked = !ENABLE_VERIFICATION_SYSTEM || (localStorage.getItem('justalink_subcard_unlocked') === 'true');
   let isSubcard2Unlocked = !ENABLE_VERIFICATION_SYSTEM || (localStorage.getItem('justalink_subcard2_unlocked') === 'true');
+  let isSupportDevDismissed = localStorage.getItem('justalink_support_dev_dismissed') === 'true';
   let unlockState = {
     xOpened: localStorage.getItem('justalink_link_x_opened') === 'true',
     telegramOpened: localStorage.getItem('justalink_link_telegram_opened') === 'true'
@@ -526,6 +528,29 @@
     updatePreview();
     updateShareUrl();
     showToast('Profile restored', 'info');
+  }
+
+  function openSupportDevModal() {
+    const modal = document.getElementById('support-dev-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  function closeSupportDevModal() {
+    const modal = document.getElementById('support-dev-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function handleContinueSupportDev() {
+    isSupportDevDismissed = true;
+    localStorage.setItem('justalink_support_dev_dismissed', 'true');
+    closeSupportDevModal();
+    renderSubCardPanel();
+    renderSubCardPanel2();
+    showToast('Thank you for supporting me', 'heart');
   }
 
   function openStarModal() {
@@ -1469,7 +1494,7 @@
     const isFooterDisabled = !!appState.disableFooter;
     const isFooterLinkDisabled = !!appState.disableFooterLink;
 
-    if (!isSubcardUnlocked) {
+    if (ENABLE_VERIFICATION_SYSTEM && !isSubcardUnlocked) {
       // Locked state: disabled & greyed out with high contrast
       subCardPanel.className = 'mt-4 p-3.5 rounded-lg border border-dashed custom-theme-locked-bg cursor-pointer transition-all hover:opacity-90 relative select-none';
       subCardPanel.innerHTML = `
@@ -1513,6 +1538,57 @@
       subCardPanel.onclick = (e) => {
         e.preventDefault();
         openStarModal();
+      };
+    } else if (!ENABLE_VERIFICATION_SYSTEM && !isSupportDevDismissed) {
+      // Disabled at first but NOT greyed out
+      subCardPanel.className = 'mt-4 p-3.5 rounded-lg border border-zinc-700/60 builder-card transition-all relative cursor-pointer';
+      subCardPanel.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Footer Customisation</span>
+          </div>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or custom branding. Markdown supported.</p>
+        
+        <div class="mb-3">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold builder-subtext text-current">
+            <input 
+              type="checkbox" 
+              ${!isFooterDisabled ? 'checked' : ''} 
+              class="rounded border-zinc-700 accent-brand-500 w-4 h-4 cursor-pointer" 
+            />
+            <span>Enable Footer</span>
+          </label>
+        </div>
+
+        <div id="custom-footer-container" class="space-y-3 transition-all ${isFooterDisabled ? 'opacity-40' : ''}">
+          <div>
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Custom Footer Text</label>
+            <input 
+              type="text" 
+              readonly
+              value="${footerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. Built with ❤" 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none cursor-pointer" 
+            />
+          </div>
+
+          <div>
+            <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold builder-subtext text-current">
+              <input 
+                type="checkbox" 
+                ${!isFooterLinkDisabled ? 'checked' : ''} 
+                class="rounded border-zinc-700 accent-brand-500 w-4 h-4 cursor-pointer" 
+              />
+              <span>Enable Footer Link</span>
+            </label>
+          </div>
+        </div>
+      `;
+      subCardPanel.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openSupportDevModal();
       };
     } else {
       // Unlocked state: active sub-card controls
@@ -1610,7 +1686,7 @@
     const footerUrlVal = appState.footerUrl || '';
     const isFooterLinkOff = !!appState.disableFooterLink || !!appState.disableFooter;
 
-    if (!isSubcard2Unlocked) {
+    if (ENABLE_VERIFICATION_SYSTEM && !isSubcard2Unlocked) {
       // Locked state: disabled & greyed out with high contrast
       subCardPanel2.className = 'mt-3 p-3.5 rounded-lg border border-dashed custom-theme-locked-bg cursor-pointer transition-all hover:opacity-90 relative select-none';
       subCardPanel2.innerHTML = `
@@ -1650,6 +1726,45 @@
       subCardPanel2.onclick = (e) => {
         e.preventDefault();
         openStarFollowModal();
+      };
+    } else if (!ENABLE_VERIFICATION_SYSTEM && !isSupportDevDismissed) {
+      // Disabled at first but NOT greyed out
+      subCardPanel2.className = 'mt-3 p-3.5 rounded-lg border border-zinc-700/60 builder-card transition-all relative cursor-pointer';
+      subCardPanel2.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold">Additional Customisation</span>
+          </div>
+        </div>
+        <p class="text-[11px] builder-subtext mb-3">Add a banner image URL and custom footer link URL for your profile card. Recommended aspect ratio for banner is 3:1 (or 16:5)</p>
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Banner Image Link</label>
+            <input 
+              type="text" 
+              readonly 
+              value="${bannerVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://images.unsplash.com/photo-..." 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none cursor-pointer" 
+            />
+          </div>
+          <div class="${isFooterLinkOff ? 'opacity-40' : ''}">
+            <label class="block text-[10px] uppercase font-bold builder-subtext mb-1">Footer URL</label>
+            <input 
+              type="text" 
+              readonly 
+              value="${footerUrlVal.replace(/"/g, '&quot;')}" 
+              placeholder="e.g. https://yourwebsite.com" 
+              class="w-full builder-input border rounded px-3 py-1.5 text-xs focus:outline-none cursor-pointer" 
+            />
+          </div>
+        </div>
+      `;
+      subCardPanel2.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openSupportDevModal();
       };
     } else {
       // Unlocked state: active sub-card controls
@@ -2618,6 +2733,14 @@
         return;
       }
 
+      const btnCloseSupportDev = e.target.closest('#btn-close-support-dev-modal');
+      const btnContinueSupportDev = e.target.closest('#btn-continue-support-dev');
+      if (btnCloseSupportDev || btnContinueSupportDev) {
+        e.preventDefault();
+        handleContinueSupportDev();
+        return;
+      }
+
       const btnAutoCheckVerify = e.target.closest('#btn-auto-check-verify');
       if (btnAutoCheckVerify) {
         e.preventDefault();
@@ -2663,6 +2786,11 @@
       if (starFollowModal && e.target === starFollowModal) {
         closeStarFollowModal();
       }
+
+      const supportDevModal = document.getElementById('support-dev-modal');
+      if (supportDevModal && e.target === supportDevModal) {
+        handleContinueSupportDev();
+      }
     });
 
     document.addEventListener('keydown', (e) => {
@@ -2686,6 +2814,10 @@
       const starFollowModal = document.getElementById('star-follow-repo-modal');
       if (e.key === 'Escape' && starFollowModal && !starFollowModal.classList.contains('hidden')) {
         closeStarFollowModal();
+      }
+      const supportDevModal = document.getElementById('support-dev-modal');
+      if (e.key === 'Escape' && supportDevModal && !supportDevModal.classList.contains('hidden')) {
+        handleContinueSupportDev();
       }
     });
 
