@@ -1,8 +1,4 @@
 // © 2026 Jaival Patel
-/**
- * JustALink - Zero-Database Hash Bio Link Builder
- * Frontend Logic & Hash Routing
- */
 
 (function () {
   'use strict';
@@ -20,11 +16,11 @@
   const ICONS = {
     sun: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
     moon: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
-    check: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+    check: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
     up: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>`,
     down: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
     close: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
-    info: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
+    info: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-brand-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
     warning: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
     bolt: `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-yellow-400 inline-block" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7v8l10-12h-7V2z"/></svg>`,
     link: `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
@@ -416,7 +412,7 @@
             <button id="btn-cancel-restore" type="button" class="builder-muted-btn text-xs font-bold px-4 py-2 rounded border transition-colors cursor-pointer">
               Cancel
             </button>
-            <button id="btn-submit-restore" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
+            <button id="btn-submit-restore" type="button" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2 rounded transition-colors cursor-pointer">
               Restore Profile
             </button>
           </div>
@@ -970,7 +966,7 @@
     const linkX = document.getElementById('unlock-link-x');
     const linkTelegram = document.getElementById('unlock-link-telegram');
 
-    const greenTickHTML = `<span class="w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold inline-flex items-center justify-center text-xs shadow-none">✓</span>`;
+    const greenTickHTML = `<span class="w-5 h-5 rounded-full bg-brand-500 text-black font-extrabold inline-flex items-center justify-center text-xs shadow-none">✓</span>`;
     const verifyingHTML = `<span class="px-2 py-0.5 rounded text-[11px] font-semibold unlock-verifying-badge flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verifying...</span>`;
 
     if (tickX) {
@@ -1330,12 +1326,12 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `p-3 rounded-lg border text-left flex flex-col justify-between transition-all ${t.bg} ${t.text} ${
-        isSelected ? 'ring-2 ring-inset ring-emerald-500 border-emerald-500 font-bold' : 'border-zinc-700/60 opacity-80 hover:opacity-100'
+        isSelected ? 'ring-2 ring-inset ring-brand-500 border-brand-500 font-bold' : 'border-zinc-700/60 opacity-80 hover:opacity-100'
       }`;
       btn.innerHTML = `
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-semibold">${t.name}</span>
-          ${isSelected ? `<span class="text-emerald-400 text-xs">${ICONS.check}</span>` : ''}
+          ${isSelected ? `<span class="text-brand-400 text-xs">${ICONS.check}</span>` : ''}
         </div>
         <div class="flex gap-1.5">
           <span class="w-3 h-3 rounded-full ${t.accent}"></span>
@@ -1366,7 +1362,7 @@
 
     // Active custom theme controls (unlocked by default)
     customPanel.className = `mt-4 p-3.5 rounded-lg border transition-all ${
-      isCustomSelected ? 'ring-2 ring-inset ring-emerald-500 border-emerald-500 builder-card' : 'border-zinc-700/60 builder-card'
+      isCustomSelected ? 'ring-2 ring-inset ring-brand-500 border-brand-500 builder-card' : 'border-zinc-700/60 builder-card'
     }`;
     customPanel.onclick = null;
     customPanel.innerHTML = `
@@ -1375,7 +1371,7 @@
           <span class="text-xs font-bold">Custom Theme</span>
         </div>
         <button type="button" id="btn-select-custom-theme" class="text-xs font-bold px-2.5 py-1 rounded transition-colors ${
-          isCustomSelected ? 'bg-emerald-600 text-white' : 'builder-muted-btn'
+          isCustomSelected ? 'bg-brand-600 text-white' : 'builder-muted-btn'
         }">
           ${isCustomSelected ? 'Active' : 'Use Custom Theme'}
         </button>
@@ -1486,7 +1482,7 @@
         <div class="pointer-events-none opacity-60 space-y-3">
           <div>
             <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold">
-              <input type="checkbox" disabled ${!isFooterDisabled ? 'checked' : ''} class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" />
+              <input type="checkbox" disabled ${!isFooterDisabled ? 'checked' : ''} class="rounded border-zinc-700 accent-brand-500 w-4 h-4 cursor-pointer" />
               <span>Enable Footer</span>
             </label>
           </div>
@@ -1503,7 +1499,7 @@
             </div>
             <div>
               <label class="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold">
-                <input type="checkbox" disabled ${!isFooterLinkDisabled ? 'checked' : ''} class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" />
+                <input type="checkbox" disabled ${!isFooterLinkDisabled ? 'checked' : ''} class="rounded border-zinc-700 accent-brand-500 w-4 h-4 cursor-pointer" />
                 <span>Enable Footer Link</span>
               </label>
             </div>
@@ -1536,7 +1532,7 @@
               type="checkbox" 
               id="checkbox-enable-footer" 
               ${!isFooterDisabled ? 'checked' : ''} 
-              class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" 
+              class="rounded border-zinc-700 accent-brand-500 w-4 h-4 cursor-pointer" 
             />
             <span>Enable Footer</span>
           </label>
@@ -1562,7 +1558,7 @@
                 id="checkbox-enable-footer-link" 
                 ${!isFooterLinkDisabled ? 'checked' : ''} 
                 ${isFooterDisabled ? 'disabled' : ''}
-                class="rounded border-zinc-700 accent-emerald-500 w-4 h-4 cursor-pointer" 
+                class="rounded border-zinc-700 accent-brand-500 w-4 h-4 cursor-pointer" 
               />
               <span>Enable Footer Link</span>
             </label>
