@@ -272,7 +272,11 @@
   function encodeData(dataObj) {
     try {
       const payload = Object.assign({ tag: 'v1.0' }, dataObj);
-      if (!payload.githubUsername) {
+      if (!ENABLE_VERIFICATION_SYSTEM) {
+        delete payload.githubUsername;
+        delete payload.githubUser;
+        delete payload.unlockedBy;
+      } else if (!payload.githubUsername) {
         const storedUser = localStorage.getItem('justalink_github_username');
         if (storedUser) {
           payload.githubUsername = storedUser;
