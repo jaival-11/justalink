@@ -252,21 +252,57 @@
   const toastMessage = document.getElementById('toast-message');
 
   // --- Homepage Light/Dark Theme Switcher State ---
-  let builderTheme = localStorage.getItem('justalink_builder_theme') || 'light';
+  function getPreferredBuilderTheme() {
+    const savedTheme = localStorage.getItem('justalink_builder_theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme;
+    }
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
 
-  function applyBuilderTheme(theme) {
+  let builderTheme = getPreferredBuilderTheme();
+
+  function applyBuilderTheme(theme, saveUserPreference = false) {
     builderTheme = theme;
-    localStorage.setItem('justalink_builder_theme', theme);
-    if (theme === 'light') {
-      document.body.classList.remove('builder-dark');
-      document.body.classList.add('builder-light');
-      themeToggleIcon.innerHTML = ICONS.moon;
-      themeToggleText.textContent = 'Dark Mode';
-    } else {
-      document.body.classList.remove('builder-light');
-      document.body.classList.add('builder-dark');
-      themeToggleIcon.innerHTML = ICONS.sun;
-      themeToggleText.textContent = 'Light Mode';
+    if (saveUserPreference) {
+      localStorage.setItem('justalink_builder_theme', theme);
+    }
+    if (document.body) {
+      if (theme === 'light') {
+        document.body.classList.remove('builder-dark');
+        document.body.classList.add('builder-light');
+      } else {
+        document.body.classList.remove('builder-light');
+        document.body.classList.add('builder-dark');
+      }
+    }
+    if (themeToggleIcon && themeToggleText) {
+      if (theme === 'light') {
+        themeToggleIcon.innerHTML = ICONS.moon;
+        themeToggleText.textContent = 'Dark Mode';
+      } else {
+        themeToggleIcon.innerHTML = ICONS.sun;
+        themeToggleText.textContent = 'Light Mode';
+      }
+    }
+  }
+
+  function initSystemThemeListener() {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleSystemThemeChange = (e) => {
+        if (!localStorage.getItem('justalink_builder_theme')) {
+          applyBuilderTheme(e.matches ? 'dark' : 'light', false);
+        }
+      };
+      if (darkMedia.addEventListener) {
+        darkMedia.addEventListener('change', handleSystemThemeChange);
+      } else if (darkMedia.addListener) {
+        darkMedia.addListener(handleSystemThemeChange);
+      }
     }
   }
 
@@ -2920,7 +2956,7 @@
     if (themeToggleBtn) {
       themeToggleBtn.addEventListener('click', () => {
         const newTheme = builderTheme === 'dark' ? 'light' : 'dark';
-        applyBuilderTheme(newTheme);
+        applyBuilderTheme(newTheme, true);
         showToast(`Switched to ${newTheme === 'light' ? 'Light' : 'Dark'} Mode`, newTheme === 'light' ? 'sun' : 'moon');
       });
     }
@@ -3615,6 +3651,8 @@
   window.renderViewMode = renderViewMode;
   window.updatePreview = updatePreview;
   window.ENABLE_VERIFICATION_SYSTEM = ENABLE_VERIFICATION_SYSTEM;
+  window.applyBuilderTheme = applyBuilderTheme;
+  window.getPreferredBuilderTheme = getPreferredBuilderTheme;
   window.setSubcardState = (s1, s2) => {
     if (!ENABLE_VERIFICATION_SYSTEM) {
       isSubcardUnlocked = true;
@@ -3627,7 +3665,8 @@
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
-    applyBuilderTheme(builderTheme);
+    applyBuilderTheme(builderTheme, false);
+    initSystemThemeListener();
     initEvents();
     handleRoute();
     performAutoCheckOnPageLoad();
