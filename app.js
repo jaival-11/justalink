@@ -93,10 +93,14 @@
 
   window.trackUmamiEvent = trackUmamiEvent;
 
+  // --- Verification System Toggle Flag ---
+  // Set to false to disable the entire verification system (locks features, follow/star checks, auto-revocation)
+  const ENABLE_VERIFICATION_SYSTEM = false;
+
   // --- Custom Theme & Sub-Card Unlock Feature State ---
   let isCustomUnlocked = true;
-  let isSubcardUnlocked = localStorage.getItem('justalink_subcard_unlocked') === 'true';
-  let isSubcard2Unlocked = localStorage.getItem('justalink_subcard2_unlocked') === 'true';
+  let isSubcardUnlocked = !ENABLE_VERIFICATION_SYSTEM || (localStorage.getItem('justalink_subcard_unlocked') === 'true');
+  let isSubcard2Unlocked = !ENABLE_VERIFICATION_SYSTEM || (localStorage.getItem('justalink_subcard2_unlocked') === 'true');
   let unlockState = {
     xOpened: localStorage.getItem('justalink_link_x_opened') === 'true',
     telegramOpened: localStorage.getItem('justalink_link_telegram_opened') === 'true'
@@ -514,14 +518,14 @@
       appState.disableFooter = false;
       appState.disableFooterLink = false;
     }
-    isSubcardUnlocked = false;
-    localStorage.setItem('justalink_subcard_unlocked', 'false');
+    isSubcardUnlocked = true;
+    localStorage.setItem('justalink_subcard_unlocked', 'true');
     populateBuilderInputs();
     renderSubCardPanel();
     renderSubCardPanel2();
     updatePreview();
     updateShareUrl();
-    showToast('Profile restored (footer customisation locked)', 'warning');
+    showToast('Profile restored', 'info');
   }
 
   function openStarModal() {
@@ -700,14 +704,14 @@
         appState.disableFooterLink = false;
       }
     }
-    isSubcard2Unlocked = false;
-    localStorage.setItem('justalink_subcard2_unlocked', 'false');
+    isSubcard2Unlocked = true;
+    localStorage.setItem('justalink_subcard2_unlocked', 'true');
     populateBuilderInputs();
     renderSubCardPanel();
     renderSubCardPanel2();
     updatePreview();
     updateShareUrl();
-    showToast('Profile restored (additional customisation locked)', 'warning');
+    showToast('Profile restored', 'info');
   }
 
   function openStarFollowModal(userStatus) {
@@ -1097,6 +1101,19 @@
           description: l.description || ''
         })) : []
       };
+
+      if (!ENABLE_VERIFICATION_SYSTEM) {
+        isSubcardUnlocked = true;
+        isSubcard2Unlocked = true;
+        appState = candidateState;
+        populateBuilderInputs();
+        renderSubCardPanel();
+        renderSubCardPanel2();
+        updatePreview();
+        updateShareUrl();
+        closeRestoreModal();
+        return { success: true };
+      }
 
       if (hasSubcard2Features) {
         if (savedUser) {
@@ -1505,9 +1522,10 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold">Footer Customisation</span>
+            ${ENABLE_VERIFICATION_SYSTEM ? `
             <span class="badge-unlocked">
               <span>Unlocked</span>
-            </span>
+            </span>` : ''}
           </div>
         </div>
         <p class="text-[11px] builder-subtext mb-3">Enable/disable card footer or custom branding. Markdown supported.</p>
@@ -1641,9 +1659,10 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold">Additional Customisation</span>
+            ${ENABLE_VERIFICATION_SYSTEM ? `
             <span class="badge-unlocked">
               <span>Unlocked</span>
-            </span>
+            </span>` : ''}
           </div>
         </div>
         <p class="text-[11px] builder-subtext mb-3">Add a banner image URL and custom footer link URL for your profile card. Recommended aspect ratio for banner is 3:1 (or 16:5)</p>
@@ -3035,6 +3054,7 @@
   let isAutoChecking = false;
 
   async function performAutoCheckOnPageLoad() {
+    if (!ENABLE_VERIFICATION_SYSTEM) return;
     if (isAutoChecking) return;
     isAutoChecking = true;
 
@@ -3268,6 +3288,7 @@
    * @returns {Promise<boolean>} True if user starred the repo, false otherwise
    */
   async function checkIfUserStarred(username) {
+    if (!ENABLE_VERIFICATION_SYSTEM) return true;
     const cleanUsername = validateGitHubUsername(username);
 
     const targetFullName = `${GITHUB_TARGET_OWNER}/${GITHUB_TARGET_REPO}`.toLowerCase();
@@ -3332,6 +3353,7 @@
    * @returns {Promise<boolean>} True if user follows jaival-11, false otherwise
    */
   async function checkIfUserFollows(username) {
+    if (!ENABLE_VERIFICATION_SYSTEM) return true;
     const cleanUsername = validateGitHubUsername(username);
 
     const url = `https://api.github.com/users/${encodeURIComponent(cleanUsername)}/following/${GITHUB_TARGET_OWNER}`;
@@ -3397,6 +3419,9 @@
    * @returns {Promise<{ hasStarred: boolean, isFollowing: boolean, hasDoneBoth: boolean }>}
    */
   async function checkIfUserStarredAndFollowed(username) {
+    if (!ENABLE_VERIFICATION_SYSTEM) {
+      return { hasStarred: true, isFollowing: true, hasDoneBoth: true };
+    }
     const cleanUsername = validateGitHubUsername(username);
 
     const [hasStarred, isFollowing] = await Promise.all([
@@ -3457,7 +3482,16 @@
   window.closeAutoCheckFailedModal = closeAutoCheckFailedModal;
   window.renderViewMode = renderViewMode;
   window.updatePreview = updatePreview;
-  window.setSubcardState = (s1, s2) => { isSubcardUnlocked = s1; isSubcard2Unlocked = s2; };
+  window.ENABLE_VERIFICATION_SYSTEM = ENABLE_VERIFICATION_SYSTEM;
+  window.setSubcardState = (s1, s2) => {
+    if (!ENABLE_VERIFICATION_SYSTEM) {
+      isSubcardUnlocked = true;
+      isSubcard2Unlocked = true;
+    } else {
+      isSubcardUnlocked = s1;
+      isSubcard2Unlocked = s2;
+    }
+  };
 
   // --- App Entry Point ---
   document.addEventListener('DOMContentLoaded', () => {
