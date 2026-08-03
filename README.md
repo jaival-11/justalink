@@ -1,6 +1,6 @@
 # JustALink - The URL is all
 
-JustALink is a serverless, zero-database "Link-in-bio". User profiles (name, avatar, bio, theme, and links) are compressed and encoded entirely inside the URL hash fragment (`#data=...`). 
+JustALink is a serverless, zero-database "Link-in-bio". User profiles (name, avatar, bio, theme, and links) are compressed and encoded entirely inside the URL fragment (`#data=...`). 
  
 ![Screenshot1 ](/assets/screenshot1.jpg)
 ![Screenshot 2](/assets/screenshot2.jpg)
@@ -10,7 +10,7 @@ JustALink is a serverless, zero-database "Link-in-bio". User profiles (name, ava
 
 ## Features
 
-* **Zero-server Architecture:** Your profile payload lives completely inside the URL hash (`#data=`).
+* **Zero-server Architecture:** Your profile payload lives completely inside the URL (`#data=`).
 * **Privacy-First:** No user data is stored on external servers or databases.
 * **Themes:** Select from six themes (*Slate Dark*, *Minimal Light*, *Cyber High-Contrast*, *Emerald Solid*, *Berry Violet*, and *Neo Punch*), or make you own!
 * **Fully customisable:** All aspects of the page can be easily customised, it's your page - make it your own.
@@ -22,16 +22,29 @@ JustALink is a serverless, zero-database "Link-in-bio". User profiles (name, ava
 ---
 ## How it works
 
-Traditional bio-link services store user profiles in a central database and assign you an ID. **JustALink** flips this model on its head:
+Traditional bio-link services store user profiles in a central database and assign you an ID. **JustALink** changes this:
 
 1. You customize your bio, links, and design in **Builder Mode**.
-2. The app compresses and URL-encodes your configuration into a single hash string.
-3. Your generated link *is* your database. Anyone opening the link decodes the hash locally in their browser to render your profile.
+2. The app compresses and URL-encodes your configuration into a single base64 string.
+3. Your generated link *is* your database. Anyone opening the link decodes it locally in their browser to render your profile.
 ---
 
 ## Bug reports and feature suggestions
 
-If you have encounter any bug or have any suggestions that could make this project better feel free to [open an issue](https://github.com/jaival-11/justalink/issues/new)
+If you have encounter any bug or have any suggestions that could make this project better feel free to [open an issue](https://github.com/jaival-11/justalink/issues/new). You can also email me:
+
+[![Email Support](https://img.shields.io/badge/Email-Contact_Me-db4437?style=for-the-badge&labelColor=0d1117&logo=gmail)](mailto:jaival7909@gmail.com)
+
+---
+
+## Support
+
+~I know I have locked some features~. I have kept all features unlocked, without any restrictions. If you like this project or like any of my other works, please consider supporting me. Supporting really helps motivate me to keep creating, maintaining, and improving open-source projects like this. You can support me by starring  my repository on Github, following me on X or Github, or joining my Telegram channel. You can also support me by sharing my work with your friends. Starring the repo or following me doesn't cost you anything but for me it really makes the difference. Every bit of support truly means a lot to me! Thank you. Hope you like my work.
+
+[![Star Repo](https://img.shields.io/badge/Star%20my%20repo-FFE100?style=for-the-badge)](https://github.com/jaival-11/justalink)
+[![Follow on Github](https://img.shields.io/badge/Follow%20on%20Github-000000?style=for-the-badge&logo=Github)](https://github.com/jaival-11)
+[![Join Telegram channel](https://img.shields.io/badge/Join%20channel-2AABEE?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/techironic)
+[![Follow on X](https://img.shields.io/badge/Follow%20on%20X-000000?style=for-the-badge&logo=X)](https://x.com/techironic11)
 
 ---
 
@@ -70,11 +83,7 @@ Contributions are welcome! Whether it's fixing a UI bug, optimizing the URL comp
 5. Open a Pull Request
 
 ---
-## Support
 
-I know I have locked some features. The only reason to do that is, starring the repo or following me doesn't cost you anything but for me it really makes the difference. So every star, every follow matters to me. Those stars and follow motivate me to keep improving, maintaining, and make such projects. If you haven't already please consider [starring the repo](https://github.com/jaival-11/justalink) and may be even following [me](https://github.com/jaival-11). Thank you. Hope you like my work.
-
----
 ## Disclaimer and Privacy
 
 **JustALink is a strictly client-side tool.** Because the entire profile payload is encoded directly into the URL hash (*"The URL is all"*), **no user-generated content is ever sent to, or stored on, any server.** 
