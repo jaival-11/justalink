@@ -2993,7 +2993,10 @@
 
     // Add Social Icon Button
     if (btnAddSocial) {
-      bindFastTap(btnAddSocial, () => {
+      bindFastTap(btnAddSocial, (e) => {
+        if (e && typeof e.stopPropagation === 'function') {
+          e.stopPropagation();
+        }
         openCard('3');
         if (!appState.socials) appState.socials = [];
         appState.socials.push({
@@ -3009,7 +3012,10 @@
 
     // Add Link Button
     if (btnAddLink) {
-      bindFastTap(btnAddLink, () => {
+      bindFastTap(btnAddLink, (e) => {
+        if (e && typeof e.stopPropagation === 'function') {
+          e.stopPropagation();
+        }
         openCard('5');
         appState.links.push({
           id: 'link_' + Date.now(),

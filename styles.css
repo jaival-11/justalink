@@ -132,6 +132,12 @@ a, button, input, textarea, select {
 .builder-card-header > * {
   pointer-events: none;
 }
+.builder-card-header button,
+.builder-card-header a,
+.builder-card-header input,
+.builder-card-header .cursor-pointer {
+  pointer-events: auto;
+}
 .builder-card-header:hover {
   opacity: 0.88;
 }
