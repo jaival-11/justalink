@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JustALink - The URL is all</title>
-  <meta name="description" content="Create elegant, link-in-bio pages powered purely by URL hash fragments." />
+  <meta name="description" content="Create elegant, link-in-bio pages powered purely by URL fragments." />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -16,10 +16,10 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts: Google Sans Flex, Inter & Material Symbols Rounded -->
+  <!-- Google Fonts: Google Sans Flex, Inter, Martel Sans & Material Symbols Rounded -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Inter:wght@400;500;600;700;800&family=Martel+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
   <link rel="stylesheet" href="styles.css?v=2.0.0" />
@@ -260,7 +260,7 @@
             <div class="builder-card-body-wrapper">
               <div class="builder-card-body-inner mt-3.5 pt-3.5 border-t border-zinc-700/40">
                 <p class="text-xs builder-subtext mb-2">
-                  Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, twitter, instagram, linkedin).
+                  Add social links as icons displayed in a row after your bio. Enter icon names from <a href="https://simpleicons.org/" target="_blank" rel="noopener noreferrer" class="underline hover:opacity-80">simpleicons.org</a> (e.g. github, X, instagram, linkedin).
                 </p>
                 <p class="text-xs builder-subtext mb-3.5">
                   <span class="font-semibold">Tip:</span> You can use <code class="font-mono text-brand-500 font-semibold">mailto:</code> followed by an email address to add an email.
@@ -447,13 +447,13 @@
               </div>
 
               <!-- Permanent Footer Watermark -->
-              <div class="mt-8 pt-4 border-t border-[inherit] text-center">
+              <div id="watermark" class="mt-8 pt-4 border-t border-[inherit] text-center watermark-footer">
                 <a 
                   id="watermark-link"
                   href="https://jaival-11.github.io/justalink?ref=footer" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity font-mono underline"
+                  class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity underline"
                   title="Create your own zero-database link-in-bio page"
                 >
                   Built with <span class="underline">JustALink</span>
@@ -523,13 +523,13 @@
         </div>
 
         <!-- Permanent Watermark Footer -->
-        <footer class="mt-10 pt-5 border-t border-[inherit] text-center">
+        <footer id="view-watermark" class="mt-10 pt-5 border-t border-[inherit] text-center watermark-footer">
           <a 
             id="view-watermark-link"
             href="https://jaival-11.github.io/justalink?ref=footer" 
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity font-mono underline"
+            class="inline-block text-xs font-semibold tracking-wider opacity-75 hover:opacity-100 transition-opacity underline"
             title="Create your own zero-database link-in-bio page"
           >
             Built with <span class="underline">JustALink</span>

@@ -1905,7 +1905,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <input 
             type="text" 
-            placeholder="Simple Icon Name (e.g. github, twitter, linkedin)" 
+            placeholder="Simple Icon Name (e.g. github, X, linkedin)" 
             value="${social.icon || ''}" 
             class="input-social-icon builder-input border rounded px-2.5 py-1.5 text-xs focus:outline-none"
           />
