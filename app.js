@@ -2090,7 +2090,7 @@
       const accent = appState.customAccent || '#d4845a';
       const textColor = getContrastTextColor(bg);
 
-      previewFrame.className = 'w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 font-profile';
+      previewFrame.className = 'w-full max-w-sm mx-auto p-5 sm:p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden font-profile preview-card-shadow';
       previewFrame.style.backgroundColor = bg;
       previewFrame.style.color = textColor;
       previewFrame.style.borderColor = accent;
@@ -2100,7 +2100,7 @@
       previewFrame.style.color = '';
       previewFrame.style.borderColor = '';
       if (previewMessage) previewMessage.style.borderColor = '';
-      previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-xl border transition-all duration-300 font-profile theme-${appState.theme}`;
+      previewFrame.className = `w-full max-w-sm mx-auto p-5 sm:p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden font-profile preview-card-shadow theme-${appState.theme}`;
     }
     
     // Name & Bio
@@ -2277,7 +2277,7 @@
       viewModeSec.className = 'min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6';
       viewModeSec.style.backgroundColor = outerBg;
 
-      viewCardContainer.className = 'w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto';
+      viewCardContainer.className = 'w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto relative overflow-hidden';
       viewCardContainer.style.backgroundColor = bg;
       viewCardContainer.style.color = textColor;
       viewCardContainer.style.borderColor = accent;
@@ -2293,7 +2293,7 @@
       const pageThemeClass = `page-theme-${data.theme || 'slate'}`;
 
       viewModeSec.className = `min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 ${pageThemeClass}`;
-      viewCardContainer.className = `w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto ${themeClass}`;
+      viewCardContainer.className = `w-full max-w-md p-6 sm:p-8 rounded-2xl border transition-colors my-auto relative overflow-hidden ${themeClass}`;
     }
 
     // Name & Bio
