@@ -43,13 +43,24 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Permanent Watermark Footer Font */
+/* Permanent Watermark Footer Font & Underline Styling */
 #watermark,
 #view-watermark,
 #watermark-link,
 #view-watermark-link,
 .watermark-footer {
   font-family: 'Martel Sans', sans-serif !important;
+}
+
+#watermark,
+#view-watermark,
+#watermark-link,
+#view-watermark-link,
+.watermark-footer,
+.watermark-footer a,
+.watermark-footer .underline,
+.watermark-footer u {
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
 }
 
 /* Material Symbols Rounded Icon styling */
