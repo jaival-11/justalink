@@ -52,6 +52,18 @@ body {
   font-family: 'Martel Sans', sans-serif !important;
 }
 
+.watermark-footer a,
+#watermark-link,
+#view-watermark-link {
+  opacity: 0.6;
+}
+
+.watermark-footer a:hover,
+#watermark-link:hover,
+#view-watermark-link:hover {
+  opacity: 0.8;
+}
+
 #watermark,
 #view-watermark,
 #watermark-link,
