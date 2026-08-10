@@ -2217,7 +2217,7 @@
     } else {
       const activeFooterUrl = isSubcard2Unlocked ? (appState.footerUrl || '') : '';
       const customUrl = (activeFooterUrl && activeFooterUrl.trim()) ? sanitizeUrl(activeFooterUrl) : null;
-      watermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink?ref=footer';
+      watermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink/?utm_source=footer';
       watermarkLink.target = '_blank';
       watermarkLink.rel = 'noopener noreferrer';
       watermarkLink.setAttribute('title', customUrl ? 'Visit footer URL' : 'Create your own zero-database link-in-bio page');
@@ -2405,7 +2405,7 @@
       viewWatermarkLink.onclick = (e) => { e.preventDefault(); };
     } else {
       const customUrl = (data.footerUrl && String(data.footerUrl).trim()) ? sanitizeUrl(data.footerUrl) : null;
-      viewWatermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink?ref=footer';
+      viewWatermarkLink.href = customUrl || 'https://jaival-11.github.io/justalink/?utm_source=footer';
       viewWatermarkLink.target = '_blank';
       viewWatermarkLink.rel = 'noopener noreferrer';
       viewWatermarkLink.setAttribute('title', customUrl ? 'Visit footer URL' : 'Create your own zero-database link-in-bio page');
@@ -2636,6 +2636,7 @@
     }
 
     const searchParams = new URLSearchParams(window.location.search);
+    const trackingSearch = window.location.search;
     if (searchParams.get('ref') === 'footer') {
       searchParams.delete('ref');
       const newSearch = searchParams.toString();
@@ -2643,8 +2644,9 @@
       window.history.replaceState(null, '', newUrl);
     }
 
-    // Log Native Pageview for Homepage (url: '/')
-    trackUmamiEvent('pageview', { url: '/', title: 'JustALink - The URL is all' });
+    // Log Native Pageview for Homepage (url: '/' + search params for campaign/utm tracking on root builder page)
+    const homepageUrl = trackingSearch ? '/' + trackingSearch : '/';
+    trackUmamiEvent('pageview', { url: homepageUrl, title: 'JustALink - The URL is all' });
 
     // Default: Show Builder Mode & Top Header Banner
     if (mainHeader) mainHeader.classList.remove('hidden');
