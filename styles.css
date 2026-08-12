@@ -464,7 +464,7 @@ body.builder-light .toast-notification {
 }
 
 .theme-neo {
-  background-color: #fff7ed;
+  background-color: #ffedd5;
   color: #1c1917;
   border-color: #1c1917;
 }
@@ -485,7 +485,7 @@ body.builder-light .toast-notification {
 .page-theme-cyber { background-color: #09090b; }
 .page-theme-emerald { background-color: #022c22; }
 .page-theme-berry { background-color: #2e1065; }
-.page-theme-neo { background-color: #ffedd5; }
+.page-theme-neo { background-color: #fed7aa; }
 
 /* Profile Card Inner Elements */
 .theme-slate #preview-message, .theme-slate #view-message { border-color: #334155; }

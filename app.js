@@ -9,7 +9,7 @@
     { id: 'cyber', name: 'Cyber High-Contrast', bg: 'bg-black', text: 'text-yellow-400', border: 'border-yellow-400', accent: 'bg-yellow-400' },
     { id: 'emerald', name: 'Emerald Solid', bg: 'bg-emerald-900', text: 'text-emerald-100', border: 'border-emerald-600', accent: 'bg-emerald-500' },
     { id: 'berry', name: 'Berry Violet', bg: 'bg-purple-900', text: 'text-purple-100', border: 'border-purple-600', accent: 'bg-purple-600' },
-    { id: 'neo', name: 'Neo Punch', bg: 'bg-amber-50', text: 'text-stone-900', border: 'border-stone-900', accent: 'bg-orange-600' },
+    { id: 'neo', name: 'Neo Punch', bg: 'bg-orange-100', text: 'text-stone-900', border: 'border-stone-900', accent: 'bg-orange-600' },
   ];
 
   // --- Clean Inline SVG Icons ---
