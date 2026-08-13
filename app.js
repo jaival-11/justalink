@@ -1430,7 +1430,15 @@
       isCustomSelected ? 'ring-2 ring-inset ring-brand-500 border-brand-500 builder-card' : 'border-zinc-700/60 builder-card'
     }`;
     customPanel.onclick = null;
-    customPanel.innerHTML = `
+
+    let pickerBg = customPanel.querySelector('#input-custom-bg-picker');
+    let textBg = customPanel.querySelector('#input-custom-bg-text');
+    let pickerAccent = customPanel.querySelector('#input-custom-accent-picker');
+    let textAccent = customPanel.querySelector('#input-custom-accent-text');
+    let btnSelectCustom = customPanel.querySelector('#btn-select-custom-theme');
+
+    if (!textBg || !textAccent || !btnSelectCustom) {
+      customPanel.innerHTML = `
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold">Custom Theme</span>
@@ -1460,7 +1468,7 @@
         </div>
       `;
 
-      const btnSelectCustom = customPanel.querySelector('#btn-select-custom-theme');
+      btnSelectCustom = customPanel.querySelector('#btn-select-custom-theme');
       if (btnSelectCustom) {
         btnSelectCustom.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1471,10 +1479,10 @@
         });
       }
 
-      const pickerBg = customPanel.querySelector('#input-custom-bg-picker');
-      const textBg = customPanel.querySelector('#input-custom-bg-text');
-      const pickerAccent = customPanel.querySelector('#input-custom-accent-picker');
-      const textAccent = customPanel.querySelector('#input-custom-accent-text');
+      pickerBg = customPanel.querySelector('#input-custom-bg-picker');
+      textBg = customPanel.querySelector('#input-custom-bg-text');
+      pickerAccent = customPanel.querySelector('#input-custom-accent-picker');
+      textAccent = customPanel.querySelector('#input-custom-accent-text');
 
       if (pickerBg && textBg) {
         pickerBg.addEventListener('input', (e) => {
@@ -1520,7 +1528,29 @@
           updateShareUrl();
         });
       }
+    } else {
+      if (btnSelectCustom) {
+        btnSelectCustom.textContent = isCustomSelected ? 'Active' : 'Use Custom Theme';
+        btnSelectCustom.className = `text-xs font-bold px-2.5 py-1 rounded transition-colors ${
+          isCustomSelected ? 'bg-brand-600 text-white' : 'builder-muted-btn'
+        }`;
+      }
+
+      if (textBg && document.activeElement !== textBg) {
+        textBg.value = bgVal;
+      }
+      if (pickerBg && /^#[0-9A-F]{6}$/i.test(bgVal)) {
+        pickerBg.value = bgVal;
+      }
+
+      if (textAccent && document.activeElement !== textAccent) {
+        textAccent.value = accentVal;
+      }
+      if (pickerAccent && /^#[0-9A-F]{6}$/i.test(accentVal)) {
+        pickerAccent.value = accentVal;
+      }
     }
+  }
 
   function renderSubCardPanel() {
     let subCardPanel = document.getElementById('sub-card-panel');
