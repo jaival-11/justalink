@@ -33,7 +33,7 @@ Traditional bio-link services store user profiles in a central database and assi
 
 If you have encounter any bug or have any suggestions that could make this project better feel free to [open an issue](https://github.com/jaival-11/justalink/issues/new). You can also email me:
 
-[![Email Support](https://img.shields.io/badge/Email-Contact_Me-db4437?style=for-the-badge&labelColor=0d1117&logo=gmail)](mailto:jaival7909@gmail.com)
+[![Email Support](https://img.shields.io/badge/Email-Contact_Me-db4437?style=for-the-badge&labelColor=0d1117&logo=gmail)](mailto:jaival7909@gmail.com)[![Support via Telegram](https://img.shields.io/badge/Telegram-2AABEE?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/theironiccircle)
 
 ---
 
@@ -43,7 +43,7 @@ If you have encounter any bug or have any suggestions that could make this proje
 
 [![Star Repo](https://img.shields.io/badge/Star%20my%20repo-FFE100?style=for-the-badge)](https://github.com/jaival-11/justalink)
 [![Follow on Github](https://img.shields.io/badge/Follow%20on%20Github-000000?style=for-the-badge&logo=Github)](https://github.com/jaival-11)
-[![Join Telegram channel](https://img.shields.io/badge/Join%20channel-2AABEE?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/techironic)
+[![Join on Telegram](https://img.shields.io/badge/Join-2AABEE?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/theironiccircle)
 [![Follow on X](https://img.shields.io/badge/Follow%20on%20X-000000?style=for-the-badge&logo=X)](https://x.com/techironic11)
 
 ---
