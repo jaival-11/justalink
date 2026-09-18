@@ -106,3 +106,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <b>Built with ❤️ by <a href="https://github.com/jaival-11">Jaival</a></b>
 </div>
 
+[![GitGem](https://gitgem.org/api/badge/github/jaival-11/justalink.svg)](https://gitgem.org/github/jaival-11/justalink)
